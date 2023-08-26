@@ -1,0 +1,91 @@
+{
+  "name": "r",
+  "displayName": "ARM Assembly Language Editor",
+  "description": "ARM Assembly Language Editor (IntelliSense, documentation tooltips, code analysis and more)",
+  "version": "0.0.1",
+  "author": "Mikhail Arkhipov",
+  "icon": "images/ArmIcon.png",
+  "publisher": "Mikhail-Arkhipov",
+  "license": "MIT",
+  "preview": true,
+  "homepage": "https://github.com/MikhailArkhipov/vscode-arm",
+  "bugs": {
+    "url": "https://github.com/MikhailArkhipov/vscode-arm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikhailArkhipov/vscode-arm"
+  },
+  "keywords": [
+    "ARM",
+    "Assembly"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters",
+    "Snippets"
+  ],
+  "activationEvents": [
+    "onLanguage:arm"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "snippets": [
+      {
+        "language": "arm",
+        "path": "./snippets/arm.json"
+      }
+    ],
+    "commands": [
+    ],
+    "keybindings": [
+    ],
+    "languages": [
+      {
+        "id": "arm",
+        "aliases": [
+          "ARM Assembly Language"
+        ],
+        "extensions": [
+          ".s"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "ARMASM",
+      "properties": {
+        "armasm.setting1": {
+          "type": "string",
+          "default": "ARM 7",
+          "description": "ARM Assembly Version"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^14.18.33",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "mocha": "^9.2.2",
+    "typescript": "^4.8.4",
+    "@vscode/vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.0.2"
+  }
+}
