@@ -2,16 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
 
-export interface IDeferred<T> {
+export interface Deferred<T> {
     readonly promise: Promise<T>;
     readonly resolved: boolean;
     readonly rejected: boolean;
     readonly completed: boolean;
-    resolve(value?: T | PromiseLike<T>);
-    reject(reason?: any);
+    resolve(value?: T | PromiseLike<T>): void;
+    reject(reason?: any): void;
 }
 
-class DeferredImpl<T> implements IDeferred<T> {
+class DeferredImpl<T> implements Deferred<T> {
     private _resolve: (value?: T | PromiseLike<T>) => void;
     private _reject: (reason?: any) => void;
     private _resolved = false;
@@ -46,6 +46,6 @@ class DeferredImpl<T> implements IDeferred<T> {
         return this._rejected || this._resolved;
     }
 }
-export function createDeferred<T>(scope: any = null): IDeferred<T> {
+export function createDeferred<T>(scope: any = null): Deferred<T> {
     return new DeferredImpl<T>(scope);
 }
