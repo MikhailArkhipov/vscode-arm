@@ -4,11 +4,12 @@
 import { TextProvider } from "../text/text";
 import { TextRangeCollection } from "../text/textRangeCollection";
 import { TokenStream } from "../tokens/tokenStream";
-import { AssemblerConfig, Tokenizer } from "../tokens/tokenizer";
+import { Tokenizer } from "../tokens/tokenizer";
 import { Token, TokenType } from "../tokens/tokens";
 import { AstNode } from "../AST/astNode";
 import { AstRoot } from "../AST/astRoot";
 import { ParseError } from "./parseError";
+import { AssemblerConfig } from "../syntaxConfig";
 
 export class ParseContext {
   public readonly text: TextProvider;
