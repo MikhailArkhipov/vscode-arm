@@ -6,23 +6,18 @@ import { Token } from "../tokens/tokens";
 
 export enum ParseErrorType {
   None,
-  Unknown,
   UnexpectedToken,
-  IndentifierExpected,
+  LabelName,
+  DirectiveName,
+  InstructionName,
+  UnknownInstruction,
+  InvalidModifier,
+  DataExpected,
   NumberExpected,
   StringExpected,
   ExpressionExpected,
-  SectionNameExpected,
-  LabelExpected,
-  DataExpected,
-  VariableOrConstantExpected,
   OperatorExpected,
-  InvalidModifier,
-  OpenCurlyBraceExpected,
-  CloseCurlyBraceExpected,
-  OpenSquareBracketExpected,
-  CloseSquareBracketExpected,
-  UnexpectedEndOfFile,
+  UnexpectedEndOfFile
 }
 
 export enum ErrorLocation {

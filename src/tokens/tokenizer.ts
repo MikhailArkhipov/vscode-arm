@@ -4,26 +4,12 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
+import { AssemblerConfig } from "../syntaxConfig";
 import { Char, Character } from "../text/charCodes";
 import { CharacterStream } from "../text/characterStream";
 import { TextProvider } from "../text/text";
 import { TextRangeCollection } from "../text/textRangeCollection";
-import { NumberTokenizer } from "./numberTokenizer";
 import { Token, TokenType } from "./tokens";
-
-export class AssemblerConfig {
-  public assemblerName: string; // Human readable assembler name, such as 'GNU ARM', 'GCC' or 'CLang'.
-  public commentsConfig: CommentsConfig; // Types of comment syntax supported.
-  public statementSeparator: string; // Some assemblers support multiple statements in line, separated by semicolon.
-}
-
-export class CommentsConfig {
-  public cLineComments: boolean; // Allow C++ type comments like //.
-  public cBlockComments: boolean; // Allow C block comments aka /* */.
-  public hashComments: boolean; // Allow # comments, provided # is the first character in line. Supported by GCC.
-  public atComments: boolean; // '@ text', run to the end of the line
-  public semicolonComments: boolean; // '; text', run to the end of the line
-}
 
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
@@ -51,8 +37,15 @@ export class Tokenizer {
 
     var end = Math.min(textProvider.length, start + length);
     while (!this._cs.isEndOfStream() && this._cs.position < end) {
+      var start = this._cs.position;
       // Keep on adding tokens
       this.addNextToken();
+
+      // If token was added, the position must change.
+      if (this._cs.position === start && !this._cs.isEndOfStream()) {
+        // We must advance or tokenizer hangs
+        throw new Error("Infinite loop in tokenizer");
+      }
     }
     return { tokens: new TextRangeCollection(this._tokens), comments: new TextRangeCollection(this._comments) };
   }
@@ -60,10 +53,14 @@ export class Tokenizer {
   // Main tokenization method. Responsible for adding next token
   // to the list, if any. Proceeds the end of the character stream.
   private addNextToken(): void {
-    var start = this._cs.position;
     this.skipWhitespace();
 
     if (this._cs.isEndOfStream()) {
+      return;
+    }
+
+    if (this.isAtLineComment()) {
+      this.addLineComment();
       return;
     }
 
@@ -72,56 +69,19 @@ export class Tokenizer {
         this.handleString();
         return;
 
-      case Char.Hash:
-      case Char.Semicolon:
-      case Char.At:
-        // Parser handles immediates and directives syntax
-        this.handlePossibleEolComment();
-        return;
-
       case Char.Slash:
-        if(this._config.commentsConfig.cLineComments && this._cs.nextChar === Char.Slash) {
-          this.handlePossibleEolComment();
-          return;
-        }      
-        if(this._config.commentsConfig.cBlockComments && this._cs.nextChar === Char.Asterisk) {
+        if (this.isAtBlockComment()) {
           this.handleCBlockComment();
           return;
-        }      
+        }
         break;
 
       case Char.Comma:
         this.addTokenAndMove(TokenType.Comma, this._cs.position);
         break;
-
-      case Char.Colon:
-        // Parser handles label syntax
-        this.addTokenAndMove(TokenType.Colon, this._cs.position);
-        return;
     }
 
-    // Try numbers
-    if (NumberTokenizer.isPossibleNumber(this._cs)) {
-      var start = this._cs.position;
-      var length = NumberTokenizer.handleNumber(this._cs);
-      if (length > 0) {
-        this.addToken(TokenType.Number, start, length);
-        return;
-      }
-    }
-
-    // Not a number. Perhaps a directive? Parser handles directive syntax
-    if (this._cs.currentChar === Char.Period) {
-      this.addTokenAndMove(TokenType.Period, this._cs.position);
-      return;
-    }
-
-    this.handleOther();
-
-    if (this._cs.position === start) {
-      // We must advance or tokenizer hangs
-      throw new Error("Infinite loop in tokenizer");
-    }
+    this.handleWord();
   }
 
   // Double-quoted string with possible escapes.
@@ -148,48 +108,25 @@ export class Tokenizer {
     this.addToken(TokenType.String, start, this._cs.position - start);
   }
 
-  private handleOther(): void {
-    // TODO: when parsing expressions in immediates
-    // If character is not a letter and not start of a string it
-    // cannot be a keyword, function or variable name. Try operators
-    // first since they are longer than puctuation.
-    // if (HandleOperator()) {
-    //    return;
-    //}
-
-    // Something unknown. Skip to whitespace and file it as unknown.
-    // Note however, we should take # ito account as it starts comment
-    var start = this._cs.position;
-    this.addIdentifier();
-  }
-
-  private addIdentifier(): void {
+  private handleWord(): void {
     var start = this._cs.position;
 
-    var length = this.getIdentifierLength();
+    var length = this.getWordLength();
     if (length === 0) {
       this.addTokenAndMove(TokenType.Unknown, start);
     } else {
-      this.addToken(TokenType.Identifier, start, length);
+      this.addToken(TokenType.Word, start, length);
     }
   }
 
-  private getIdentifierLength(): number {
+  private getWordLength(): number {
     var start = this._cs.position;
-    Tokenizer.skipIdentifier(
+    this.skipWord(
       this._cs,
       (cs: CharacterStream) => {
-        return Character.isAnsiLetter(cs.currentChar) || cs.currentChar === Char.$;
+        // Anything except strings, commas or comments
+        return !cs.isAtString() && !this.isAtLineComment() && !this.isAtBlockComment();
       },
-      (cs: CharacterStream) => {
-        return (
-          Character.isAnsiLetter(cs.currentChar) ||
-          Character.isDecimal(cs.currentChar) ||
-          cs.currentChar === Char.Underscore ||
-          cs.currentChar === Char.Period || // Mostly for instructions with modifiers
-          cs.currentChar === Char.$
-        );
-      }
     );
     return this._cs.position - start;
   }
@@ -197,35 +134,27 @@ export class Tokenizer {
   // Handle generic comment that spans to the end of the line.
   // Comment explicitly terminate current statement, no next
   // line continuation is allowed.
-  private handlePossibleEolComment(): void {
+  private isAtLineComment(): boolean {
     switch (this._cs.currentChar) {
       case Char.Hash:
-        // Possibly # comment, must start at the beginning of the line.
-        // Typically GNU https://sourceware.org/binutils/docs/as/Comments.html
+        // GNU # comment, must start at the beginning of the line.
         // TODO: support GNU preprocessing instructions, like #IF? This
         // would be for semantic coloring or special completions after #.
-        if (!this._config.commentsConfig || !Character.isNewLine(this._cs.prevChar)) {
-          // Possible immediate value
-          this.addTokenAndMove(TokenType.Hash, this._cs.position);
-          return;
-        }
-        break;
+        return this._config.hashComments && Character.isNewLine(this._cs.prevChar);
 
-      case Char.Semicolon:
-        if (!this._config.commentsConfig.semicolonComments) {
-          this.addTokenAndMove(TokenType.Unknown, this._cs.position);
-          return;
-        }
-        break;
+      case Char.Slash:
+        return this._config.cLineComments && this._cs.nextChar === Char.Slash;
 
-      case Char.At:
-        if (!this._config.commentsConfig.atComments) {
-          this.addTokenAndMove(TokenType.Unknown, this._cs.position);
-          return;
-        }
-        break;
+      default:
+        return this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar;
     }
+  }
 
+  private isAtBlockComment(): boolean {
+    return this._config.cBlockComments && this._cs.nextChar === Char.Asterisk;
+  }
+
+  private addLineComment(): void {
     var start = this._cs.position;
     this._cs.moveToEol();
 
@@ -233,7 +162,6 @@ export class Tokenizer {
     if (length > 0) {
       this.addComment(start, length);
     }
-
     // Explicitly terminate statement
     var start = this._cs.position;
     this._cs.skipLineBreak();
@@ -242,10 +170,10 @@ export class Tokenizer {
 
   private handleCBlockComment(): void {
     var start = this._cs.position;
-    
+
     this._cs.advance(2); // Skip /*
-    while(!this._cs.isEndOfStream()) {
-      if(this._cs.currentChar === Char.Asterisk && this._cs.nextChar === Char.Slash) {
+    while (!this._cs.isEndOfStream()) {
+      if (this._cs.currentChar === Char.Asterisk && this._cs.nextChar === Char.Slash) {
         this._cs.advance(2);
         break;
       }
@@ -271,29 +199,6 @@ export class Tokenizer {
     this._cs.moveToNextChar();
   }
 
-  private skipIdentifier(
-    isIdentifierLeadCharacter: (cs: CharacterStream) => boolean,
-    isIdentifierCharacter: (cs: CharacterStream) => boolean
-  ): void {
-    if (!isIdentifierLeadCharacter(this._cs)) {
-      return;
-    }
-
-    if (this._cs.isEndOfStream()) {
-      return;
-    }
-
-    while (!this._cs.isWhiteSpace()) {
-      if (!isIdentifierCharacter(this._cs)) {
-        break;
-      }
-
-      if (!this._cs.moveToNextChar()) {
-        break;
-      }
-    }
-  }
-
   // Skip over whitespace characters.
   private skipWhitespace(): void {
     if (this._cs.isEndOfStream()) {
@@ -306,43 +211,19 @@ export class Tokenizer {
       }
     }
   }
-
-  private skipUnknown(): void {
-    while (!this._cs.isEndOfStream() && !this._cs.isWhiteSpace()) {
-      // Break at possible comments in order to recover
-      if (this._config.commentsConfig.semicolonComments && this._cs.currentChar === Char.Semicolon) {
-        break;
-      }
-      if (this._config.commentsConfig.atComments && this._cs.currentChar === Char.At) {
-        break;
-      }
-      this._cs.moveToNextChar();
-    }
-  }
-}
-
-export namespace Tokenizer {
-  export function skipIdentifier(
+  
+  private skipWord(
     cs: CharacterStream,
-    isIdentifierLeadCharacter: (cs: CharacterStream) => boolean,
-    isIdentifierCharacter: (cs: CharacterStream) => boolean
+    isAllowedCharacter: (cs: CharacterStream) => boolean
   ): void {
-    if (!isIdentifierLeadCharacter(cs)) {
-      return;
-    }
-
-    if (cs.isEndOfStream()) {
-      return;
-    }
-
-    while (!cs.isWhiteSpace()) {
-      if (!isIdentifierCharacter(cs)) {
+    while (!cs.isEndOfStream()) {
+      if(cs.isWhiteSpace()) {
         break;
       }
-
-      if (!cs.moveToNextChar()) {
+      if (!isAllowedCharacter(cs)) {
         break;
       }
+      cs.moveToNextChar();
     }
   }
 }

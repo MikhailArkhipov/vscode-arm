@@ -2,23 +2,20 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextProvider } from "../text/text";
-import { TextRange, TextRangeImpl } from "../text/textRange";
 import { TextRangeCollection } from "../text/textRangeCollection";
-import { AssemblerConfig } from "../tokens/tokenizer";
-import { Token, TokenType } from "../tokens/tokens";
+import { Token } from "../tokens/tokens";
 import { AstNode, AstNodeImpl } from "./astNode";
 import { ParseContext } from "../parser/parser";
-import { Directive } from "./directive";
 import { Statement } from "./statement";
+import { AssemblerConfig } from "../syntaxConfig";
 
 export class AstRoot extends AstNodeImpl {
-  public readonly labels: TextRangeCollection<Token>;
-  public readonly variables: TextRangeCollection<Token>;
-
   private _text: TextProvider;
   private _config: AssemblerConfig;
   private _comments: TextRangeCollection<Token>;
   private _statements: Statement[];
+  private _labels: Token[];
+  private _variables: Token[];
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._text = context.text;
@@ -40,7 +37,7 @@ export class AstRoot extends AstNodeImpl {
     }
     return super.parse(context, this);
   }
-  
+
   public get text(): TextProvider {
     return this._text;
   }
@@ -55,5 +52,13 @@ export class AstRoot extends AstNodeImpl {
 
   public get statements(): TextRangeCollection<Statement> {
     return new TextRangeCollection(this._statements);
+  }
+
+  public get labels(): TextRangeCollection<Token> {
+    return new TextRangeCollection(this._variables);
+  }
+  
+  public get variables(): TextRangeCollection<Token> {
+    return new TextRangeCollection(this._variables);
   }
 }
