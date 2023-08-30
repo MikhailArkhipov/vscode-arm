@@ -56,14 +56,14 @@ export class TextRangeCollection<T extends TextRange> {
     if (position < this.start) {
       return -1;
     }
-    if (position > this.end) {
+    if (position >= this.end) {
       return -1;
     }
 
     let min = 0;
     let max = this.count - 1;
 
-    while (min < max) {
+    while (min <= max) {
       const mid = Math.floor(min + (max - min) / 2);
       const item = this._items[mid];
 
@@ -78,7 +78,7 @@ export class TextRangeCollection<T extends TextRange> {
       }
     }
 
-    return min;
+    return -1;
   }
 
   /**
