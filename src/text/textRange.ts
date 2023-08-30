@@ -35,6 +35,10 @@ export namespace TextRange {
     return position >= start && position < start + length;
   }
 
+  export function containsRange(start1: number, length1: number, start2: number, length2: number): boolean {
+   return contains(start1, length1, start2) && contains(start1, length1, start2+length2)
+  }
+
   export function intersect(start1: number, length1: number, start2: number, length2: number): boolean {
     if (length1 === 0 && length2 === 0) {
       return start1 === start2;
