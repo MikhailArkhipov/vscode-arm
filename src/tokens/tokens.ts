@@ -10,7 +10,7 @@ import { TextRangeImpl } from "../text/textRange";
 // It is split into specific item tokenizers which are employed
 // by the code analysis as needed.
 export const enum TokenType {
-  Unknown,
+  Unknown = 0,
   // Basically any character sequence except commas and comments.
   // We let parser and code validator to deal with specifics, such as
   // if it is a directive, instruction, immediate or something else.

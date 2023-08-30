@@ -59,35 +59,35 @@ test("TextRange intersectRange 2", () => {
   var r1 = TextRange.fromBounds(1, 5);
   var r2 = TextRange.fromBounds(5, 10);
 
-  expect(TextRange.intersectRange(r1,r2)).toBe(false);
-  expect(TextRange.intersectRange(r2,r1)).toBe(false);
+  expect(TextRange.intersectRange(r1, r2)).toBe(false);
+  expect(TextRange.intersectRange(r2, r1)).toBe(false);
 
-  expect(TextRange.intersectRange(r1,r1)).toBe(true);
+  expect(TextRange.intersectRange(r1, r1)).toBe(true);
 
   var r3 = TextRange.fromBounds(1, 1);
   var r4 = TextRange.fromBounds(1, 2);
   var r5 = TextRange.fromBounds(2, 3);
 
-  expect(TextRange.intersectRange(r1,r3)).toBe(true);
+  expect(TextRange.intersectRange(r1, r3)).toBe(true);
 
-  expect(TextRange.intersectRange(r1,r4)).toBe(true);
-  expect(TextRange.intersectRange(r1,r5)).toBe(true);
+  expect(TextRange.intersectRange(r1, r4)).toBe(true);
+  expect(TextRange.intersectRange(r1, r5)).toBe(true);
 
   expect(TextRange.intersectRange(r3, r1)).toBe(true);
-  expect(TextRange.intersectRange(r4,r1)).toBe(true);
-  expect(TextRange.intersectRange(r5,r1)).toBe(true);
+  expect(TextRange.intersectRange(r4, r1)).toBe(true);
+  expect(TextRange.intersectRange(r5, r1)).toBe(true);
 
   var r6 = TextRange.fromBounds(Number.MIN_VALUE / 2, Number.MAX_VALUE / 2);
-  expect(TextRange.intersectRange(r1,r6)).toBe(true);
-  expect(TextRange.intersectRange(r6,r1)).toBe(true);
+  expect(TextRange.intersectRange(r1, r6)).toBe(true);
+  expect(TextRange.intersectRange(r6, r1)).toBe(true);
 
   var r7 = TextRange.fromBounds(0, 20);
-  expect(TextRange.intersectRange(r1,r7)).toBe(true);
-  expect(TextRange.intersectRange(r7,r1)).toBe(true);
+  expect(TextRange.intersectRange(r1, r7)).toBe(true);
+  expect(TextRange.intersectRange(r7, r1)).toBe(true);
 
   var r8 = TextRange.fromBounds(5, 8);
-  expect(TextRange.intersectRange(r1,r8)).toBe(false);
-  expect(TextRange.intersectRange(r8,r1)).toBe(false);
+  expect(TextRange.intersectRange(r1, r8)).toBe(false);
+  expect(TextRange.intersectRange(r8, r1)).toBe(false);
 });
 
 test("TextRange isValid", () => {
@@ -104,12 +104,12 @@ test("TextRange isValid", () => {
 });
 
 test("TextRange construction", () => {
-  var r = TextRange.fromBounds(0,1);
+  var r = TextRange.fromBounds(0, 1);
   expect(r.start).toBe(0);
   expect(r.length).toBe(1);
   expect(r.end).toBe(1);
 
-  r = TextRange.create(1,2);
+  r = TextRange.create(1, 2);
   expect(r.start).toBe(1);
   expect(r.length).toBe(2);
   expect(r.end).toBe(3);
@@ -163,7 +163,3 @@ test("TextRange empty", () => {
   expect(r.end).toBe(0);
   expect(r.length).toBe(0);
 });
-
-
-
-

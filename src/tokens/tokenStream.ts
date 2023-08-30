@@ -11,14 +11,19 @@ export class TokenStream {
   private readonly _tokens: TextRangeCollection<Token>;
   private readonly _endOfStreamToken: Token;
   private _index: number = 0;
-  private _isEndOfStream: boolean;
+  private _isEndOfStream: boolean = false;
   private _currentToken: Token;
 
   constructor(tokens: TextRangeCollection<Token>, endOfStreamToken: Token) {
     this._tokens = tokens;
     this._endOfStreamToken = endOfStreamToken;
+    this.checkBounds();
   }
 
+  public get length(): number {
+    return this._tokens.count;
+  }
+  
   public get position(): number {
     return this._index;
   }
@@ -28,12 +33,15 @@ export class TokenStream {
   }
 
   public get currentToken(): Token {
+    if(!this._currentToken) {
+      this._currentToken = this.getTokenAt(this._index);
+    }
     return this._currentToken;
   }
 
   public getTokenAt(position: number): Token {
     if (position >= 0 && position < this._tokens.count) {
-      return this._tokens[position];
+      return this._tokens.getItemAt(position);
     }
     return this._endOfStreamToken;
   }
@@ -81,6 +89,6 @@ export class TokenStream {
     }
 
     this._isEndOfStream = this._index >= this._tokens.count;
-    this._currentToken = this._isEndOfStream ? this._endOfStreamToken : this._tokens[this._index];
+    this._currentToken = this._isEndOfStream ? this._endOfStreamToken : this._tokens.getItemAt(this._index);
   }
 }
