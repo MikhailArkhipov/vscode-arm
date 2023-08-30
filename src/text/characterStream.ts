@@ -22,8 +22,10 @@ export class CharacterStream {
 
   public constructor(textProvider: TextProvider, range?: TextRange) {
     this.text = textProvider;
-    this._range = TextRange.fromBounds(range ? range.start : 0, range ? range.end : 0);
-    this._position = this._range.start;
+    var start = range ? range.start : 0;
+    var length = range ? range.length : textProvider.length;
+    this._range = TextRange.create(start, length);
+    this.position = this._range.start;
   }
 
   public get position(): number {
@@ -112,7 +114,7 @@ export class CharacterStream {
   }
 
   public isWhiteSpace(): boolean {
-    return this.currentChar === Char.Space;
+    return Character.isWhitespace(this.currentChar);
   }
 
   public isAtNewLine(): boolean {

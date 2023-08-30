@@ -163,6 +163,10 @@ export namespace Character {
     return ch >= Char._0 && ch <= Char._9;
   }
 
+  export function isWhitespace(ch: number): boolean {
+    return isNewLine(ch) || ch === Char.Space || ch === Char.Tab;
+  }
+
   export function isNewLine(ch: number): boolean {
     return ch === Char.CarriageReturn || ch === Char.LineFeed;
   }

@@ -1,9 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange } from "../../text/textRange";
 import { TextRangeCollection } from "../../text/textRangeCollection";
-import { TextStream } from "../../text/textStream";
 import { TokenStream } from "../../tokens/tokenStream";
 import { Token, TokenType } from "../../tokens/tokens";
 
