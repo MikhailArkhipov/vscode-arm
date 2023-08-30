@@ -1,6 +1,6 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-"use strict"
+"use strict";
 
 import { Char, Character } from "./charCodes";
 import { TextProvider } from "./text";
@@ -101,9 +101,9 @@ export class CharacterStream {
   }
 
   public moveToEol(): void {
-      while (!this.isEndOfStream() && !this.isAtNewLine()) {
-        this.moveToNextChar();
-      }
+    while (!this.isEndOfStream() && !this.isAtNewLine()) {
+      this.moveToNextChar();
+    }
   }
 
   public moveToNextLine(): void {
@@ -120,16 +120,8 @@ export class CharacterStream {
   }
 
   public skipLineBreak(): void {
-    if (this.currentChar === Char.LineFeed.valueOf()) {
+    while (this.currentChar === Char.LineFeed || this.currentChar === Char.CarriageReturn) {
       this.moveToNextChar();
-      if (this.currentChar === Char.CarriageReturn.valueOf()) {
-        this.moveToNextChar();
-      }
-    } else if (this.currentChar === Char.CarriageReturn.valueOf()) {
-      this.moveToNextChar();
-      if (this.currentChar === Char.LineFeed.valueOf()) {
-        this.moveToNextChar();
-      }
     }
   }
 

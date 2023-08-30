@@ -13,7 +13,6 @@ export class AstRoot extends AstNodeImpl {
   private _text: TextProvider;
   private _config: AssemblerConfig;
   private _comments: TextRangeCollection<Token>;
-  private _statements: Statement[];
   private _labels: Token[];
   private _variables: Token[];
 
@@ -22,14 +21,11 @@ export class AstRoot extends AstNodeImpl {
     this._config = context.config;
     this._comments = context.comments;
 
-    var t = context.tokens;
-    var statements: Statement[] = [];
-
-    while (!t.isEndOfStream()) {
+    while (!context.tokens.isEndOfStream()) {
       var statement = Statement.create(context, this);
       if (statement != null) {
         if (statement.parse(context, this)) {
-          statements.push(statement);
+          this.appendChild(statement);
         } else {
           statement = undefined;
         }
@@ -50,14 +46,10 @@ export class AstRoot extends AstNodeImpl {
     return this._comments;
   }
 
-  public get statements(): TextRangeCollection<Statement> {
-    return new TextRangeCollection(this._statements);
-  }
-
   public get labels(): TextRangeCollection<Token> {
     return new TextRangeCollection(this._variables);
   }
-  
+
   public get variables(): TextRangeCollection<Token> {
     return new TextRangeCollection(this._variables);
   }

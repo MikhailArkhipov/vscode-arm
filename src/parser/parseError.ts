@@ -11,6 +11,7 @@ export enum ParseErrorType {
   DirectiveName,
   InstructionName,
   UnknownInstruction,
+  OperandExpected,
   InvalidModifier,
   DataExpected,
   NumberExpected,

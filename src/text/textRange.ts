@@ -4,6 +4,8 @@
 //   https://github.com/MikhailArkhipov/vscode-r/blob/master/src/Languages/Core/Impl/Text/TextRange.cs
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { TextProvider } from "./text";
+
 /**
  *    Represents range of text in a text source.
  */
@@ -73,6 +75,10 @@ export namespace TextRange {
 
   export function intersectionRange(range1: TextRange, range2: TextRange): TextRange {
     return intersection(range1.start, range1.length, range2.start, range2.length);
+  }
+
+  export function getText(tp: TextProvider, range: TextRange): string {
+    return tp.getText(range.start, range.length);
   }
 }
 

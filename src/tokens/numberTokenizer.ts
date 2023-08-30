@@ -45,7 +45,9 @@ export namespace NumberTokenizer {
       cs.moveToNextChar();
     }
 
-    if (cs.currentChar === Char._0 && (cs.currentChar === Char.x.valueOf() || cs.currentChar === Char.X.valueOf())) {
+    // https://sourceware.org/binutils/docs-2.26/as/Integers.html#Integers
+    // A hexadecimal integer is `0x' or `0X' followed by one or more hexadecimal digits.
+    if (cs.currentChar === Char._0 && (cs.nextChar === Char.x || cs.nextChar === Char.X)) {
       cs.advance(2);
       return handleHex(cs, start);
     }

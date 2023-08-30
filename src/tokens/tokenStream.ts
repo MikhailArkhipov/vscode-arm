@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextRangeCollection } from "../text/textRangeCollection";
-import { Token } from "./tokens";
+import { Token, TokenType } from "./tokens";
 
 // Generic token stream. Allows fetching tokens safely, returns special end of stream
 // tokens even before start  or beyond end of stream. Allows looking beyound end of
@@ -54,10 +54,14 @@ export class TokenStream {
     return this._isEndOfStream;
   }
 
+  public isEndOfLine(): boolean {
+    return this.isEndOfStream() || this.currentToken.tokenType === TokenType.EndOfLine;
+  }
+
   public moveToNextToken(): Token {
     if (this._index < this._tokens.count - 1) {
       this._index++;
-      this._currentToken = this._tokens.getItemAt[this._index];
+      this._currentToken = this._tokens.getItemAt(this._index);
       return this._currentToken;
     }
     return this.advance(1);

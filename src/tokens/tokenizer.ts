@@ -79,6 +79,12 @@ export class Tokenizer {
       case Char.Comma:
         this.addTokenAndMove(TokenType.Comma, this._cs.position);
         break;
+
+      default:
+        if (this._cs.isAtNewLine()) {
+          this.handleLineBreak();
+        }
+        break;
     }
 
     this.handleWord();
@@ -121,13 +127,10 @@ export class Tokenizer {
 
   private getWordLength(): number {
     var start = this._cs.position;
-    this.skipWord(
-      this._cs,
-      (cs: CharacterStream) => {
-        // Anything except strings, commas or comments
-        return !cs.isAtString() && !this.isAtLineComment() && !this.isAtBlockComment();
-      },
-    );
+    this.skipWord(this._cs, (cs: CharacterStream) => {
+      // Anything except strings, commas or comments
+      return !cs.isAtString() && !this.isAtLineComment() && !this.isAtBlockComment();
+    });
     return this._cs.position - start;
   }
 
@@ -162,10 +165,6 @@ export class Tokenizer {
     if (length > 0) {
       this.addComment(start, length);
     }
-    // Explicitly terminate statement
-    var start = this._cs.position;
-    this._cs.skipLineBreak();
-    this.addToken(TokenType.EndOfLine, start, this._cs.position - start);
   }
 
   private handleCBlockComment(): void {
@@ -179,6 +178,14 @@ export class Tokenizer {
       }
     }
     this.addComment(start, this._cs.position - start);
+  }
+
+  private handleLineBreak(): void {
+    if (this._cs.isAtNewLine()) {
+      var start = this._cs.position;
+      this._cs.skipLineBreak();
+      this.addToken(TokenType.EndOfLine, start, this._cs.position - start);
+    }
   }
 
   private addComment(start: number, length: number): void {
@@ -206,18 +213,17 @@ export class Tokenizer {
     }
 
     while (this._cs.isWhiteSpace()) {
-      if (!this._cs.moveToNextChar()) {
+      if (this._cs.isAtNewLine()) {
+        this.handleLineBreak();
+      } else if (!this._cs.moveToNextChar()) {
         break;
       }
     }
   }
-  
-  private skipWord(
-    cs: CharacterStream,
-    isAllowedCharacter: (cs: CharacterStream) => boolean
-  ): void {
+
+  private skipWord(cs: CharacterStream, isAllowedCharacter: (cs: CharacterStream) => boolean): void {
     while (!cs.isEndOfStream()) {
-      if(cs.isWhiteSpace()) {
+      if (cs.isWhiteSpace()) {
         break;
       }
       if (!isAllowedCharacter(cs)) {
