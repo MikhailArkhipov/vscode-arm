@@ -8,7 +8,7 @@ import { ParseItem, ParseContext } from "../parser/parser";
 
 export interface AstNode extends TextRange {
     readonly root?: AstRoot;
-    parent?: AstNode;
+    readonly parent?: AstNode;
     readonly children: TextRangeCollection<AstNode>;
 
     appendChild(node: AstNode): void;
@@ -24,18 +24,14 @@ export class AstNodeImpl implements AstNode, ParseItem {
     private _parent?: AstNode;
     private readonly _children: AstNode[] = [];
 
-    constructor(parent?: AstRoot) {
-        this._parent = parent;
-    }
-
     public get root(): AstRoot | undefined {
         return this._parent?.root;
     }
     public get parent(): AstNode | undefined {
         return this._parent;
     }
-    public set parent(value: AstNode) {
-        if (this._parent && this._parent != value && value != null) {
+    public set parent(value: AstNode | undefined) {
+        if (this._parent && this._parent !== value && value !== null) {
             throw new Error("Node already has parent");
         }
         this._parent = value;

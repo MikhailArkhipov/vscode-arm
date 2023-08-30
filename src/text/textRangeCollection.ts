@@ -104,7 +104,7 @@ export class TextRangeCollection<T extends TextRange> {
       var mid = Math.floor(min + (max - min) / 2);
       var item = this._items[mid];
 
-      if (item.contains(position)) {
+      if (TextRange.contains(item.start, item.length, position)) {
         return mid;
       }
 

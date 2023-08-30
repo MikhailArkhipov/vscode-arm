@@ -1,5 +1,6 @@
 {
   "name": "r",
+  "type": "module",
   "displayName": "ARM Assembly Language Editor",
   "description": "ARM Assembly Language Editor (IntelliSense, documentation tooltips, code analysis and more)",
   "version": "0.0.1",
@@ -40,10 +41,8 @@
         "path": "./snippets/arm.json"
       }
     ],
-    "commands": [
-    ],
-    "keybindings": [
-    ],
+    "commands": [],
+    "keybindings": [],
     "languages": [
       {
         "id": "arm",
@@ -70,22 +69,30 @@
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
     "compile": "tsc -watch -p ./",
-    "test": "node ./node_modules/vscode/bin/test"
+    "test": "jest"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.1",
+    "@jest/globals": "^29.6.4",
+    "@types/jest": "29.5.4",
     "@types/node": "^14.18.33",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
+    "@vscode/vsce": "^2.15.0",
+    "chai": "^4.3.8",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "mocha": "^9.2.2",
-    "typescript": "^4.8.4",
-    "@vscode/vsce": "^2.15.0"
+    "jest": "^29.6.4",
+    "ts-jest": "^29.1.1",
+    "typescript": "^4.8.4"
   },
   "dependencies": {
     "vscode-languageclient": "^8.0.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
   }
 }

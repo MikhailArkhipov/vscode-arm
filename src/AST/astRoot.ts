@@ -34,6 +34,10 @@ export class AstRoot extends AstNodeImpl {
     return super.parse(context, this);
   }
 
+  public get parent(): AstNode {
+    return this;
+  }
+  
   public get text(): TextProvider {
     return this._text;
   }
