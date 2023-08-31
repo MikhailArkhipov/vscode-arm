@@ -19,5 +19,4 @@
     getText(start: number, length: number): string;
     indexOf(text: string, startPosition: number, ignoreCase: boolean): number;
     compareTo(position: number, length: number, text: string, ignoreCase: boolean): boolean;
-    readonly version: number;
   }

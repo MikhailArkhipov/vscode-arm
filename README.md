@@ -10,8 +10,11 @@ Currently ARM Assembler syntax is not supported. Coloring is not provided as the
 Note that file syntax references are somewhat contradictory. For example, [Here](https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_11.html#SEC152) ';' is allowed as comment character in ARM while [Here](https://sourceware.org/binutils/docs/as/ARM_002dChars.html#ARM_002dChars) documentation says '@' must be used for line comments while ';' is an instruction separator. The former reference may be old although GAS version appear to be modern. This extension follows the [latter documentation](https://sourceware.org/binutils/docs/as/ARM_002dChars.html#ARM_002dChars)
 
 # Acknowledgements
-The code is partially based on Microsoft code in https://github.com/MikhailArkhipov/vscode-r (which, in turn, was forked off https://github.com/microsoft/rtvs), translated from C# to TypeScript. Some related code was already translated to TypeScript in https://github.com/microsoft/pyright, so small amount was taken from there as well (pieces primarily related to tokenization and character streams).
+The code is partially based on Microsoft code in [R Tools for VS Code](https://github.com/MikhailArkhipov/vscode-r) (which, in turn, was forked off [Microsoft RTVS](https://github.com/microsoft/rtvs)), translated from C# to TypeScript. Some origonally C# code was already translated to TypeScript in [Pyright](https://github.com/microsoft/pyright), hence small amount was taken from there (pieces primarily related to the tokenization and supporting classes).
 
 # Bugs and feedback
+
+Feel free to file bugs and suggestings at [vscode-arm](https://github.com/MikhailArkhipov/vscode-arm) repo.
+
 
 

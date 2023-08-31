@@ -5,11 +5,9 @@ import { TextProvider } from "./text";
 
 export class TextStream implements TextProvider {
   private readonly _text: string;
-  private _version: number;
 
-  constructor(text: string, version: number = 0) {
+  constructor(text: string) {
     this._text = text;
-    this._version = version;
   }
 
   public static readonly Empty = new TextStream("");
@@ -58,9 +56,5 @@ export class TextStream implements TextProvider {
       return part.match(`/${text}/i`) ? true : false;
     }
     return part === text;
-  }
-
-  public get version(): number {
-    return this._version;
   }
 }
