@@ -78,11 +78,12 @@ export class Tokenizer {
 
       case Char.Comma:
         this.addTokenAndMove(TokenType.Comma, this._cs.position);
-        break;
+        return;
 
       default:
         if (this._cs.isAtNewLine()) {
           this.handleLineBreak();
+          return;
         }
         break;
     }
@@ -129,7 +130,7 @@ export class Tokenizer {
     var start = this._cs.position;
     this.skipWord(this._cs, (cs: CharacterStream) => {
       // Anything except strings, commas or comments
-      return !cs.isAtString() && !this.isAtLineComment() && !this.isAtBlockComment();
+      return cs.currentChar !== Char.Comma && !cs.isAtString() && !this.isAtLineComment() && !this.isAtBlockComment();
     });
     return this._cs.position - start;
   }
