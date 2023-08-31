@@ -1,14 +1,11 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { ParseContext } from "../parser/parseContext";
 import { ErrorLocation, ParseError, ParseErrorType } from "../parser/parseError";
-import { ParseContext } from "../parser/parser";
 import { Char } from "../text/charCodes";
 import { Token, TokenType } from "../tokens/tokens";
 import { AstNode, AstNodeImpl } from "./astNode";
-import { Directive } from "./directive";
-import { EmptyStatement } from "./emptyStatement";
-import { Instruction } from "./instruction";
 import { Operand } from "./operand";
 import { TokenNode } from "./tokenNode";
 
@@ -19,7 +16,7 @@ import { TokenNode } from "./tokenNode";
 // is an assembler directive. If the symbol begins with a letter the statement is
 // an assembly language instruction.
 
-export abstract class Statement extends AstNodeImpl {
+export class Statement extends AstNodeImpl {
   protected _label: AstNode | undefined;
   protected _name: AstNode | undefined;
 
@@ -31,7 +28,9 @@ export abstract class Statement extends AstNodeImpl {
     return super.parse(context, parent);    
   }
 
-  protected abstract checkStatementName(text: string): ParseErrorType | undefined;
+  protected checkStatementName(text: string): ParseErrorType | undefined {
+    return;
+  }
 
   private parseLabel(context: ParseContext): boolean {
     // ARM does not require : after the label name which makes it a guessing game.
@@ -104,7 +103,68 @@ export abstract class Statement extends AstNodeImpl {
   }
 }
 
-export namespace Statement {
+  // '.ascii "string"' and similar
+export class Directive extends Statement {
+  protected checkStatementName(text: string): ParseErrorType | undefined {
+    if (!Token.isDirectiveName(text)) {
+      return ParseErrorType.DirectiveName;
+    }
+  }
+}
+
+export namespace Directive {
+  export function create(context: ParseContext, parent: AstNode): Directive | undefined {
+    var ch = context.text.charCodeAt(context.tokens.currentToken.start);
+    if (ch === Char.Period) {
+      var directive = new Directive();
+      if (directive.parse(context, parent)) {
+        return directive;
+      }
+    }
+  }
+}
+
+// INSTR12.I8
+export class Instruction extends Statement {
+  protected checkStatementName(text: string): ParseErrorType | undefined {
+      if(!Token.isInstructionName(text)) {
+        return ParseErrorType.InstructionName;
+      }
+  }
+}
+
+export namespace Instruction {
+  export function create(context: ParseContext, parent: AstNode): Instruction | undefined {
+    var ch = context.text.charCodeAt(context.tokens.currentToken.start);
+    if (ch !== Char.Period) {
+      var instruction = new Instruction();
+      if (instruction.parse(context, parent)) {
+        return instruction;
+      }
+    }
+  }
+}
+
+// Per https://sourceware.org/binutils/docs/as/Statements.html
+// statement end at the end of the line and 'label:' is
+// 'label: <empty statement> rather than line continuation.
+export class EmptyStatement extends Statement {
+  protected checkStatementName(text: string): ParseErrorType | undefined {
+    return;
+  }
+}
+
+export namespace EmptyStatement {
+  export function create(context: ParseContext, parent: AstNode): Statement | undefined {
+    if (context.tokens.isEndOfLine()) {
+      var statement = new EmptyStatement();
+      statement.parse(context, parent);
+      return statement;
+    }
+  }
+}
+
+export namespace Statement { 
   export function create(context: ParseContext, parent: AstNode): Statement | undefined {
     // Is it an empty statement?
     var statement: Statement | undefined;

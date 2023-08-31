@@ -122,6 +122,12 @@ test("Tokenize nested comments 2", () => {
   verifyTokenTypes(actual, [TokenType.Comment]);
 });
 
+test("Tokenize unclosed C comment", () => {
+  var text = "/* comment \n\n";
+  var actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  verifyTokenTypes(actual, [TokenType.Comment]);
+});
 
 function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
   expect(actual.count).toBe(expected.length);

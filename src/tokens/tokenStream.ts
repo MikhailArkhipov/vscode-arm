@@ -14,9 +14,9 @@ export class TokenStream {
   private _isEndOfStream: boolean = false;
   private _currentToken: Token;
 
-  constructor(tokens: TextRangeCollection<Token>, endOfStreamToken: Token) {
+  constructor(tokens: TextRangeCollection<Token>) {
     this._tokens = tokens;
-    this._endOfStreamToken = endOfStreamToken;
+    this._endOfStreamToken = new Token(TokenType.EndOfStream, 0, 0);
     this.checkBounds();
   }
 

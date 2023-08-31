@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { ParseContext } from "../parser/parser";
+import { ParseContext } from "../parser/parseContext";
 import { TextRangeCollection } from "../text/textRangeCollection";
 import { Token, TokenType } from "../tokens/tokens";
 import { AstNodeImpl, AstNode } from "./astNode";

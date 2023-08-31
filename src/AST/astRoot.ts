@@ -5,9 +5,9 @@ import { TextProvider } from "../text/text";
 import { TextRangeCollection } from "../text/textRangeCollection";
 import { Token } from "../tokens/tokens";
 import { AstNode, AstNodeImpl } from "./astNode";
-import { ParseContext } from "../parser/parser";
 import { Statement } from "./statement";
 import { AssemblerConfig } from "../syntaxConfig";
+import { ParseContext } from "../parser/parseContext";
 
 export class AstRoot extends AstNodeImpl {
   private _text: TextProvider;

@@ -3,12 +3,14 @@
 
 import * as fs from 'fs'
 
-import { AssemblerConfig, AssemblerType, SyntaxConfig } from "../syntaxConfig";
+import { AssemblerType, SyntaxConfig } from "../syntaxConfig";
 import { Character } from "../text/charCodes";
 import { TextStream } from "../text/textStream";
 import { Tokenizer } from "../tokens/tokenizer";
 import { Token, TokenType } from "../tokens/tokens";
 import { TextRangeCollection } from '../text/textRangeCollection';
+import { Parser } from '../parser/parser';
+import { AstRoot } from '../AST/astRoot';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -20,9 +22,15 @@ export namespace TestUtil {
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
-  export function tokenizeToArray(text: string): TextRangeCollection<Token> {
+  export function tokenizeToArray(text: string, separateComments:boolean = false): TextRangeCollection<Token> {
     var t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
-    return t.tokenize(new TextStream(text), 0, text.length, false).tokens;
+    return t.tokenize(new TextStream(text), 0, text.length, separateComments).tokens;
+  }
+
+  export function tokenize(text: string, separateComments:boolean = false): 
+  { tokens: TextRangeCollection<Token>, comments: TextRangeCollection<Token>} {
+    var t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
+    return t.tokenize(new TextStream(text), 0, text.length, separateComments);
   }
 
   export function tokenizeToString(text: string): string[] {
@@ -82,5 +90,11 @@ export namespace TestUtil {
     }     
 
     return -1;
+  }
+
+  export function parseText(text: string): AstRoot {
+    var config = SyntaxConfig.create(AssemblerType.GNU);
+    var p = new Parser();
+    return p.parse(new TextStream(text), config);
   }
 }

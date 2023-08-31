@@ -6,7 +6,7 @@ import { TokenStream } from "../../tokens/tokenStream";
 import { Token, TokenType } from "../../tokens/tokens";
 
 function createTokenStream(tokens: Token[]): TokenStream {
-  return new TokenStream(new TextRangeCollection<Token>(tokens), new Token(TokenType.EndOfStream, 0, 0));
+  return new TokenStream(new TextRangeCollection<Token>(tokens));
 }
 
 test("TokenStream empty", () => {

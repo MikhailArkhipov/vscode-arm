@@ -1,9 +1,9 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { ParseContext } from "../parser/parseContext";
 import { Token } from "../tokens/tokens";
 import { AstNode, AstNodeImpl } from "./astNode";
-import { ParseContext } from "../parser/parser";
 
 // Node that represents a single token item
 export class TokenNode extends AstNodeImpl {
@@ -22,10 +22,5 @@ export class TokenNode extends AstNodeImpl {
     this._token = context.tokens.currentToken;
     context.tokens.moveToNextToken();
     return super.parse(context, parent);
-  }
-
-  public toString(): string {
-    var name = this.root ? this.root.text.getText(this._token.start, this._token.length) : "<???>";
-    return `${name} [${this.start}...${this.end})`;
   }
 }
