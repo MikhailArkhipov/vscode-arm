@@ -144,7 +144,8 @@ export class Tokenizer {
         // GNU # comment, must start at the beginning of the line.
         // TODO: support GNU preprocessing instructions, like #IF? This
         // would be for semantic coloring or special completions after #.
-        return this._config.hashComments && Character.isNewLine(this._cs.prevChar);
+        return this._config.hashComments && 
+          (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0);
 
       case Char.Slash:
         return this._config.cLineComments && this._cs.nextChar === Char.Slash;
@@ -177,6 +178,7 @@ export class Tokenizer {
         this._cs.advance(2);
         break;
       }
+      this._cs.moveToNextChar();
     }
     this.addComment(start, this._cs.position - start);
   }
