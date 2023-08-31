@@ -18,6 +18,18 @@ export class TokenNode extends AstNodeImpl {
     return this._token;
   }
 
+  public get start(): number {
+    return this._token.start;
+  }
+
+  public get length(): number {
+    return this._token.length;
+  }
+
+  public get end(): number {
+    return this._token.end;
+  }
+
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._token = context.tokens.currentToken;
     context.tokens.moveToNextToken();

@@ -19,19 +19,18 @@ export interface AstNode extends TextRange {
 }
 
 export namespace AstNode {
-    export function getRoot(node: AstNode | undefined): AstNode | undefined {
-        if(!node) {
-            return;
-        }
-        while(node && node.parent !== node) {
-            node = node.parent;
-        }
-        return node;
+  export function getRoot(node: AstNode | undefined): AstNode | undefined {
+    if (!node) {
+      return;
     }
+    while (node && node.parent !== node) {
+      node = node.parent;
+    }
+    return node;
+  }
 }
 
-export interface ParseItem {
-}
+export interface ParseItem {}
 
 export class AstNodeImpl implements AstNode, ParseItem {
   private _parent?: AstNode;
@@ -55,7 +54,7 @@ export class AstNodeImpl implements AstNode, ParseItem {
   }
 
   public get start(): number {
-    return this._children && this._children.length > 0 ? this._children[0].start : 0;
+    return this._children.length > 0 ? this._children[0].start : 0;
   }
 
   public get length(): number {
@@ -63,7 +62,7 @@ export class AstNodeImpl implements AstNode, ParseItem {
   }
 
   public get end(): number {
-    return this._children && this._children.length > 0 ? this._children[this._children.length - 1].end : 0;
+    return this._children.length > 0 ? this._children[this._children.length - 1].end : 0;
   }
 
   public appendChild(node: AstNode): void {

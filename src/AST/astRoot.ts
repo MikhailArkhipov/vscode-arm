@@ -10,26 +10,17 @@ import { AssemblerConfig } from "../syntaxConfig";
 import { ParseContext } from "../parser/parseContext";
 
 export class AstRoot extends AstNodeImpl {
-  private _text: TextProvider;
-  private _config: AssemblerConfig;
-  private _comments: TextRangeCollection<Token>;
   private _labels: Token[];
   private _variables: Token[];
+  private _context: ParseContext;
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    this._text = context.text;
-    this._config = context.config;
-    this._comments = context.comments;
+    this._context = context;
 
     while (!context.tokens.isEndOfStream()) {
-      var statement = Statement.create(context, this);
-      if (statement != null) {
-        if (statement.parse(context, this)) {
-          this.appendChild(statement);
-        } else {
-          statement = undefined;
-        }
-      }
+      var statement = new Statement();
+      statement.parse(context, this);
+      this.appendChild(statement);
     }
     return super.parse(context, this);
   }
@@ -37,21 +28,21 @@ export class AstRoot extends AstNodeImpl {
   public get parent(): AstNode {
     return this;
   }
-  
+
+  public get context(): ParseContext {
+    return this._context;
+  }
+
   public get text(): TextProvider {
-    return this._text;
+    return this._context.text;
   }
 
   public get config(): AssemblerConfig {
-    return this._config;
-  }
-
-  public get comments(): TextRangeCollection<Token> {
-    return this._comments;
+    return this._context.config;
   }
 
   public get labels(): TextRangeCollection<Token> {
-    return new TextRangeCollection(this._variables);
+    return new TextRangeCollection(this._labels);
   }
 
   public get variables(): TextRangeCollection<Token> {

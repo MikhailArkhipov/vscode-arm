@@ -1,7 +1,6 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Char, Character } from "../text/charCodes";
 import { TextRangeImpl } from "../text/textRange";
 
 // We keep tokens simple and let parser deal with specifics.
@@ -48,28 +47,8 @@ export namespace Token {
     // Symbol names do not start with a digit.
     // TODO: Local labels like '1:' NYI. Same for Unicode label and variable names.
 
-    var matches = text.match(/([a-zA-Z_]+)([a-zA-Z0-9_]*)/g);
-    return matches != null && matches.length === 1 && matches[0] === text;
-  }
-
-  export function isDirectiveName(text: string): boolean {
-    // Directive name starts with a period. Directive name is a symbol.
-    if (text.charCodeAt(0) !== Char.Period) {
-      return false;
-    }
-    return Token.isSymbol(text, 1, text.length - 1);
-  }
-
-  // Instruction is a symbol but may contain a single period followed by a modifier.
-  // Modifier is letter(s) followed optionally by number(s).
-  // Example: BCS.W or LDR.I8
-  export function isInstructionName(text: string): boolean {
-    // INSTR6.I8 - either all upper or all lower case
-    var matches = text.match(/[A-Z]+[0-9]*[\.]?[A-Z]*[0-9]?/g);
-    if(matches != null && matches.length === 1 && matches[0] === text) {
-      return true;
-    }
-    matches = text.match(/[a-z]+[0-9]*[\.]?[a-z]*[0-9]?/g);
-    return matches != null && matches.length === 1 && matches[0] === text;
+    var symbol = text.substring(start, start + length);
+    var matches = symbol.match(/([a-zA-Z_]+)([a-zA-Z0-9_]*)/g);
+    return matches != null && matches.length === 1 && matches[0] === symbol;
   }
 }
