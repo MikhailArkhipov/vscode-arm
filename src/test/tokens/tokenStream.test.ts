@@ -46,7 +46,7 @@ test("TokenStream empty", () => {
 test("TokenStream test 1", () => {
   var tokens: Token[] = [
     new Token(TokenType.Comma, 0, 1),
-    new Token(TokenType.Comment, 3, 1),
+    new Token(TokenType.LineComment, 3, 1),
     new Token(TokenType.String, 6, 2),
     new Token(TokenType.Word, 12, 8),
     new Token(TokenType.Unknown, 20, 1),
@@ -57,14 +57,14 @@ test("TokenStream test 1", () => {
 
   expect(ts.isEndOfStream()).toBe(false);
   expect(ts.currentToken.tokenType).toBe(TokenType.Comma);
-  expect(ts.nextToken.tokenType).toBe(TokenType.Comment);
+  expect(ts.nextToken.tokenType).toBe(TokenType.LineComment);
   expect(ts.previousToken.tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
   ts.moveToNextToken();
 
   expect(ts.isEndOfStream()).toBe(false);
-  expect(ts.currentToken.tokenType).toBe(TokenType.Comment);
+  expect(ts.currentToken.tokenType).toBe(TokenType.LineComment);
   expect(ts.nextToken.tokenType).toBe(TokenType.String);
   expect(ts.previousToken.tokenType).toBe(TokenType.Comma);
   expect(ts.lookAhead(-2).tokenType).toBe(TokenType.EndOfStream);
@@ -76,7 +76,7 @@ test("TokenStream test 1", () => {
   expect(ts.currentToken.tokenType).toBe(TokenType.Word);
   expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
   expect(ts.previousToken.tokenType).toBe(TokenType.String);
-  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.Comment);
+  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
   expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);
 
@@ -100,7 +100,7 @@ test("TokenStream test 1", () => {
   expect(ts.currentToken.tokenType).toBe(TokenType.Word);
   expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
   expect(ts.previousToken.tokenType).toBe(TokenType.String);
-  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.Comment);
+  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
   expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);
 });

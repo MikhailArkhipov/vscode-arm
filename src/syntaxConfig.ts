@@ -88,6 +88,7 @@ export namespace SyntaxConfig {
         // ac.statementSeparator = Char.Semicolon; NYI in tokenizer. Probably never will be.
         ac.supportsUnifiedSyntax = true;
         ac.labelRequiresColon = true;
+        ac.colonInLabels = true;
         break;
 
       case AssemblerType.ARM:

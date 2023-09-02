@@ -10,7 +10,6 @@ import { AssemblerConfig } from "../syntaxConfig";
 import { ParseContext } from "../parser/parseContext";
 
 export class AstRoot extends AstNodeImpl {
-  private _labels: Token[];
   private _variables: Token[];
   private _context: ParseContext;
 
@@ -39,10 +38,6 @@ export class AstRoot extends AstNodeImpl {
 
   public get config(): AssemblerConfig {
     return this._context.config;
-  }
-
-  public get labels(): TextRangeCollection<Token> {
-    return new TextRangeCollection(this._labels);
   }
 
   public get variables(): TextRangeCollection<Token> {

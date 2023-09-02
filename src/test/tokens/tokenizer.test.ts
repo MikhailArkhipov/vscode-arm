@@ -14,27 +14,47 @@ test("Tokenize single label", () => {
   var result = TestUtil.tokenizeToArray("label:");
   expect(result.length).toBe(6);
   expect(result.count).toBe(1);
-  expect(result.getItemAt(0).tokenType).toBe(TokenType.Word);
+  expect(result.getItemAt(0).tokenType).toBe(TokenType.Label);
 });
 
 test("Tokenize single instruction", () => {
   var result = TestUtil.tokenizeToArray("ADDS5.I8");
   expect(result.length).toBe(8);
   expect(result.count).toBe(1);
-  expect(result.getItemAt(0).tokenType).toBe(TokenType.Word);
+  expect(result.getItemAt(0).tokenType).toBe(TokenType.Instruction);
 });
 
 test("Tokenize label with instruction", () => {
   var actual = TestUtil.tokenizeToArray("label: B.N");
   expect(actual.length).toBe(10);
-  verifyTokenTypes(actual, [TokenType.Word, TokenType.Word]);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
+});
+
+test("Tokenize single directive", () => {
+  var result = TestUtil.tokenizeToArray(".ascii");
+  expect(result.length).toBe(6);
+  expect(result.count).toBe(1);
+  expect(result.getItemAt(0).tokenType).toBe(TokenType.Directive);
+});
+
+test("Tokenize label with directive", () => {
+  var actual = TestUtil.tokenizeToArray("label: .fill");
+  expect(actual.length).toBe(12);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
 });
 
 test("Tokenize comma", () => {
-  var text = "a, b, c";
+  var text = "add a, b, c";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Word, TokenType.Comma, TokenType.Word, TokenType.Comma, TokenType.Word]);
+  verifyTokenTypes(actual, [
+    TokenType.Instruction,
+    TokenType.Word,
+    TokenType.Comma,
+    TokenType.Word,
+    TokenType.Comma,
+    TokenType.Word,
+  ]);
 });
 
 test("Tokenize instruction with operands", () => {
@@ -42,8 +62,8 @@ test("Tokenize instruction with operands", () => {
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length - 1);
   verifyTokenTypes(actual, [
-    TokenType.Word,
-    TokenType.Word,
+    TokenType.Label,
+    TokenType.Instruction,
     TokenType.Word,
     TokenType.Comma,
     TokenType.Word,
@@ -56,7 +76,7 @@ test("Tokenize string", () => {
   var text = 'label: .ascii "a b c"';
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Word, TokenType.Word, TokenType.String]);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
 });
 
 test("Tokenize line breaks", () => {
@@ -64,11 +84,11 @@ test("Tokenize line breaks", () => {
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [
-    TokenType.Word,
-    TokenType.Word,
+    TokenType.Label,
+    TokenType.Directive,
     TokenType.String,
     TokenType.EndOfLine,
-    TokenType.Word,
+    TokenType.Instruction,
     TokenType.Word,
     TokenType.Comma,
     TokenType.Word,
@@ -82,51 +102,74 @@ test("Tokenize hash comments", () => {
   var text = "# comment\nabc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Comment, TokenType.EndOfLine, TokenType.Word]);
+  verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
 test("Tokenize @ comments", () => {
   var text = "abc @ comment\nabc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Word, TokenType.Comment, TokenType.EndOfLine, TokenType.Word]);
+  verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
 test("Tokenize C++ comments", () => {
   var text = "abc // comment\n// abc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Word, TokenType.Comment, TokenType.EndOfLine, TokenType.Comment]);
+  verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.LineComment]);
 });
 
-test("Tokenize C block comments", () => {
+test("Tokenize C block comments 1", () => {
   var text = "abc /* comment */ def\n/* abc\ndef */ klm\n";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [
-    TokenType.Word, TokenType.Comment, TokenType.Word, TokenType.EndOfLine, 
-    TokenType.Comment, TokenType.Word, TokenType.EndOfLine]);
+    TokenType.Instruction,
+    TokenType.BlockComment,
+    TokenType.Word,
+    TokenType.EndOfLine,
+    TokenType.BlockComment,
+    TokenType.Instruction,
+    TokenType.EndOfLine,
+  ]);
+});
+
+test("Tokenize C block comments 2", () => {
+  var text = "label: /**/ abc /* comment */ def\n/* abc\ndef */ klm\n";
+  var actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  verifyTokenTypes(actual, [
+    TokenType.Label,
+    TokenType.BlockComment,
+    TokenType.Instruction,
+    TokenType.BlockComment,
+    TokenType.Word,
+    TokenType.EndOfLine,
+    TokenType.BlockComment,
+    TokenType.Instruction,
+    TokenType.EndOfLine,
+  ]);
 });
 
 test("Tokenize nested comments 1", () => {
   var text = "// /* comment */ ";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Comment]);
+  verifyTokenTypes(actual, [TokenType.LineComment]);
 });
 
 test("Tokenize nested comments 2", () => {
   var text = "/* // comment */";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Comment]);
+  verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 test("Tokenize unclosed C comment", () => {
   var text = "/* comment \n\n";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Comment]);
+  verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {

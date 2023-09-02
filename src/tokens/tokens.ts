@@ -1,22 +1,28 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { Char } from "../text/charCodes";
+import { TextProvider } from "../text/text";
 import { TextRangeImpl } from "../text/textRange";
+import { TokenStream } from "./tokenStream";
 
-// We keep tokens simple and let parser deal with specifics.
-// This allows to reuse tokenizer for both GNU and ARM syntaxes.
-// Tokenizer is not immediately handling numbers, strings or expressions.
-// It is split into specific item tokenizers which are employed
-// by the code analysis as needed.
+// Tokenizer performs some structure analysis since it helps
+// downstream code to avoid duplicated checks such as if
+// symbol is a label or a directive.
+// TODO: ARM syntax is not currently supported.
 export enum TokenType {
   Unknown = 0,
-  // Basically any character sequence except commas and comments.
-  // We let parser and code validator to deal with specifics, such as
-  // if it is a directive, instruction, immediate or something else.
-  // This includes strings.
-  Word, // Any characters except whitespace, commas or quotes
+  LineComment, // C-type // or GNU @, ARM ; or # (legacy).
+  BlockComment, // /* ... */, GNU
+  // Label appear first in line and in GNU ends in :.
+  // ARM does not require :, but requires labes to start at 0.
+  Label,
+  // Directive start with . and appear first or second after label.
+  Directive,
+  // Instruction is like directive above except it does not start with .
+  Instruction,
   String, // Double quoted
-  Comment,
+  Word, // Any characters except whitespace, commas or quotes
   Comma,
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
@@ -33,22 +39,5 @@ export class Token extends TextRangeImpl {
   constructor(tokenType: TokenType, start: number, length: number) {
     super(start, length);
     this.tokenType = tokenType;
-  }
-}
-
-export namespace Token {
-  export function isSymbol(text: string, start: number, length: number): boolean {
-    // GCC https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
-    // Symbol names begin with a letter or with one of `._'. On most machines, you can
-    // also use $ in symbol names; exceptions are noted in Machine Dependencies.
-    // That character may be followed by any string of digits, letters, dollar signs
-    // (unless otherwise noted for a particular target machine), and underscores.
-    // Case of letters is significant: foo is a different symbol name than Foo.
-    // Symbol names do not start with a digit.
-    // TODO: Local labels like '1:' NYI. Same for Unicode label and variable names.
-
-    var symbol = text.substring(start, start + length);
-    var matches = symbol.match(/([a-zA-Z_]+)([a-zA-Z0-9_]*)/g);
-    return matches != null && matches.length === 1 && matches[0] === symbol;
   }
 }

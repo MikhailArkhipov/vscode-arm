@@ -44,14 +44,7 @@ export class Statement extends AstNodeImpl {
     // GCC: https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
     // Label is a symbol followed by colon.
     var ct = context.tokens.currentToken;
-    var text = context.text.getText(ct.start, ct.length);
-    if (context.config.colonInLabels && text.charCodeAt(text.length - 1) !== Char.Colon) {
-      return false;
-    }
-
-    if (!Token.isSymbol(text, ct.start, ct.length - 1)) {
-      context.addError(new ParseError(ParseErrorType.LabelName, ErrorLocation.Token, context.tokens.currentToken));
-      context.tokens.moveToNextToken();
+    if (ct.tokenType != TokenType.Label) {
       return false;
     }
 
@@ -66,15 +59,19 @@ export class Statement extends AstNodeImpl {
     var ct = context.tokens.currentToken;
 
     if (!context.tokens.isEndOfLine()) {
-      var text = context.text.getText(ct.start, ct.length);
-      if (this.isDirectiveName(text)) {
-        this._type = StatementType.Directive;
-      } else if (this.isInstructionName(text)) {
-        this._type = StatementType.Instruction;
-      } else {
-        this._type = StatementType.Unknown;
-        context.addError(new ParseError(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, ct));
+      switch (ct.tokenType) {
+        case TokenType.Directive:
+          this._type = StatementType.Directive;
+          break;
+        case TokenType.Instruction:
+          this._type = StatementType.Instruction;
+          break;
+        default:
+          this._type = StatementType.Unknown;
+          context.addError(new ParseError(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, ct));
+          break;
       }
+
       var n = new TokenNode(ct);
       if (this._type !== StatementType.Unknown) {
         this._name = n;
@@ -86,6 +83,7 @@ export class Statement extends AstNodeImpl {
       // 'label: <empty statement> rather than line continuation.
       this._type = StatementType.Empty;
     }
+
     context.tokens.moveToNextToken();
     return true;
   }
@@ -109,28 +107,6 @@ export class Statement extends AstNodeImpl {
       }
       context.tokens.moveToNextToken();
     }
-  }
-
-  private isDirectiveName(text: string): boolean {
-    // Directive name starts with a period. Directive name is a symbol.
-    // '.ascii "string"' and similar
-    if (text.charCodeAt(0) !== Char.Period) {
-      return false;
-    }
-    return Token.isSymbol(text, 1, text.length - 1);
-  }
-
-  // Instruction is a symbol but may contain a single period followed by a modifier.
-  // Modifier is letter(s) followed optionally by number(s).
-  // Example: BCS.W or LDR.I8
-  private isInstructionName(text: string): boolean {
-    // INSTR6.I8 - either all upper or all lower case
-    var matches = text.match(/[A-Z]+[0-9]*[\.]?[A-Z]*[0-9]?/g);
-    if (matches != null && matches.length === 1 && matches[0] === text) {
-      return true;
-    }
-    matches = text.match(/[a-z]+[0-9]*[\.]?[a-z]*[0-9]?/g);
-    return matches != null && matches.length === 1 && matches[0] === text;
   }
 
   public get type(): StatementType {
