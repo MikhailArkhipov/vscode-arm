@@ -29,4 +29,3 @@ export class Parser {
     return root;
   }
 }
-

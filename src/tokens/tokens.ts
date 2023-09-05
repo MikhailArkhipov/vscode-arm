@@ -17,7 +17,7 @@ export enum TokenType {
   // Instruction is like directive above except it does not start with .
   Instruction = 3,
   // Anything between commas like label: instr a, b, #(1 + 2)
-  Sequence = 4, 
+  Sequence = 4,
   Comma = 5,
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
@@ -41,6 +41,9 @@ export class Token extends TextRangeImpl {
 
 export namespace Token {
   export function isEndOfLine(t: Token): boolean {
-    return t.tokenType === TokenType.EndOfStream || t.tokenType === TokenType.EndOfLine;
+    return (
+      t.tokenType === TokenType.EndOfStream ||
+      t.tokenType === TokenType.EndOfLine
+    );
   }
 }

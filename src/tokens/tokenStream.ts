@@ -23,7 +23,7 @@ export class TokenStream {
   public get length(): number {
     return this._tokens.count;
   }
-  
+
   public get position(): number {
     return this._index;
   }
@@ -33,7 +33,7 @@ export class TokenStream {
   }
 
   public get currentToken(): Token {
-    if(!this._currentToken) {
+    if (!this._currentToken) {
       this._currentToken = this.getTokenAt(this._index);
     }
     return this._currentToken;
@@ -63,7 +63,10 @@ export class TokenStream {
   }
 
   public isEndOfLine(): boolean {
-    return this.isEndOfStream() || this.currentToken.tokenType === TokenType.EndOfLine;
+    return (
+      this.isEndOfStream() ||
+      this.currentToken.tokenType === TokenType.EndOfLine
+    );
   }
 
   public moveToNextToken(): Token {
@@ -89,6 +92,8 @@ export class TokenStream {
     }
 
     this._isEndOfStream = this._index >= this._tokens.count;
-    this._currentToken = this._isEndOfStream ? this._endOfStreamToken : this._tokens.getItemAt(this._index);
+    this._currentToken = this._isEndOfStream
+      ? this._endOfStreamToken
+      : this._tokens.getItemAt(this._index);
   }
 }

@@ -33,7 +33,12 @@ export class ParseContext {
   }
 
   public addError(error: ParseError): void {
-    var found = this._errors.find((e) => e.start == error.start && e.length == error.length && e.errorType == error.errorType);
+    var found = this._errors.find(
+      (e) =>
+        e.start == error.start &&
+        e.length == error.length &&
+        e.errorType == error.errorType
+    );
     if (!found) {
       this._errors.push(error);
     }

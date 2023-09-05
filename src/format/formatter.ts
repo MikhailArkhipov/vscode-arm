@@ -35,7 +35,11 @@ export class Formatter {
   private _operandsIndent: number;
   private _lines: string[] = [];
 
-  public formatDocument(text: TextProvider, options: FormatOptions, config: AssemblerConfig): string {
+  public formatDocument(
+    text: TextProvider,
+    options: FormatOptions,
+    config: AssemblerConfig
+  ): string {
     this._text = text;
     this._options = options;
     this._lines = [];
@@ -121,7 +125,11 @@ export class Formatter {
     return lineTokens;
   }
 
-  private appendInstructionOrDirective(tokens: Token[], i: number, lineText: string[]) {
+  private appendInstructionOrDirective(
+    tokens: Token[],
+    i: number,
+    lineText: string[]
+  ) {
     // label:<tab>instruction ...
     // <tab>      instruction
     // label:<tab>.directive
@@ -157,7 +165,11 @@ export class Formatter {
       case TokenType.Instruction:
       case TokenType.Directive:
         // Indent instruction, leave directive as is
-        lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+        lineText.push(
+          this.getWhitespace(
+            this._operandsIndent - this._instructionIndent - pt.length
+          )
+        );
         lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
@@ -172,7 +184,11 @@ export class Formatter {
     }
   }
 
-  private appendLineComment(tokens: Token[], i: number, lineText: string[]): void {
+  private appendLineComment(
+    tokens: Token[],
+    i: number,
+    lineText: string[]
+  ): void {
     // Line comments when nothing else at the line get aligned
     // to either 0 or to instructions indent, whichever is closer.
     var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
@@ -232,7 +248,8 @@ export class Formatter {
     this._tokens.position = currentPosition;
     var ts = this._options.tabSize;
     // label:<tab>instruction<tab>//comment
-    var instructionsIndent = (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
+    var instructionsIndent =
+      (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
     var operandsIndent = instructionsIndent;
     if (maxInstructionLength > 0) {
       // no instructions found

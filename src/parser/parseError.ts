@@ -20,7 +20,7 @@ export enum ParseErrorType {
   StringExpected,
   ExpressionExpected,
   OperatorExpected,
-  UnexpectedEndOfFile
+  UnexpectedEndOfFile,
 }
 
 export enum ErrorLocation {
@@ -41,14 +41,18 @@ export enum ErrorSeverity {
   // Syntax error
   Error,
   // Fatal error, such as internal product error.
-  Fatal
+  Fatal,
 }
 
 export class ParseError extends TextRangeImpl {
   public readonly errorType: ParseErrorType;
   public readonly location: ErrorLocation;
 
-  constructor(errorType: ParseErrorType, location: ErrorLocation, range: TextRange) {
+  constructor(
+    errorType: ParseErrorType,
+    location: ErrorLocation,
+    range: TextRange
+  ) {
     super(range.start, range.length);
     this.errorType = errorType;
     this.location = location;

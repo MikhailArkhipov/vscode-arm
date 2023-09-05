@@ -28,7 +28,10 @@ export class Tokenizer {
     start: number,
     length: number,
     separateComments: boolean
-  ): { tokens: TextRangeCollection<Token>; comments: TextRangeCollection<Token> } {
+  ): {
+    tokens: TextRangeCollection<Token>;
+    comments: TextRangeCollection<Token>;
+  } {
     this._cs = new CharacterStream(textProvider);
     this._cs.position = start;
 
@@ -49,7 +52,10 @@ export class Tokenizer {
         throw new Error("Tokenizer: infinite loop");
       }
     }
-    return { tokens: new TextRangeCollection(this._tokens), comments: new TextRangeCollection(this._comments) };
+    return {
+      tokens: new TextRangeCollection(this._tokens),
+      comments: new TextRangeCollection(this._comments),
+    };
   }
 
   // [label:] [instruction] [sequence[, sequence[, ...]]] [//|@] comment <eol>
@@ -65,7 +71,7 @@ export class Tokenizer {
     // Possible /* */ before instruction
     this.handleCBlockComment();
     this.skipWhitespace();
-    
+
     this.handleInstruction();
     this.skipWhitespace();
 
@@ -150,18 +156,27 @@ export class Tokenizer {
         // GNU # comment, must start at the beginning of the line.
         // TODO: support GNU preprocessing instructions, like #IF? This
         // would be for semantic coloring or special completions after #.
-        return this._config.hashComments && (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0);
+        return (
+          this._config.hashComments &&
+          (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0)
+        );
 
       case Char.Slash:
         return this._config.cLineComments && this._cs.nextChar === Char.Slash;
 
       default:
-        return this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar;
+        return (
+          this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar
+        );
     }
   }
 
   private isAtBlockComment(): boolean {
-    return this._config.cBlockComments && this._cs.currentChar === Char.Slash && this._cs.nextChar === Char.Asterisk;
+    return (
+      this._config.cBlockComments &&
+      this._cs.currentChar === Char.Slash &&
+      this._cs.nextChar === Char.Asterisk
+    );
   }
 
   private handleLineComment(): void {
@@ -186,7 +201,10 @@ export class Tokenizer {
     var start = this._cs.position;
     this._cs.advance(2); // Skip /*
     while (!this._cs.isEndOfStream()) {
-      if (this._cs.currentChar === Char.Asterisk && this._cs.nextChar === Char.Slash) {
+      if (
+        this._cs.currentChar === Char.Asterisk &&
+        this._cs.nextChar === Char.Slash
+      ) {
         this._cs.advance(2);
         break;
       }
@@ -203,7 +221,11 @@ export class Tokenizer {
     }
   }
 
-  private addComment(tokenType: TokenType, start: number, length: number): void {
+  private addComment(
+    tokenType: TokenType,
+    start: number,
+    length: number
+  ): void {
     if (this._separateComments) {
       this._comments.push(new Token(tokenType, start, length));
     } else {
@@ -268,7 +290,10 @@ export class Tokenizer {
       }
       this._cs.moveToNextChar();
     }
-    if (this._cs.position > start && Character.isWhitespace(this._cs.prevChar)) {
+    if (
+      this._cs.position > start &&
+      Character.isWhitespace(this._cs.prevChar)
+    ) {
       this._cs.position = lastNonWsPosition + 1;
     }
   }
