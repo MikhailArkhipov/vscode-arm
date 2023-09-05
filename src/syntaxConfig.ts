@@ -62,8 +62,6 @@ export class AssemblerConfig {
   public supportsUnifiedSyntax: boolean;
   // Set by directive parser to activate GCC 'unified' syntax.
   public unifiedSyntax: boolean;
-  // ARM uses labels without :.
-  public labelRequiresColon: boolean;
 }
 
 export namespace SyntaxConfig {
@@ -83,11 +81,10 @@ export namespace SyntaxConfig {
         // # comment must start at the beginning of the line.
         ac.hashComments = true;
         ac.expressions = true;
-        ac.unifiedSyntax
+        ac.unifiedSyntax = true;
         ac.immediatePrefix = "#$"; // GCC supports both #123 and $123.
         // ac.statementSeparator = Char.Semicolon; NYI in tokenizer. Probably never will be.
         ac.supportsUnifiedSyntax = true;
-        ac.labelRequiresColon = true;
         ac.colonInLabels = true;
         break;
 
@@ -98,6 +95,7 @@ export namespace SyntaxConfig {
         ac.cLineComments = true; // Allow C++ style line comments i.e. //
         ac.cBlockComments = true; // Allow C block comments /* */
         ac.immediatePrefix = "#";
+        ac.unifiedSyntax = true;
         break;
     }
 
