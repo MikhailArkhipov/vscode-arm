@@ -157,7 +157,11 @@ export class Formatter {
       case TokenType.Instruction:
       case TokenType.Directive:
         // Indent instruction, leave directive as is
-        lineText.push(this.getWhitespace(this._operandsIndent - pt.length));
+        lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+        lineText.push(this._text.getText(ct.start, ct.length));
+        break;
+
+      case TokenType.Comma:
         lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
@@ -183,6 +187,8 @@ export class Formatter {
       }
     } else if (pt.tokenType === TokenType.Label) {
       lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
+    } else {
+      lineText.push(this.getWhitespace(1));
     }
     lineText.push(this._text.getText(ct.start, ct.length));
   }
