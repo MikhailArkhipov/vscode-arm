@@ -5,51 +5,51 @@ import { TextRangeCollection } from "../../text/textRangeCollection";
 import { Token, TokenType } from "../../tokens/tokens";
 import { TestUtil } from "../utility";
 
-test("Tokenize empty string", () => {
+test("Empty string", () => {
   var result = TestUtil.tokenizeToString("");
   expect(result.length).toBe(0);
 });
 
-test("Tokenize single label", () => {
+test("Single label", () => {
   var result = TestUtil.tokenizeToArray("label:");
   expect(result.length).toBe(6);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).tokenType).toBe(TokenType.Label);
 });
 
-test("Tokenize single instruction", () => {
+test("Single instruction", () => {
   var result = TestUtil.tokenizeToArray("ADDS5.I8");
   expect(result.length).toBe(8);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).tokenType).toBe(TokenType.Instruction);
 });
 
-test("Tokenize label with instruction", () => {
+test("Label with instruction", () => {
   var actual = TestUtil.tokenizeToArray("label: B.N");
   expect(actual.length).toBe(10);
   verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
 });
 
-test("Tokenize single directive", () => {
+test("Single directive", () => {
   var result = TestUtil.tokenizeToArray(".ascii");
   expect(result.length).toBe(6);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).tokenType).toBe(TokenType.Directive);
 });
 
-test("Tokenize label with directive", () => {
+test("Label with directive", () => {
   var actual = TestUtil.tokenizeToArray("label: .fill");
   expect(actual.length).toBe(12);
   verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
 });
 
-test("Tokenize label with instruction no space", () => {
+test("Label with instruction no space", () => {
   var actual = TestUtil.tokenizeToArray("label:add");
   expect(actual.length).toBe(9);
   verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
 });
 
-test("Tokenize comma", () => {
+test("Instruction with operands", () => {
   var text = "add a, b, c";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
@@ -63,7 +63,7 @@ test("Tokenize comma", () => {
   ]);
 });
 
-test("Tokenize instruction with operands", () => {
+test("Label + instruction with operands", () => {
   var text = "label: ADD r1, r2, r3 ";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length - 1);
@@ -78,14 +78,14 @@ test("Tokenize instruction with operands", () => {
   ]);
 });
 
-test("Tokenize string", () => {
+test("Label + directive + string", () => {
   var text = 'label: .ascii "a b c"';
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.Sequence]);
 });
 
-test("Tokenize line breaks", () => {
+test("Line breaks", () => {
   var text = 'label: .ascii "a b c"\n  ADDS r1, r2, #1\n';
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
@@ -104,28 +104,28 @@ test("Tokenize line breaks", () => {
   ]);
 });
 
-test("Tokenize hash comments", () => {
+test("Hash comments", () => {
   var text = "# comment\nabc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
-test("Tokenize @ comments", () => {
+test("@ comments", () => {
   var text = "abc @ comment\nabc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
-test("Tokenize C++ comments", () => {
+test("C++ comments", () => {
   var text = "abc // comment\n// abc";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.LineComment]);
 });
 
-test("Tokenize C block comments 1", () => {
+test("C block comments 1", () => {
   var text = "abc /* comment */ def\n/* abc\ndef */ klm\n";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
@@ -140,7 +140,7 @@ test("Tokenize C block comments 1", () => {
   ]);
 });
 
-test("Tokenize C block comments 2", () => {
+test("C block comments 2", () => {
   var text = "label: /**/ abc /* comment */ def\n/* abc\ndef */ klm\n";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
@@ -157,21 +157,21 @@ test("Tokenize C block comments 2", () => {
   ]);
 });
 
-test("Tokenize nested comments 1", () => {
+test("Nested comments 1", () => {
   var text = "// /* comment */ ";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.LineComment]);
 });
 
-test("Tokenize nested comments 2", () => {
+test("Nested comments 2", () => {
   var text = "/* // comment */";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
-test("Tokenize unclosed C comment", () => {
+test("Unclosed C comment", () => {
   var text = "/* comment \n\n";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);

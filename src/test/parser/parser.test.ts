@@ -6,14 +6,14 @@ import { TokenNode } from "../../AST/tokenNode";
 import { TokenType } from "../../tokens/tokens";
 import { TestUtil } from "../utility";
 
-test("Parse empty string", () => {
+test("Empty string", () => {
     var root = TestUtil.parseText("");
     expect(root).toBeDefined();
     expect(root.children.count).toBe(0);
     expect(root.parent).toBe(root);
 });
 
-test("Parse label empty statement", () => {
+test("Label + empty statement", () => {
     var root = TestUtil.parseText("label: ");
     expect(root).toBeDefined();
     expect(root.children.count).toBe(1);
