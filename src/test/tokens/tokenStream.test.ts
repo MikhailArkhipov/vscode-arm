@@ -47,8 +47,8 @@ test("TokenStream test 1", () => {
   var tokens: Token[] = [
     new Token(TokenType.Comma, 0, 1),
     new Token(TokenType.LineComment, 3, 1),
-    new Token(TokenType.String, 6, 2),
-    new Token(TokenType.Word, 12, 8),
+    new Token(TokenType.Label, 6, 2),
+    new Token(TokenType.Instruction, 12, 8),
     new Token(TokenType.Unknown, 20, 1),
   ];
 
@@ -65,7 +65,7 @@ test("TokenStream test 1", () => {
 
   expect(ts.isEndOfStream()).toBe(false);
   expect(ts.currentToken.tokenType).toBe(TokenType.LineComment);
-  expect(ts.nextToken.tokenType).toBe(TokenType.String);
+  expect(ts.nextToken.tokenType).toBe(TokenType.Label);
   expect(ts.previousToken.tokenType).toBe(TokenType.Comma);
   expect(ts.lookAhead(-2).tokenType).toBe(TokenType.EndOfStream);
   expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
@@ -73,9 +73,9 @@ test("TokenStream test 1", () => {
 
   ts.advance(2);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.Word);
+  expect(ts.currentToken.tokenType).toBe(TokenType.Instruction);
   expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
-  expect(ts.previousToken.tokenType).toBe(TokenType.String);
+  expect(ts.previousToken.tokenType).toBe(TokenType.Label);
   expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
   expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);
@@ -97,9 +97,9 @@ test("TokenStream test 1", () => {
 
   ts.advance(-2);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.Word);
+  expect(ts.currentToken.tokenType).toBe(TokenType.Instruction);
   expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
-  expect(ts.previousToken.tokenType).toBe(TokenType.String);
+  expect(ts.previousToken.tokenType).toBe(TokenType.Label);
   expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
   expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);

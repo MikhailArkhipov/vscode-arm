@@ -43,17 +43,23 @@ test("Tokenize label with directive", () => {
   verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
 });
 
+test("Tokenize label with instruction no space", () => {
+  var actual = TestUtil.tokenizeToArray("label:add");
+  expect(actual.length).toBe(9);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
+});
+
 test("Tokenize comma", () => {
   var text = "add a, b, c";
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [
     TokenType.Instruction,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
   ]);
 });
 
@@ -64,11 +70,11 @@ test("Tokenize instruction with operands", () => {
   verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Instruction,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
   ]);
 });
 
@@ -76,7 +82,7 @@ test("Tokenize string", () => {
   var text = 'label: .ascii "a b c"';
   var actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.Sequence]);
 });
 
 test("Tokenize line breaks", () => {
@@ -86,14 +92,14 @@ test("Tokenize line breaks", () => {
   verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Directive,
-    TokenType.String,
+    TokenType.Sequence,
     TokenType.EndOfLine,
     TokenType.Instruction,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.EndOfLine,
   ]);
 });
@@ -126,7 +132,7 @@ test("Tokenize C block comments 1", () => {
   verifyTokenTypes(actual, [
     TokenType.Instruction,
     TokenType.BlockComment,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.EndOfLine,
     TokenType.BlockComment,
     TokenType.Instruction,
@@ -143,7 +149,7 @@ test("Tokenize C block comments 2", () => {
     TokenType.BlockComment,
     TokenType.Instruction,
     TokenType.BlockComment,
-    TokenType.Word,
+    TokenType.Sequence,
     TokenType.EndOfLine,
     TokenType.BlockComment,
     TokenType.Instruction,

@@ -118,4 +118,26 @@ export class Statement extends AstNodeImpl {
   public get name(): AstNode | undefined {
     return this._name;
   }
+
+  // private isLabel(tokenText: string, start: number, length: number): boolean {
+  //   // Label must be the first element in line.
+  //   if (!this.isPreviousTokenNewLine()) {
+  //     return false;
+  //   }
+  //   // No previous token (start of the file) or it is a line break,
+  //   // so we are at the start of the line.
+  //   if (this._config.colonInLabels) {
+  //     if (tokenText.charCodeAt(tokenText.length - 1) !== Char.Colon) {
+  //       return false;
+  //     }
+  //   } else {
+  //     // ARM UAL requires labels at the beginning of the line.
+  //     if (start > 0) {
+  //       return false;
+  //     }
+  //   }
+  //   var symbol = tokenText.substring(0, length - (this._config.colonInLabels ? 1 : 0));
+  //   // Either symbol OR a number (label in a macro like 1:, 2:).
+  //   return Text.isSymbol(symbol) || Text.isDecimalNumber(symbol);
+  // }
 }

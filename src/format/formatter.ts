@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { AssemblerConfig } from "../syntaxConfig";
+import { Character } from "../text/charCodes";
 import { TextProvider } from "../text/text";
-import { TextStream } from "../text/textStream";
 import { TokenStream } from "../tokens/tokenStream";
 import { Tokenizer } from "../tokens/tokenizer";
 import { Token, TokenType } from "../tokens/tokens";
@@ -29,85 +29,214 @@ export class FormatOptions {
 
 export class Formatter {
   private _tokens: TokenStream;
-  private _out: string[] = [];
   private _text: TextProvider;
   private _options: FormatOptions;
+  private _instructionIndent: number;
+  private _operandsIndent: number;
+  private _lines: string[] = [];
 
   public formatDocument(text: TextProvider, options: FormatOptions, config: AssemblerConfig): string {
     this._text = text;
     this._options = options;
-    this._out = [];
+    this._lines = [];
 
     var t = new Tokenizer(config);
     var tokens = t.tokenize(text, 0, text.length, false).tokens;
     this._tokens = new TokenStream(tokens);
 
-    var instructionIndent = this.getInstructionIndent();
+    var indents = this.getIndents();
+    this._instructionIndent = indents.instructions;
+    this._operandsIndent = indents.operands;
 
+    // Format line by line.
     while (!this._tokens.isEndOfStream()) {
-      this.appendNextToken();
+      // Collect tokens up to EOL or EOF
+      var lineTokens = this.getLineTokens();
+
+      var lineText = this.formatLine(lineTokens);
+      if (lineText.length > 0) {
+        this._lines.push(lineText);
+      }
+
+      if (this._tokens.isEndOfLine()) {
+        this._tokens.moveToNextToken();
+      }
     }
 
-    var result = this._out.join("");
+    var result = this._lines.join("\n");
     return result;
   }
 
-  private appendNextToken(): void {
-    switch (this._tokens.currentToken.tokenType) {
+  private formatLine(tokens: Token[]): string {
+    // There is at least one token
+    if (tokens.length === 0) {
+      return "";
+    }
+
+    var lineText: string[] = [];
+    // We trust tokenizer so we are not going to check here
+    // if there is more than one label or instruction.
+    for (var i = 0; i < tokens.length; i++) {
+      var t = tokens[i];
+      switch (t.tokenType) {
+        case TokenType.Label:
+          lineText.push(this._text.getText(t.start, t.length));
+          break;
+
+        case TokenType.Instruction:
+        case TokenType.Directive:
+          this.appendInstructionOrDirective(tokens, i, lineText);
+          break;
+
+        case TokenType.Sequence:
+          this.appendOperand(tokens, i, lineText);
+          break;
+
+        case TokenType.LineComment:
+          // Block comments are added verbatim
+          this.appendLineComment(tokens, i, lineText);
+          break;
+
+        case TokenType.Comma:
+          this.appendComma(lineText);
+          break;
+
+        default:
+          lineText.push(this.getWhitespace(1));
+          lineText.push(this._text.getText(t.start, t.length));
+          break;
+      }
+    }
+
+    var result = lineText.join("");
+    return result;
+  }
+
+  private getLineTokens(): Token[] {
+    var lineTokens: Token[] = [];
+    while (!this._tokens.isEndOfLine()) {
+      lineTokens.push(this._tokens.currentToken);
+      this._tokens.moveToNextToken();
+    }
+    return lineTokens;
+  }
+
+  private appendInstructionOrDirective(tokens: Token[], i: number, lineText: string[]) {
+    // label:<tab>instruction ...
+    // <tab>      instruction
+    // label:<tab>.directive
+    // .directive
+    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    var ct = tokens[i];
+
+    switch (pt.tokenType) {
       case TokenType.EndOfLine:
-        this.appendLineBreak();
+      case TokenType.EndOfStream:
+        // Indent instruction, leave directive as is
+        if (ct.tokenType === TokenType.Instruction) {
+          lineText.push(this.getWhitespace(this._instructionIndent));
+        }
         break;
-      case TokenType.LineComment:
-        // Block comments are added verbatim
-        this.appendLineComment();
+
+      case TokenType.Label:
+        lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
         break;
-      case TokenType.Comma:
-        this.appendComma();
-        break;
+
       default:
-        this.appendToken(this._tokens.currentToken);
+        lineText.push(this.getWhitespace(1));
+        break;
+    }
+    lineText.push(this._text.getText(ct.start, ct.length));
+  }
+
+  private appendOperand(tokens: Token[], i: number, lineText: string[]) {
+    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    var ct = tokens[i];
+
+    switch (pt.tokenType) {
+      case TokenType.Instruction:
+      case TokenType.Directive:
+        // Indent instruction, leave directive as is
+        lineText.push(this.getWhitespace(this._operandsIndent - pt.length));
+        lineText.push(this._text.getText(ct.start, ct.length));
+        break;
+
+      default:
+        lineText.push(this.getWhitespace(1));
+        lineText.push(this._text.getText(ct.start, ct.length));
         break;
     }
   }
 
-  private appendLineBreak(): void {
-    this._out.push("\n");
-    this._tokens.moveToNextToken();
-  }
-
-  private appendLineComment(): void {
-    // Line comments when nothing else at the line get aligned 
+  private appendLineComment(tokens: Token[], i: number, lineText: string[]): void {
+    // Line comments when nothing else at the line get aligned
     // to either 0 or to instructions indent, whichever is closer.
-    var pt = this._tokens.previousToken;
-    if (pt.tokenType === TokenType.EndOfLine || pt.tokenType === TokenType.EndOfStream) {
+    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    var ct = tokens[i];
 
+    if (Token.isEndOfLine(pt)) {
+      // Get current indentation
+      var currentIndentation = ct.start - pt.end;
+      if (currentIndentation > this._instructionIndent / 2) {
+        // indent to instructions
+        lineText.push(this.getWhitespace(this._instructionIndent));
+      }
+    } else if (pt.tokenType === TokenType.Label) {
+      lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
     }
+    lineText.push(this._text.getText(ct.start, ct.length));
   }
 
-  private appendComma(): void {
+  private appendComma(lineText: string[]): void {
     if (this._options.spaceAfterComma) {
-      this._out.push(", ");
+      lineText.push(", ");
     } else {
-      this._out.push(" ");
+      lineText.push(" ");
     }
   }
 
-  private appendToken(t: Token): void {
-    // If it is first token which is not a label, or a second token that is
-    // preceded by a label and it is a symbol, it is the instruction name.
-    this._out.push(this._text.getText(t.start, t.length));
+  private getWhitespace(amount: number): string {
+    return new Array(amount + 1).join(" ");
   }
 
-  private getInstructionIndent(): number {
-    var maxLength = 0;
+  private getIndents(): { instructions: number; operands: number } {
+    var currentPosition = this._tokens.position;
+    var maxLabelLength = 0;
+    var maxInstructionLength = 0;
+
     for (var i = 0; i < this._tokens.length; i++) {
-      var t = this._tokens.currentToken;
-      if (t.length > maxLength && t.tokenType === TokenType.Label) {
-        maxLength = t.length;
+      var ct = this._tokens.currentToken;
+      // Only measure labels that are on the same like as instructions/directives
+      switch (ct.tokenType) {
+        case TokenType.Label:
+          if (ct.length > maxLabelLength) {
+            maxLabelLength = ct.length;
+          }
+          break;
+        case TokenType.Directive:
+        case TokenType.Instruction:
+          if (ct.length > maxInstructionLength) {
+            maxInstructionLength = ct.length;
+          }
+          break;
       }
       this._tokens.moveToNextToken();
     }
-    this._tokens.position = 0;
-    return Math.floor((maxLength + this._options.tabSize - 1) / this._options.tabSize);
+
+    this._tokens.position = currentPosition;
+    var ts = this._options.tabSize;
+    // label:<tab>instruction<tab>//comment
+    var instructionsIndent = (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
+    var operandsIndent = instructionsIndent;
+    if (maxInstructionLength > 0) {
+      // no instructions found
+      var operandsIndent = instructionsIndent + maxInstructionLength;
+      operandsIndent = Math.floor((operandsIndent + ts - 1) / ts) * ts;
+    }
+
+    return {
+      instructions: instructionsIndent,
+      operands: operandsIndent,
+    };
   }
 }

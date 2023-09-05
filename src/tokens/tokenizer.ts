@@ -7,7 +7,7 @@
 import { AssemblerConfig } from "../syntaxConfig";
 import { Char, Character } from "../text/charCodes";
 import { CharacterStream } from "../text/characterStream";
-import { TextProvider } from "../text/text";
+import { Text, TextProvider } from "../text/text";
 import { TextRangeCollection } from "../text/textRangeCollection";
 import { Token, TokenType } from "./tokens";
 
@@ -40,113 +40,105 @@ export class Tokenizer {
     var end = Math.min(textProvider.length, start + length);
     while (!this._cs.isEndOfStream() && this._cs.position < end) {
       var start = this._cs.position;
-      // Keep on adding tokens
-      this.addNextToken();
+      this.addNextLine();
+      this.handleLineBreak();
 
       // If token was added, the position must change.
       if (this._cs.position === start && !this._cs.isEndOfStream()) {
         // We must advance or tokenizer hangs
-        throw new Error("Infinite loop in tokenizer");
+        throw new Error("Tokenizer: infinite loop");
       }
     }
     return { tokens: new TextRangeCollection(this._tokens), comments: new TextRangeCollection(this._comments) };
   }
 
-  // Main tokenization method. Responsible for adding next token
-  // to the list, if any. Proceeds the end of the character stream.
-  private addNextToken(): void {
+  // [label:] [instruction] [sequence[, sequence[, ...]]] [//|@] comment <eol>
+  private addNextLine(): void {
+    // Possible /* */ before label
+    this.skipWhitespace();
+    this.handleCBlockComment();
+
+    this.skipWhitespace();
+    this.handleLabel();
     this.skipWhitespace();
 
-    if (this._cs.isEndOfStream()) {
-      return;
-    }
+    // Possible /* */ before instruction
+    this.handleCBlockComment();
+    this.skipWhitespace();
+    
+    this.handleInstruction();
+    this.skipWhitespace();
 
-    if (this.isAtLineComment()) {
-      this.addLineComment();
-      return;
-    }
+    // Possible /* */ before operands
+    this.handleCBlockComment();
+    this.handleOperands();
+    this.skipWhitespace();
 
-    switch (this._cs.currentChar) {
-      case Char.DoubleQuote:
-        this.handleString();
-        return;
+    // Possible /* */ before line comment
+    this.handleCBlockComment();
+    this.skipWhitespace();
 
-      case Char.Slash:
-        if (this.isAtBlockComment()) {
-          this.handleCBlockComment();
-          return;
-        }
-        break;
-
-      case Char.Comma:
-        this.addTokenAndMove(TokenType.Comma, this._cs.position);
-        return;
-
-      default:
-        if (this._cs.isAtNewLine()) {
-          this.handleLineBreak();
-          return;
-        }
-        break;
-    }
-
-    this.handleOther();
+    this.handleLineComment();
+    this.skipWhitespace();
   }
 
-  // Double-quoted string with possible escapes.
-  private handleString(): void {
+  private handleLabel(): void {
     var start = this._cs.position;
-    this._cs.moveToNextChar();
-
-    if (!this._cs.isEndOfStream()) {
-      while (true) {
-        if (this._cs.currentChar === Char.DoubleQuote) {
-          this._cs.moveToNextChar();
-          break;
-        }
-
-        if (this._cs.currentChar == Char.Backslash) {
-          this._cs.moveToNextChar();
-        }
-
-        if (!this._cs.moveToNextChar()) {
-          break;
-        }
-      }
-    }
-    this.addToken(TokenType.String, start, this._cs.position - start);
-  }
-
-  private handleOther(): void {
-    var start = this._cs.position;
-    this.skipWord();
+    // Try label. Skip to after :, to comma, whitespace or <eol>
+    this.skipWord(true);
 
     var length = this._cs.position - start;
-    var tokenText = this._text.getText(start, length);
-
-    if (this.isLabel(tokenText, start, length)) {
-      this.addToken(TokenType.Label, start, length);
-      return;
+    if (length > 0) {
+      if (this._cs.prevChar === Char.Colon) {
+        // Looks like a label. We are not going to ensure that this is indeed
+        // a label, we'll let parser to perform name check.
+        this.addToken(TokenType.Label, start, length);
+        return;
+      }
     }
+    this._cs.position = start;
+  }
 
-    var prevToken = this.getPreviousNonCommentToken();
-    if (
-      prevToken.tokenType === TokenType.EndOfStream ||
-      prevToken.tokenType === TokenType.EndOfLine ||
-      prevToken.tokenType === TokenType.Label
-    ) {
-      if (tokenText.charCodeAt(0) === Char.Period && this.isSymbol(tokenText.substring(1, length - 1))) {
+  private handleInstruction(): void {
+    var start = this._cs.position;
+    this.skipWord(false);
+
+    var length = this._cs.position - start;
+    if (length > 0) {
+      if (this._cs.text.getText(start, 1) === ".") {
         this.addToken(TokenType.Directive, start, length);
-        return;
-      }
-
-      if (this.isInstructionName(tokenText)) {
+      } else {
         this.addToken(TokenType.Instruction, start, length);
-        return;
       }
     }
+  }
 
-    this.addToken(TokenType.Word, start, length);
+  private handleOperands(): void {
+    // Split sequence into '? comma ? comma ...' where '?' is any character
+    // sequence except comments. The sequence may include inner whitespace,
+    // leading and trailing are trimmed down.
+    while (!this._cs.isAtNewLine() && !this._cs.isEndOfStream()) {
+      this.skipWhitespace();
+      // Possible /* */
+      this.handleCBlockComment();
+
+      var start = this._cs.position;
+      this.skipSequence();
+      var length = this._cs.position - start;
+      if (length > 0) {
+        this.addToken(TokenType.Sequence, start, length);
+      }
+
+      this.skipWhitespace();
+      // Possible /* */
+      this.handleCBlockComment();
+
+      if (this._cs.currentChar === Char.Comma) {
+        this.addTokenAndMove(TokenType.Comma, this._cs.position);
+      } else {
+        break;
+      }
+    }
   }
 
   // Handle generic comment that spans to the end of the line.
@@ -169,10 +161,14 @@ export class Tokenizer {
   }
 
   private isAtBlockComment(): boolean {
-    return this._config.cBlockComments && this._cs.nextChar === Char.Asterisk;
+    return this._config.cBlockComments && this._cs.currentChar === Char.Slash && this._cs.nextChar === Char.Asterisk;
   }
 
-  private addLineComment(): void {
+  private handleLineComment(): void {
+    if (!this.isAtLineComment()) {
+      return;
+    }
+
     var start = this._cs.position;
     this._cs.moveToEol();
 
@@ -183,8 +179,11 @@ export class Tokenizer {
   }
 
   private handleCBlockComment(): void {
-    var start = this._cs.position;
+    if (!this.isAtBlockComment()) {
+      return;
+    }
 
+    var start = this._cs.position;
     this._cs.advance(2); // Skip /*
     while (!this._cs.isEndOfStream()) {
       if (this._cs.currentChar === Char.Asterisk && this._cs.nextChar === Char.Slash) {
@@ -222,24 +221,22 @@ export class Tokenizer {
     this._cs.moveToNextChar();
   }
 
-  // Skip over whitespace characters.
+  // Skip over whitespace characters within a line.
   private skipWhitespace(): void {
-    if (this._cs.isEndOfStream()) {
-      return;
-    }
-
     while (this._cs.isWhiteSpace()) {
       if (this._cs.isAtNewLine()) {
-        this.handleLineBreak();
-      } else if (!this._cs.moveToNextChar()) {
         break;
       }
+      this._cs.moveToNextChar();
     }
   }
 
-  private skipWord(): void {
+  // Word is any non-whitespace sequence, optionally breaking after colon.
+  // Help with extraction of labels and instruction names.
+  private skipWord(breakOnColon: boolean): void {
     while (
       !this._cs.isEndOfStream() &&
+      !this._cs.isAtNewLine() &&
       !this._cs.isWhiteSpace() &&
       this._cs.currentChar !== Char.Comma &&
       !this._cs.isAtString() &&
@@ -247,71 +244,32 @@ export class Tokenizer {
       !this.isAtBlockComment()
     ) {
       this._cs.moveToNextChar();
+      if (breakOnColon && this._cs.prevChar === Char.Colon) {
+        break;
+      }
     }
   }
 
-  private isSymbol(symbol: string): boolean {
-    // GCC https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
-    // Symbol names begin with a letter or with one of `._'. On most machines, you can
-    // also use $ in symbol names; exceptions are noted in Machine Dependencies.
-    // That character may be followed by any string of digits, letters, dollar signs
-    // (unless otherwise noted for a particular target machine), and underscores.
-    // Case of letters is significant: foo is a different symbol name than Foo.
-    // Symbol names do not start with a digit.
-    // TODO: Local labels like '1:' NYI. Same for Unicode label and variable names.
-    var matches = symbol.match(/([a-zA-Z_]+)([a-zA-Z0-9_]*)/g);
-    return matches != null && matches.length === 1 && matches[0] === symbol;
-  }
-
-  private isLabel(tokenText: string, start: number, length: number): boolean {
-    // Label must be the first element in line.
-    // TODO: not sure if we care about '/* comment */ _label:' case.
-    // This would be tricky to handle since in AST case comment tokens
-    // are not in the stream while in formatting case they are here.
-    var prevToken = this.getPreviousNonCommentToken();
-    if (prevToken && prevToken.tokenType !== TokenType.EndOfLine && prevToken.tokenType !== TokenType.EndOfStream) {
-      return false;
-    }
-    // No previous token (start of the file) or it is a line break,
-    // so we are at the start of the line.
-    if (this._config.colonInLabels) {
-      if (tokenText.charCodeAt(tokenText.length - 1) !== Char.Colon) {
-        return false;
+  // Sequence may contain whitepace and strings. For example,
+  // expression between commas: INSTR x1, x2, (1 + 'a').
+  // This may change if expression parsing gets implemented.
+  private skipSequence(): void {
+    var start = this._cs.position;
+    var lastNonWsPosition = this._cs.position;
+    while (
+      !this._cs.isEndOfStream() &&
+      !this._cs.isAtNewLine() &&
+      this._cs.currentChar !== Char.Comma &&
+      !this.isAtLineComment() &&
+      !this.isAtBlockComment()
+    ) {
+      if (!this._cs.isWhiteSpace()) {
+        lastNonWsPosition = this._cs.position;
       }
-    } else {
-      // ARM UAL requires labels at the beginning of the line.
-      if (start > 0) {
-        return false;
-      }
+      this._cs.moveToNextChar();
     }
-    var symbol = tokenText.substring(0, length - (this._config.colonInLabels ? 1 : 0));
-    return this.isSymbol(symbol);
-  }
-
-  // Instruction is a symbol but may contain a single period followed by a modifier.
-  // Modifier is letter(s) followed optionally by number(s).
-  // Example: BCS.W or LDR.I8
-  private isInstructionName(text: string): boolean {
-    // INSTR6.I8 - either all upper or all lower case
-    var matches = text.match(/[A-Z]+[0-9]*[\.]?[A-Z]*[0-9]?/g);
-    if (matches != null && matches.length === 1 && matches[0] === text) {
-      return true;
+    if (this._cs.position > start && Character.isWhitespace(this._cs.prevChar)) {
+      this._cs.position = lastNonWsPosition + 1;
     }
-    matches = text.match(/[a-z]+[0-9]*[\.]?[a-z]*[0-9]?/g);
-    return matches != null && matches.length === 1 && matches[0] === text;
-  }
-
-  private getPreviousNonCommentToken(): Token {
-    // Walk back skipping any block comments
-    for (var i = this._tokens.length - 1; i >= 0; i--) {
-      var t = this._tokens[i];
-      if (t.tokenType === TokenType.EndOfLine || t.tokenType === TokenType.EndOfStream) {
-        return t;
-      }
-      if (t.tokenType !== TokenType.BlockComment) {
-        return t;
-      }
-    }
-    return new Token(TokenType.EndOfStream, 0, 0);
   }
 }
