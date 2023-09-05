@@ -1,6 +1,5 @@
 {
-  "name": "r",
-  "type": "module",
+  "name": "arm",
   "displayName": "ARM Assembly Language Editor",
   "description": "ARM Assembly Language Editor (IntelliSense, documentation tooltips, code analysis and more)",
   "version": "0.0.1",
@@ -30,41 +29,25 @@
     "Linters",
     "Snippets"
   ],
-  "activationEvents": [
-    "onLanguage:arm"
-  ],
   "main": "./out/src/extension",
   "contributes": {
-    "snippets": [
-      {
-        "language": "arm",
-        "path": "./snippets/arm.json"
-      }
-    ],
     "commands": [],
     "keybindings": [],
     "languages": [
       {
         "id": "arm",
         "aliases": [
-          "ARM Assembly Language"
+          "ARM", "Arm", "ARM Assembly Language"
         ],
         "extensions": [
-          ".s"
-        ]
+          ".s",
+          ".S",
+          ".asm",
+          ".sx"
+        ],
+        "configuration": "./language-configuration.json"
       }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "ARMASM",
-      "properties": {
-        "armasm.setting1": {
-          "type": "string",
-          "default": "ARM 7",
-          "description": "ARM Assembly Version"
-        }
-      }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
