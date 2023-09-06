@@ -44,20 +44,20 @@ export class Formatter {
     this._options = options;
     this._lines = [];
 
-    var t = new Tokenizer(config);
-    var tokens = t.tokenize(text, 0, text.length, false).tokens;
+    const t = new Tokenizer(config);
+    const tokens = t.tokenize(text, 0, text.length, false).tokens;
     this._tokens = new TokenStream(tokens);
 
-    var indents = this.getIndents();
+    const indents = this.getIndents();
     this._instructionIndent = indents.instructions;
     this._operandsIndent = indents.operands;
 
     // Format line by line.
     while (!this._tokens.isEndOfStream()) {
       // Collect tokens up to EOL or EOF
-      var lineTokens = this.getLineTokens();
+      const lineTokens = this.getLineTokens();
 
-      var lineText = this.formatLine(lineTokens);
+      const lineText = this.formatLine(lineTokens);
       if (lineText.length > 0) {
         this._lines.push(lineText);
       }
@@ -67,7 +67,7 @@ export class Formatter {
       }
     }
 
-    var result = this._lines.join("\n");
+    const result = this._lines.join("\n");
     return result;
   }
 
@@ -77,11 +77,11 @@ export class Formatter {
       return "";
     }
 
-    var lineText: string[] = [];
+    const lineText: string[] = [];
     // We trust tokenizer so we are not going to check here
     // if there is more than one label or instruction.
     for (var i = 0; i < tokens.length; i++) {
-      var t = tokens[i];
+      const t = tokens[i];
       switch (t.tokenType) {
         case TokenType.Label:
           lineText.push(this._text.getText(t.start, t.length));
@@ -112,12 +112,12 @@ export class Formatter {
       }
     }
 
-    var result = lineText.join("");
+    const result = lineText.join("");
     return result;
   }
 
   private getLineTokens(): Token[] {
-    var lineTokens: Token[] = [];
+    const lineTokens: Token[] = [];
     while (!this._tokens.isEndOfLine()) {
       lineTokens.push(this._tokens.currentToken);
       this._tokens.moveToNextToken();
@@ -134,8 +134,8 @@ export class Formatter {
     // <tab>      instruction
     // label:<tab>.directive
     // .directive
-    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    var ct = tokens[i];
+    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    const ct = tokens[i];
 
     switch (pt.tokenType) {
       case TokenType.EndOfLine:
@@ -158,8 +158,8 @@ export class Formatter {
   }
 
   private appendOperand(tokens: Token[], i: number, lineText: string[]) {
-    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    var ct = tokens[i];
+    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    const ct = tokens[i];
 
     switch (pt.tokenType) {
       case TokenType.Instruction:
@@ -191,12 +191,12 @@ export class Formatter {
   ): void {
     // Line comments when nothing else at the line get aligned
     // to either 0 or to instructions indent, whichever is closer.
-    var pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    var ct = tokens[i];
+    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
+    const ct = tokens[i];
 
     if (Token.isEndOfLine(pt)) {
       // Get current indentation
-      var currentIndentation = ct.start - pt.end;
+      const currentIndentation = ct.start - pt.end;
       if (currentIndentation > this._instructionIndent / 2) {
         // indent to instructions
         lineText.push(this.getWhitespace(this._instructionIndent));
@@ -222,12 +222,12 @@ export class Formatter {
   }
 
   private getIndents(): { instructions: number; operands: number } {
-    var currentPosition = this._tokens.position;
+    const currentPosition = this._tokens.position;
     var maxLabelLength = 0;
     var maxInstructionLength = 0;
 
     for (var i = 0; i < this._tokens.length; i++) {
-      var ct = this._tokens.currentToken;
+      const ct = this._tokens.currentToken;
       // Only measure labels that are on the same like as instructions/directives
       switch (ct.tokenType) {
         case TokenType.Label:
@@ -246,14 +246,14 @@ export class Formatter {
     }
 
     this._tokens.position = currentPosition;
-    var ts = this._options.tabSize;
+    const ts = this._options.tabSize;
     // label:<tab>instruction<tab>//comment
-    var instructionsIndent =
+    const instructionsIndent =
       (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
     var operandsIndent = instructionsIndent;
     if (maxInstructionLength > 0) {
       // no instructions found
-      var operandsIndent = instructionsIndent + maxInstructionLength;
+      operandsIndent = instructionsIndent + maxInstructionLength;
       operandsIndent = Math.floor((operandsIndent + ts - 1) / ts) * ts;
     }
 

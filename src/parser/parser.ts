@@ -13,16 +13,16 @@ export class Parser {
   private _labels: Token[] = [];
   private _variables: Token[] = [];
 
-  public parse(text: TextProvider, config: AssemblerConfig): AstRoot {
+  public parse(text: TextProvider, config: AssemblerConfig, version: number): AstRoot {
     this._labels = [];
     this._variables = [];
 
-    var t = new Tokenizer(config);
-    var result = t.tokenize(text, 0, text.length, true);
+    const t = new Tokenizer(config);
+    const result = t.tokenize(text, 0, text.length, true);
 
-    var root = new AstRoot();
-    var ts = new TokenStream(result.tokens);
-    var context = new ParseContext(text, config, ts, result.comments);
+    const root = new AstRoot();
+    const ts = new TokenStream(result.tokens);
+    const context = new ParseContext(text, config, ts, result.comments, version);
 
     // Recursive descend parser
     root.parse(context, root);

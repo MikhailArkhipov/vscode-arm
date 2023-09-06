@@ -13,6 +13,7 @@ export class ParseContext {
   public readonly config: AssemblerConfig;
   public readonly tokens: TokenStream;
   public readonly comments: TextRangeCollection<Token>;
+  public readonly version: number;
 
   private readonly _errors: ParseError[] = [];
 
@@ -20,12 +21,14 @@ export class ParseContext {
     text: TextProvider,
     config: AssemblerConfig,
     tokens: TokenStream,
-    comments: TextRangeCollection<Token>
+    comments: TextRangeCollection<Token>,
+    version: number
   ) {
     this.text = text;
     this.config = config;
     this.tokens = tokens;
     this.comments = comments;
+    this.version = version;
   }
 
   public get errors(): TextRangeCollection<ParseError> {
@@ -33,7 +36,7 @@ export class ParseContext {
   }
 
   public addError(error: ParseError): void {
-    var found = this._errors.find(
+    const found = this._errors.find(
       (e) =>
         e.start == error.start &&
         e.length == error.length &&

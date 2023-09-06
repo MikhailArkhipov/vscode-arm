@@ -34,8 +34,8 @@ export class TextStream implements TextProvider {
     if (length === 0 || position >= this._text.length) {
       return "";
     }
-    var start = Math.max(position, 0);
-    var end = Math.min(position + length, this._text.length);
+    const start = Math.max(position, 0);
+    const end = Math.min(position + length, this._text.length);
     return this._text.substring(start, end);
   }
 
@@ -48,9 +48,9 @@ export class TextStream implements TextProvider {
       return text.length == 0;
     }
 
-    var start = Math.max(position, 0);
-    var end = Math.min(position + length, this._text.length);
-    var part = this._text.substring(start, end);
+    const start = Math.max(position, 0);
+    const end = Math.min(position + length, this._text.length);
+    const part = this._text.substring(start, end);
 
     if (ignoreCase) {
       return part.match(`/${text}/i`) ? true : false;

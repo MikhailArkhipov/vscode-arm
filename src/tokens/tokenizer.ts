@@ -40,9 +40,9 @@ export class Tokenizer {
     this._tokens = [];
     this._text = textProvider;
 
-    var end = Math.min(textProvider.length, start + length);
+    const end = Math.min(textProvider.length, start + length);
     while (!this._cs.isEndOfStream() && this._cs.position < end) {
-      var start = this._cs.position;
+      const start = this._cs.position;
       this.addNextLine();
       this.handleLineBreak();
 
@@ -89,11 +89,11 @@ export class Tokenizer {
   }
 
   private handleLabel(): void {
-    var start = this._cs.position;
+    const start = this._cs.position;
     // Try label. Skip to after :, to comma, whitespace or <eol>
     this.skipWord(true);
 
-    var length = this._cs.position - start;
+    const length = this._cs.position - start;
     if (length > 0) {
       if (this._cs.prevChar === Char.Colon) {
         // Looks like a label. We are not going to ensure that this is indeed
@@ -106,10 +106,10 @@ export class Tokenizer {
   }
 
   private handleInstruction(): void {
-    var start = this._cs.position;
+    const start = this._cs.position;
     this.skipWord(false);
 
-    var length = this._cs.position - start;
+    const length = this._cs.position - start;
     if (length > 0) {
       if (this._cs.text.getText(start, 1) === ".") {
         this.addToken(TokenType.Directive, start, length);
@@ -128,9 +128,9 @@ export class Tokenizer {
       // Possible /* */
       this.handleCBlockComment();
 
-      var start = this._cs.position;
+      const start = this._cs.position;
       this.skipSequence();
-      var length = this._cs.position - start;
+      const length = this._cs.position - start;
       if (length > 0) {
         this.addToken(TokenType.Sequence, start, length);
       }
@@ -184,10 +184,10 @@ export class Tokenizer {
       return;
     }
 
-    var start = this._cs.position;
+    const start = this._cs.position;
     this._cs.moveToEol();
 
-    var length = this._cs.position - start;
+    const length = this._cs.position - start;
     if (length > 0) {
       this.addComment(TokenType.LineComment, start, length);
     }
@@ -198,7 +198,7 @@ export class Tokenizer {
       return;
     }
 
-    var start = this._cs.position;
+    const start = this._cs.position;
     this._cs.advance(2); // Skip /*
     while (!this._cs.isEndOfStream()) {
       if (
@@ -215,7 +215,7 @@ export class Tokenizer {
 
   private handleLineBreak(): void {
     if (this._cs.isAtNewLine()) {
-      var start = this._cs.position;
+      const start = this._cs.position;
       this._cs.skipLineBreak();
       this.addToken(TokenType.EndOfLine, start, this._cs.position - start);
     }
@@ -234,7 +234,7 @@ export class Tokenizer {
   }
 
   private addToken(type: TokenType, start: number, length: number): void {
-    var token = new Token(type, start, length);
+    const token = new Token(type, start, length);
     this._tokens.push(token);
   }
 
@@ -276,8 +276,8 @@ export class Tokenizer {
   // expression between commas: INSTR x1, x2, (1 + 'a').
   // This may change if expression parsing gets implemented.
   private skipSequence(): void {
-    var start = this._cs.position;
-    var lastNonWsPosition = this._cs.position;
+    const start = this._cs.position;
+    let lastNonWsPosition = this._cs.position;
     while (
       !this._cs.isEndOfStream() &&
       !this._cs.isAtNewLine() &&

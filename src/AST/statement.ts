@@ -43,7 +43,7 @@ export class Statement extends AstNodeImpl {
 
     // GCC: https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
     // Label is a symbol followed by colon.
-    var ct = context.tokens.currentToken;
+    const ct = context.tokens.currentToken;
     if (ct.tokenType != TokenType.Label) {
       return false;
     }
@@ -72,7 +72,7 @@ export class Statement extends AstNodeImpl {
           break;
       }
 
-      var n = new TokenNode(ct);
+      const n = new TokenNode(ct);
       if (this._type !== StatementType.Unknown) {
         this._name = n;
       }
@@ -95,9 +95,9 @@ export class Statement extends AstNodeImpl {
     // with any errors like missing braces, incorrect number of operands, etc.
     // Parser only fills data structures for the subsequent analysis pass.
     while (!context.tokens.isEndOfStream() && !context.tokens.isEndOfLine()) {
-      var ts = context.tokens;
+      const ts = context.tokens;
       if (ts.currentToken.tokenType !== TokenType.Comma) {
-        var operand = new Operand();
+        const operand = new Operand();
         if (!operand.parse(context, this)) {
           break;
         }

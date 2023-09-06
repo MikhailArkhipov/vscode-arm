@@ -22,8 +22,8 @@ export class CharacterStream {
 
   public constructor(textProvider: TextProvider, range?: TextRange) {
     this.text = textProvider;
-    var start = range ? range.start : 0;
-    var length = range ? range.length : textProvider.length;
+    const start = range ? range.start : 0;
+    const length = range ? range.length : textProvider.length;
     this._range = TextRange.create(start, length);
     this.position = this._range.start;
   }
@@ -39,7 +39,7 @@ export class CharacterStream {
       this._position = 0;
     }
 
-    var maxPosition = Math.min(this.text.length, this._range.end);
+    const maxPosition = Math.min(this.text.length, this._range.end);
 
     this._isEndOfStream = this._position >= maxPosition;
     if (this._isEndOfStream) {

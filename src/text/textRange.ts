@@ -62,8 +62,8 @@ export namespace TextRange {
   }
 
   export function union(start1: number, length1: number, start2: number, length2: number): TextRange {
-    var start = Math.min(start1, start2);
-    var end = Math.max(start1 + length1, start2 + length2);
+    const start = Math.min(start1, start2);
+    const end = Math.max(start1 + length1, start2 + length2);
     return start <= end ? fromBounds(start, end) : emptyRange();
   }
 
@@ -72,8 +72,8 @@ export namespace TextRange {
   }
 
   export function intersection(start1: number, length1: number, start2: number, length2: number): TextRange {
-    var start = Math.max(start1, start2);
-    var end = Math.min(start1 + length1, start2 + length2);
+    const start = Math.max(start1, start2);
+    const end = Math.min(start1 + length1, start2 + length2);
     return start <= end ? fromBounds(start, end) : emptyRange();
   }
 
