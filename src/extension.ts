@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import * as vscode from 'vscode';
 import {
   ExtensionContext,
   languages,
@@ -8,29 +9,22 @@ import {
   FormattingOptions,
   TextEdit,
   Disposable,
-  Position,
   CompletionItem,
   CancellationToken,
   ProviderResult,
+  TextEditor,
 } from "vscode";
-import { AssemblerType, SyntaxConfig } from "./syntaxConfig";
-import { TextStream } from "./text/textStream";
-import { AstRoot } from "./AST/astRoot";
-import { Parser } from "./parser/parser";
 import { provideHover } from "./editor/hover";
 import { formatDocument } from "./editor/formatting";
 import { provideCompletions, resolveCompletionItem } from "./editor/completions";
+import { updateDiagnostics } from './editor/diagnostics';
 
 const languageName = "arm";
-const disposables: Disposable[] = [];
-const config = SyntaxConfig.create(AssemblerType.GNU);
-
-let ast: AstRoot | undefined;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: ExtensionContext) {
-  disposables.push(
+  context.subscriptions.push(
     languages.registerDocumentFormattingEditProvider(languageName, {
       provideDocumentFormattingEdits(
         document: TextDocument,
@@ -63,24 +57,17 @@ export async function activate(context: ExtensionContext) {
       provideHover(document, position, token) {
         return provideHover(document, position);
       },
-    })
+    }),
   );
+  context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(
+    (e: TextEditor | undefined) => {
+        if (e !== undefined) {
+            updateDiagnostics(e);
+        }
+    }));
+
 }
 
 export async function deactivate(): Promise<void> {
-  disposables.forEach((d) => d.dispose());
 }
 
-// TODO: validation/diagnostics
-// TODO: folding on .if-.endif, .macro/.endm, ...
-
-function getTokenByPosition(document: TextDocument, position: Position) {}
-
-function getAst(document: TextDocument): AstRoot {
-  if (ast && ast.context.version === document.version) {
-    return ast;
-  }
-  var p = new Parser();
-  ast = p.parse(new TextStream(document.getText()), config, document.version);
-  return ast;
-}
