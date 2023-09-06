@@ -1,0 +1,661 @@
+{
+  "architectures": {
+    "5": "ARMv5T*, ARMv6*, ARMv7",
+    "5E": "ARMv5TE, ARMv6*, ARMv7",
+    "6": "ARMv6*, ARMv7",
+    "6M": "ARMv6-M, ARMv7",
+    "x6M": "Not available in ARMv6-M",
+    "7": "ARMv7",
+    "7A": "ARMv7-A",
+    "7M": "ARMv7-M",
+    "x7M": "Not available in ARMv6-M or ARMv7-M, or any ARMv7E-M implementation",
+    "7EM": "ARMv7E-M, but not in the ARMv7-M or ARMv6-M architecture.",
+    "7R": "ARMv7-R",
+    "7MP": "ARMv7 with Multiprocessing Extensions.",
+    "J": "ARMv5TEJ, ARMv6*, and ARMv7",
+    "K": "ARMv6K, ARMv7",
+    "T": "ARMv4T, ARMv5T*, ARMv6*, ARMv7",
+    "T2": "ARMv6T2 and above",
+    "XS": "XScale versions of the ARM",
+    "Z": "If Security Extensions are implemented"
+  },
+  "instructions": {
+    "adc": {
+      "desc": "Add with Carry",
+      "arch": "",
+      "args": ""
+    },
+    "add": {
+      "desc": "Add",
+      "arch": "",
+      "args": ""
+    },
+    "adr": {
+      "desc": "Load program or register-relative address (short range)",
+      "arch": "",
+      "args": ""
+    },
+    "adrl": {
+      "desc": "Load program or register-relative address (medium range)",
+      "arch": "x6M",
+      "args": ""
+    },
+    "and": {
+      "desc": "Logical AND",
+      "arch": "",
+      "args": ""
+    },
+    "asr": {
+      "desc": "Arithmetic Shift Right",
+      "arch": "",
+      "args": ""
+    },
+    "b": {
+      "desc": "Branch",
+      "arch": "",
+      "args": ""
+    },
+    "bfc": {
+      "desc": "Bit Field Clear",
+      "arch": "T2",
+      "args": ""
+    },
+    "bfi": {
+      "desc": "Bit Field Insert",
+      "arch": "T2",
+      "args": ""
+    },
+    "bic": {
+      "desc": "Bit Clear",
+      "arch": "",
+      "args": ""
+    },
+    "bkpt": {
+      "desc": "Breakpoint",
+      "arch": "5",
+      "args": ""
+    },
+    "bl": {
+      "desc": "Branch with Link",
+      "arch": "",
+      "args": ""
+    },
+    "blx": {
+      "desc": "Branch with Link, change instruction set",
+      "arch": "T",
+      "args": ""
+    },
+    "bx": {
+      "desc": "Branch, change instruction set",
+      "arch": "T",
+      "args": ""
+    },
+    "bxj": {
+      "desc": "Branch, change to Jazelle",
+      "arch": "J, x7M",
+      "args": ""
+    },
+    "cbz": {
+      "desc": "Compare and Branch if Zero",
+      "arch": "T2",
+      "args": ""
+    },
+    "cbnz": {
+      "desc": "Compare and Branch if Non Zero",
+      "arch": "T2",
+      "args": ""
+    },
+    "cdp": {
+      "desc": "Coprocessor Data Processing operation",
+      "arch": "x6M",
+      "args": ""
+    },
+    "cdp2": {
+      "desc": "Coprocessor Data Processing operation",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "clrex": {
+      "desc": "Clear Exclusive",
+      "arch": "K, x6M",
+      "args": ""
+    },
+    "clz": {
+      "desc": "Count Leading Zeros",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "cmn": {
+      "desc": "Compare Negative",
+      "arch": "",
+      "args": ""
+    },
+    "cmp": {
+      "desc": "Compare",
+      "arch": "",
+      "args": ""
+    },
+    "cps": {
+      "desc": "Change Processor State",
+      "arch": "6",
+      "args": ""
+    },
+    "cpy": {
+      "desc": "Copy",
+      "arch": "6",
+      "args": ""
+    },
+    "dbg": {
+      "desc": "Debug",
+      "arch": "7",
+      "args": ""
+    },
+    "dmb": {
+      "desc": "Data Memory Barrier",
+      "arch": "6M, 7",
+      "args": ""
+    },
+    "dsb": {
+      "desc": "Data Synchronization Barrier",
+      "arch": "6M, 7",
+      "args": ""
+    },
+    "eor": {
+      "desc": "Exclusive OR",
+      "arch": "",
+      "args": ""
+    },
+    "eret": {
+      "desc": "Exception Return",
+      "arch": "7VE",
+      "args": ""
+    },
+    "hvc": {
+      "desc": "Hypervisor Call",
+      "arch": "7VE",
+      "args": ""
+    },
+    "isb": {
+      "desc": "Instruction Synchronization Barrier",
+      "arch": "6M, 7",
+      "args": ""
+    },
+    "it": {
+      "desc": "If-Then",
+      "arch": "T2",
+      "args": ""
+    },
+    "ldc": {
+      "desc": "Load Coprocessor",
+      "arch": "x6M",
+      "args": ""
+    },
+    "ldc2": {
+      "desc": "Load Coprocessor",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "ldm": {
+      "desc": "Load Multiple registers",
+      "arch": "",
+      "args": ""
+    },
+    "ldr": {
+      "desc": "Load Register with word",
+      "arch": "",
+      "args": ""
+    },
+    "ldrb": {
+      "desc": "Load Register with byte",
+      "arch": "",
+      "args": ""
+    },
+    "ldrbt": {
+      "desc": "Load Register with byte, user mode",
+      "arch": "x6M",
+      "args": ""
+    },
+    "ldrd": {
+      "desc": "Load Register with two words",
+      "arch": "5E, x6M",
+      "args": ""
+    },
+    "ldrex": {
+      "desc": "Load Register Exclusive",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "ldrexb": {
+      "desc": "Load Register Exclusive Byte",
+      "arch": "K, x6M",
+      "args": ""
+    },
+    "ldrexh": {
+      "desc": "Load Register Exclusive Halfword",
+      "arch": "K, x6M",
+      "args": ""
+    },
+    "ldrexd": {
+      "desc": "Load Register Exclusive Doubleword",
+      "arch": "K, x7M",
+      "args": ""
+    },
+    "ldrh": {
+      "desc": "Load Register with halfword",
+      "arch": "",
+      "args": ""
+    },
+    "ldrht": {
+      "desc": "Load Register with halfword, user mode",
+      "arch": "T2",
+      "args": ""
+    },
+    "ldrsb": {
+      "desc": "Load Register with signed byte",
+      "arch": "",
+      "args": ""
+    },
+    "ldrsbt": {
+      "desc": "Load Register with signed byte, user mode",
+      "arch": "T2",
+      "args": ""
+    },
+    "ldrsh": {
+      "desc": "Load Register with halfword",
+      "arch": "",
+      "args": ""
+    },
+    "ldrsht": {
+      "desc": "Load Register with halfword, user mode",
+      "arch": "T2",
+      "args": ""
+    },
+    "ldrt": {
+      "desc": "Load Register with word, user mode",
+      "arch": "x6M",
+      "args": ""
+    },
+    "lsl": {
+      "desc": "Logical Shift Left",
+      "arch": "",
+      "args": ""
+    },
+    "lsr": {
+      "desc": "Logical Shift Right",
+      "arch": "",
+      "args": ""
+    },
+    "mar": {
+      "desc": "Move from Registers to 40-bit Accumulator",
+      "arch": "XS",
+      "args": ""
+    },
+    "mcr": {
+      "desc": "Move from Register to Coprocessor",
+      "arch": "x6M",
+      "args": ""
+    },
+    "mcr2": {
+      "desc": "Move from Register to Coprocessor",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "mcrr": {
+      "desc": "Move from Register to Coprocessor",
+      "arch": "5E, x6M",
+      "args": ""
+    },
+    "mcrr2": {
+      "desc": "Move from Register to Coprocessor",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "mia": {
+      "desc": "Multiply with Internal 40-bit Accumulate",
+      "arch": "XS",
+      "args": ""
+    },
+    "miaph": {
+      "desc": "Multiply with Internal 40-bit Accumulate",
+      "arch": "XS",
+      "args": ""
+    },
+    "mla": {
+      "desc": "Multiply Accumulate",
+      "arch": "x6M",
+      "args": ""
+    },
+    "mls": {
+      "desc": "Multiply and Subtract",
+      "arch": "T2",
+      "args": ""
+    },
+    "mov": {
+      "desc": "Move",
+      "arch": "",
+      "args": ""
+    },
+    "movt": {
+      "desc": "Move Top",
+      "arch": "T2",
+      "args": ""
+    },
+    "mov32": {
+      "desc": "Move 32-bit immediate to register",
+      "arch": "T2",
+      "args": ""
+    },
+    "mra": {
+      "desc": "Move from 40-bit Accumulator to Registers",
+      "arch": "XS",
+      "args": ""
+    },
+    "mrc": {
+      "desc": "Move from Coprocessor to Register",
+      "arch": "x6M",
+      "args": ""
+    },
+    "mrc2": {
+      "desc": "Move from Coprocessor to Register",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "mrrc": {
+      "desc": "Move from Coprocessor to Register",
+      "arch": "5E, x6M",
+      "args": ""
+    },
+    "mrrc2": {
+      "desc": "Move from Coprocessor to Register",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "mrs": {
+      "desc": "Move from PSR to register",
+      "arch": "",
+      "args": ""
+    },
+    "msr": {
+      "desc": "Move from register to PSR",
+      "arch": "",
+      "args": ""
+    },
+    "mul": {
+      "desc": "Multiply",
+      "arch": "",
+      "args": ""
+    },
+    "mvn": {
+      "desc": "Move NOT",
+      "arch": "",
+      "args": ""
+    },
+    "neg": {
+      "desc": "Negate",
+      "arch": "",
+      "args": ""
+    },
+    "nop": {
+      "desc": "No Operation",
+      "arch": "",
+      "args": ""
+    },
+    "orn": {
+      "desc": "Logical OR NOT",
+      "arch": "T2",
+      "args": ""
+    },
+    "orr": {
+      "desc": "Logical OR",
+      "arch": "",
+      "args": ""
+    },
+    "pkhbt": {
+      "desc": "Pack Halfwords",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "pkhtb": {
+      "desc": "Pack Halfwords",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "pld": {
+      "desc": "Preload Data",
+      "arch": "5E, x6M",
+      "args": ""
+    },
+    "pldw": {
+      "desc": "Preload Data with intent to Write",
+      "arch": "7MP",
+      "args": ""
+    },
+    "pli": {
+      "desc": "Preload Instruction",
+      "arch": "7",
+      "args": ""
+    },
+    "pop": {
+      "desc": "POP registers from stack",
+      "arch": "",
+      "args": ""
+    },
+    "push": {
+      "desc": "PUSH registers to stack",
+      "arch": "",
+      "args": ""
+    },
+    "qadd": {
+      "desc": "Signed saturating Add",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "qadd8": {
+      "desc": "Signed saturating parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "qadd16": {
+      "desc": "Signed saturating parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "qasx": {
+      "desc": "Signed saturating parallel add and subtract halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "qdadd": {
+      "desc": "Signed saturating Double and Add",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "qdsub": {
+      "desc": "Signed saturating Double and Subtract",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "qsax": {
+      "desc": "Signed saturating parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "qsub": {
+      "desc": "Signed saturating Subtract",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "qsub8": {
+      "desc": "Signed saturating parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "qsub16": {
+      "desc": "Signed saturating parallel halfword-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "rbit": {
+      "desc": "Reverse Bits",
+      "arch": "T2",
+      "args": ""
+    },
+    "rev": {
+      "desc": "Reverse byte order in a word",
+      "arch": "6",
+      "args": ""
+    },
+    "rev16": {
+      "desc": "Reverse byte order in two halfwords",
+      "arch": "6",
+      "args": ""
+    },
+    "revsh": {
+      "desc": "Reverse byte order in a halfword and sign extend",
+      "arch": "6",
+      "args": ""
+    },
+    "rfe": {
+      "desc": "Return From Exception",
+      "arch": "T2, x7M",
+      "args": ""
+    },
+    "ror": {
+      "desc": "Rotate Right Register",
+      "arch": "",
+      "args": ""
+    },
+    "rrx": "",
+    "rsb": "",
+    "rsc": "",
+    "sadd": "",
+    "sadd8": "",
+    "sadd16": "",
+    "sasx": "",
+    "sbc": "",
+    "sbfx": "",
+    "sdiv": "",
+    "sel": "",
+    "setend": "",
+    "sev": "",
+    "shadd8": "",
+    "shadd16": "",
+    "shasx": "",
+    "shsax": "",
+    "shsub8": "",
+    "shsub16": "",
+    "smc": "",
+    "smla": "",
+    "smlald": "",
+    "smlaw": "",
+    "smlsd": "",
+    "smmla": "",
+    "smmls": "",
+    "smmul": "",
+    "smuad": "",
+    "smusd": "",
+    "smul": "",
+    "smull": "",
+    "smulw": "",
+    "srs": "",
+    "ssat": "",
+    "ssax": "",
+    "ssub8": "",
+    "ssub16": "",
+    "stc": "",
+    "stc2": "",
+    "stm": "",
+    "str": "",
+    "strb": "",
+    "strbt": "",
+    "strd": "",
+    "strex": "",
+    "strexb": "",
+    "strexh": "",
+    "strexd": "",
+    "strh": "",
+    "strht": "",
+    "strt": "",
+    "sub": "R,R,R|#",
+    "subs": "R,R,R|#",
+    "svc": "",
+    "swp": "",
+    "swpb": "",
+    "sxtab": "",
+    "sxtab16": "",
+    "sxtah": "",
+    "sxtb": "",
+    "sxtb16": "",
+    "sxth": "",
+    "sys": "",
+    "tbb": "",
+    "tbh": "",
+    "teq": "",
+    "tst": "",
+    "uadd8": "",
+    "uadd16": "",
+    "uasx": "",
+    "ubfx": "",
+    "udiv": "",
+    "uhadd8": "",
+    "uhadd16": "",
+    "uhasx": "",
+    "uhsax": "",
+    "uhsub8": "",
+    "uhsub16": "",
+    "umaal": "",
+    "umlal": "",
+    "umull": "",
+    "uquadd8": "",
+    "uquadd16": "",
+    "uqasx": "",
+    "uqsax": "",
+    "uqsub8": "",
+    "uqsub16": "",
+    "usad8": "",
+    "usada8": "",
+    "usat": "",
+    "usat16": "",
+    "usax": "",
+    "usub8": "",
+    "usub16": "",
+    "uxtab": "",
+    "uxtab16": "",
+    "uxtah":  {
+      "desc": "Zero extend Halfword with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uxtb": {
+      "desc": "Zero extend Byte",
+      "arch": "6",
+      "args": ""
+    },
+    "uxtb16": {
+      "desc": "Zero extend two bytes",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uxth": {
+      "desc": "Zero extend Halfword",
+      "arch": "6",
+      "args": ""
+    },
+    "wfe": {
+      "desc": "Wait For Event",
+      "arch": "T2, 6M",
+      "args": ""
+    },
+    "wfi": {
+      "desc": "Wait For Interrupt",
+      "arch": "T2, 6M",
+      "args": ""
+    },
+    "yield": {
+      "desc": "yield",
+      "arch": "T2, 6M",
+      "args": ""
+    }
+  },
+  "instructions-neon": {}
+}
