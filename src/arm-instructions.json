@@ -890,39 +890,171 @@
       "arch": "7A, 7R",
       "args": ""
     },
-    "tbb": "",
-    "tbh": "",
-    "teq": "",
-    "tst": "",
-    "uadd8": "",
-    "uadd16": "",
-    "uasx": "",
-    "ubfx": "",
-    "udiv": "",
-    "uhadd8": "",
-    "uhadd16": "",
-    "uhasx": "",
-    "uhsax": "",
-    "uhsub8": "",
-    "uhsub16": "",
-    "umaal": "",
-    "umlal": "",
-    "umull": "",
-    "uquadd8": "",
-    "uquadd16": "",
-    "uqasx": "",
-    "uqsax": "",
-    "uqsub8": "",
-    "uqsub16": "",
-    "usad8": "",
-    "usada8": "",
-    "usat": "",
-    "usat16": "",
-    "usax": "",
-    "usub8": "",
-    "usub16": "",
-    "uxtab": "",
-    "uxtab16": "",
+    "tbb": {
+      "desc": "Table Branch Byte",
+      "arch": "T2",
+      "args": ""
+    },
+    "tbh": {
+      "desc": "Table Branch Halfword",
+      "arch": "T2",
+      "args": ""
+    },
+    "teq": {
+      "desc": "Test Equivalence",
+      "arch": "x6M",
+      "args": ""
+    },
+    "tst": {
+      "desc": "Test",
+      "arch": "",
+      "args": ""
+    },
+    "uadd8": {
+      "desc": "Unsigned parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uadd16": {
+      "desc": "Unsigned parallel hslfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uasx": {
+      "desc": "Unsigned parallel add and subtract halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "ubfx": {
+      "desc": "Unsigned Bit Field eXtract",
+      "arch": "T2",
+      "args": ""
+    },
+    "udiv": {
+      "desc": "Unsigned divide",
+      "arch": "7A, 7M, 7R",
+      "args": ""
+    },
+    "uhadd8": {
+      "desc": "Unsigned halving parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uhadd16": {
+      "desc": "Unsigned halving parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uhasx": {
+      "desc": "Unsigned halving parallel add and subtract halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uhsax": {
+      "desc": "Unsigned halving parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uhsub8": {
+      "desc": "Unsigned halving parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uhsub16": {
+      "desc": "Unsigned halving parallel halfword-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "umaal": {
+      "desc": "Unsigned Multiply Accumulate Accumulate Long (64 <= 32 + 32 + 32 x 32)",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "umlal": {
+      "desc": "Unsigned Multiply Accumulate (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
+      "arch": "x6M",
+      "args": ""
+    },
+    "umull": {
+      "desc": "Unsigned Multiply (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
+      "arch": "x6M",
+      "args": ""
+    },
+    "uquadd8": {
+      "desc": "Unsigned saturating parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uquadd16": {
+      "desc": "Unsigned saturating parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uqasx": {
+      "desc": "Unsigned saturating parallel add and subtract halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uqsax": {
+      "desc": "Unsigned saturating parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uqsub8": {
+      "desc": "Unsigned saturating parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uqsub16": {
+      "desc": "Unsigned saturating parallel halfword-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usad8": {
+      "desc": "Unsigned Sum of Absolute Differences",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usada8": {
+      "desc": "Accumulate Unsigned Sum of Absolute Differences",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usat": {
+      "desc": "Unsigned Saturate",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "usat16": {
+      "desc": "Unsigned Saturate, parallel halfwords",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usax": {
+      "desc": "Unsigned parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usub8": {
+      "desc": "Unsigned parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "usub16": {
+      "desc": "Unsigned parallel halfword-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uxtab": {
+      "desc": "Zero extend Byte with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "uxtab16": {
+      "desc": "Zero extend two bytes with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
     "uxtah": {
       "desc": "Zero extend Halfword with Addition",
       "arch": "6, 7EM",
