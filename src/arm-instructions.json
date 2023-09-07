@@ -9,9 +9,9 @@
     "7A": "ARMv7-A",
     "7M": "ARMv7-M",
     "x7M": "Not available in ARMv6-M or ARMv7-M, or any ARMv7E-M implementation",
-    "7EM": "ARMv7E-M, but not in the ARMv7-M or ARMv6-M architecture.",
+    "7EM": "ARMv7E-M, but not in the ARMv7-M or ARMv6-M architecture",
     "7R": "ARMv7-R",
-    "7MP": "ARMv7 with Multiprocessing Extensions.",
+    "7MP": "ARMv7 with Multiprocessing Extensions",
     "J": "ARMv5TEJ, ARMv6*, and ARMv7",
     "K": "ARMv6K, ARMv7",
     "T": "ARMv4T, ARMv5T*, ARMv6*, ARMv7",
@@ -525,69 +525,371 @@
       "arch": "",
       "args": ""
     },
-    "rrx": "",
-    "rsb": "",
-    "rsc": "",
-    "sadd": "",
-    "sadd8": "",
-    "sadd16": "",
-    "sasx": "",
-    "sbc": "",
-    "sbfx": "",
-    "sdiv": "",
-    "sel": "",
-    "setend": "",
-    "sev": "",
-    "shadd8": "",
-    "shadd16": "",
-    "shasx": "",
-    "shsax": "",
-    "shsub8": "",
-    "shsub16": "",
-    "smc": "",
-    "smla": "",
-    "smlald": "",
-    "smlaw": "",
-    "smlsd": "",
-    "smmla": "",
-    "smmls": "",
-    "smmul": "",
-    "smuad": "",
-    "smusd": "",
-    "smul": "",
-    "smull": "",
-    "smulw": "",
-    "srs": "",
-    "ssat": "",
-    "ssax": "",
-    "ssub8": "",
-    "ssub16": "",
-    "stc": "",
-    "stc2": "",
-    "stm": "",
-    "str": "",
-    "strb": "",
-    "strbt": "",
-    "strd": "",
-    "strex": "",
-    "strexb": "",
-    "strexh": "",
-    "strexd": "",
-    "strh": "",
-    "strht": "",
-    "strt": "",
-    "sub": "R,R,R|#",
-    "subs": "R,R,R|#",
-    "svc": "",
-    "swp": "",
-    "swpb": "",
-    "sxtab": "",
-    "sxtab16": "",
-    "sxtah": "",
-    "sxtb": "",
-    "sxtb16": "",
-    "sxth": "",
-    "sys": "",
+    "rrx": {
+      "desc": "Rotate Right with Extend",
+      "arch": "x6M",
+      "args": ""
+    },
+    "rsb": {
+      "desc": "Reverse Subtract",
+      "arch": "",
+      "args": ""
+    },
+    "rsc": {
+      "desc": "Rotate Right Register",
+      "arch": "x7M",
+      "args": ""
+    },
+    "sadd8": {
+      "desc": "Signed parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sadd16": {
+      "desc": "Signed parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sasx": {
+      "desc": "Signed parallel add and subtract halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sbc": {
+      "desc": "Subtract with Carry",
+      "arch": "",
+      "args": ""
+    },
+    "sbfx": {
+      "desc": "Signed Bit Field eXtract",
+      "arch": "T2",
+      "args": ""
+    },
+    "sdiv": {
+      "desc": "Signed divide",
+      "arch": "7A, 7M, 7R",
+      "args": ""
+    },
+    "sel": {
+      "desc": "Select bytes according to APSR GE flags",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "setend": {
+      "desc": "Set Endianness for memory accesses",
+      "arch": "6, x7M",
+      "args": ""
+    },
+    "sev": {
+      "desc": "Set Event",
+      "arch": "K, 6M",
+      "args": ""
+    },
+    "shadd8": {
+      "desc": "Signed halving parallel byte-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "shadd16": {
+      "desc": "Signed halving parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "shasx": {
+      "desc": "Signed halving parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "shsax": {
+      "desc": "Signed halving parallel halfword-wise addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "shsub8": {
+      "desc": "Signed halving parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "shsub16": {
+      "desc": "Signed halving parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smc": {
+      "desc": "Secure Monitor Call",
+      "arch": "Z",
+      "args": ""
+    },
+    "smlabb": {
+      "desc": "Signed Multiply with Accumulate (bottom halves)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlabt": {
+      "desc": "Signed Multiply with Accumulate (bottom, top halves)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlatb": {
+      "desc": "Signed Multiply with Accumulate (top, bottom halves)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlatt": {
+      "desc": "Signed Multiply with Accumulate (top halves)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlad": {
+      "desc": "Dual Signed Multiply Accumulate",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smlald": {
+      "desc": "Dual Signed Multiply Accumulate Long",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smlawb": {
+      "desc": "Signed Multiply with Accumulate (bottom half)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlawt": {
+      "desc": "Signed Multiply with Accumulate (top half)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smlsd": {
+      "desc": "Dual Signed Multiply Subtract Accumulate",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smlsld": {
+      "desc": "Dual Signed Multiply Subtract Accumulate Long",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smmla": {
+      "desc": "Signed top word Multiply with Accumulate (32 <= TopWord(32 x 32 + 32))",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smmls": {
+      "desc": "Signed top word Multiply with Subtract (32 <= TopWord(32 - 32 x 32))",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smmul": {
+      "desc": "Signed top word Multiply (32 <= TopWord(32 x 32))",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smuad": {
+      "desc": "Dual 16-bit Signed Multiply with Addition of products, and optional exchange of operand halves",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smusd": {
+      "desc": "Dual 16-bit Signed Multiply with Subtraction of products, and optional exchange of operand halves",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "smulbb": {
+      "desc": "Signed Multiply (32 <= 32 x 16, bottom, bottom)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smulbt": {
+      "desc": "Signed Multiply (32 <= 32 x 16, bottom, top)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smultb": {
+      "desc": "Signed Multiply (32 <= 32 x 16, top, bottom)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smultt": {
+      "desc": "Signed Multiply (32 <= 32 x 16, top, top)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smull": {
+      "desc": "Signed Multiply (64 <= 32 x 32)",
+      "arch": "x6M",
+      "args": ""
+    },
+    "smulwb": {
+      "desc": "Signed Multiply (32 <= 32 x 16, bottom)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "smulwt": {
+      "desc": "Signed Multiply (32 <= 32 x 16, top)",
+      "arch": "5E, 7EM",
+      "args": ""
+    },
+    "srs": {
+      "desc": "Store Return State",
+      "arch": "T2, x7M",
+      "args": ""
+    },
+    "ssat": {
+      "desc": "Signed Saturate",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "ssat16": {
+      "desc": "Signed Saturate, parallel halfwords",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "ssax": {
+      "desc": "Signed parallel subtract and add halfwords with exchange",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "ssub8": {
+      "desc": "Signed parallel byte-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "ssub16": {
+      "desc": "Signed parallel halfword-wise subtraction",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "stc": {
+      "desc": "Store Coprocessor",
+      "arch": "x6M",
+      "args": ""
+    },
+    "stc2": {
+      "desc": "Store Coprocessor",
+      "arch": "5, x6M",
+      "args": ""
+    },
+    "stm": {
+      "desc": "Store Multiple registers",
+      "arch": "",
+      "args": ""
+    },
+    "str": {
+      "desc": "Store Register with word",
+      "arch": "",
+      "args": ""
+    },
+    "strb": {
+      "desc": "Store Register with byte",
+      "arch": "",
+      "args": ""
+    },
+    "strbt": {
+      "desc": "Store Register with byte, user mode",
+      "arch": "x6M",
+      "args": ""
+    },
+    "strd": {
+      "desc": "Store Registers with two words",
+      "arch": "5E, x6M",
+      "args": ""
+    },
+    "strex": {
+      "desc": "Store Register Exclusive",
+      "arch": "6, x6M",
+      "args": ""
+    },
+    "strexb": {
+      "desc": "Store Register Exclusive Byte",
+      "arch": "K, x6M",
+      "args": ""
+    },
+    "strexh": {
+      "desc": "Store Register Exclusive Halfword",
+      "arch": "K, x6M",
+      "args": ""
+    },
+    "strexd": {
+      "desc": "Store Register Exclusive Doubleword",
+      "arch": "K, x7M",
+      "args": ""
+    },
+    "strh": {
+      "desc": "Store Register with halfword",
+      "arch": "",
+      "args": ""
+    },
+    "strht": {
+      "desc": "Store Register with halfword, user mode",
+      "arch": "T2",
+      "args": ""
+    },
+    "strt": {
+      "desc": "Store Register with halfword, user mode",
+      "arch": "x6M",
+      "args": ""
+    },
+    "sub": {
+      "desc": "Subtract",
+      "arch": "",
+      "args": ""
+    },
+    "subs": {
+      "desc": "Exception return, no stack",
+      "arch": "T2, x7M",
+      "args": ""
+    },
+    "svc": {
+      "desc": "SuperVisor Call",
+      "arch": "",
+      "args": ""
+    },
+    "swp": {
+      "desc": "Swap registers and memory",
+      "arch": "",
+      "args": ""
+    },
+    "swpb": {
+      "desc": "Swap registers and memory",
+      "arch": "x7M",
+      "args": ""
+    },
+    "sxtab": {
+      "desc": "Sign extend Byte, with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sxtab16": {
+      "desc": "Sign extend two Bytes, with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sxtah": {
+      "desc": "Sign extend Halfword, with Addition",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sxtb": {
+      "desc": "Sign extend Byte",
+      "arch": "6",
+      "args": ""
+    },
+    "sxtb16": {
+      "desc": "Sign extend two Bytes",
+      "arch": "6, 7EM",
+      "args": ""
+    },
+    "sxth": {
+      "desc": "Sign extend Halfword",
+      "arch": "6",
+      "args": ""
+    },
+    "sys": {
+      "desc": "Execute system coprocessor instruction",
+      "arch": "7A, 7R",
+      "args": ""
+    },
     "tbb": "",
     "tbh": "",
     "teq": "",
@@ -621,7 +923,7 @@
     "usub16": "",
     "uxtab": "",
     "uxtab16": "",
-    "uxtah":  {
+    "uxtah": {
       "desc": "Zero extend Halfword with Addition",
       "arch": "6, 7EM",
       "args": ""
