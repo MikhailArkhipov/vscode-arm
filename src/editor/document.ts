@@ -7,7 +7,7 @@ import { Parser } from "../parser/parser";
 import { TextStream } from "../text/textStream";
 import { AssemblerType, SyntaxConfig } from "../syntaxConfig";
 import { Tokenizer } from "../tokens/tokenizer";
-import { Token } from "../tokens/tokens";
+import { Token, TokenType } from "../tokens/tokens";
 import { TextRangeCollection } from "../text/textRangeCollection";
 
 export class EditorDocument {
@@ -45,6 +45,18 @@ export class EditorDocument {
       ).tokens;
     }
     return this._tokens;
+  }
+
+  public isComment(tokenIndex: number): boolean {
+    // Locate matching document in RDT
+    if (tokenIndex >= 0) {
+      const t = this._tokens.getItemAt(tokenIndex);
+      return (
+        t.tokenType === TokenType.LineComment ||
+        t.tokenType === TokenType.BlockComment
+      );
+    }
+    return false;
   }
 }
 

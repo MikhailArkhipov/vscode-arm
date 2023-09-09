@@ -1,10 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import {
-  CancellationToken,
-  CompletionTriggerKind,
-} from "vscode-languageclient";
+import { CancellationToken } from "vscode-languageclient";
 import * as asmDirectives from "../asm-directives-gas.json";
 import * as asmInstuctions from "../arm-instructions.json";
 
@@ -15,7 +12,10 @@ import {
   CompletionItem,
   CompletionItemKind,
 } from "vscode";
-import { getDirectiveDocumentation } from "./documentation";
+import {
+  getDirectiveDocumentation,
+  getInstructionDocumentation,
+} from "./documentation";
 import { RDT } from "./rdt";
 import { TokenType } from "../tokens/tokens";
 import { Settings, getSetting } from "./settings";
@@ -33,7 +33,7 @@ export function provideCompletions(
 
   const offset = td.offsetAt(position);
   const tokenIndex = ed.tokens.getItemContaining(offset);
-  if (isPositionInComment(ed, tokenIndex)) {
+  if (ed.isComment(tokenIndex)) {
     return [];
   }
 
@@ -56,18 +56,6 @@ export async function resolveCompletionItem(
     );
   }
   return item;
-}
-
-function isPositionInComment(ed: EditorDocument, tokenIndex: number): boolean {
-  // Locate matching document in RDT
-  if (tokenIndex >= 0) {
-    const t = ed.tokens.getItemAt(tokenIndex);
-    return (
-      t.tokenType === TokenType.LineComment ||
-      t.tokenType === TokenType.BlockComment
-    );
-  }
-  return false;
 }
 
 function handleDirectivesCompletion(
@@ -142,9 +130,7 @@ function handleInstructionsCompletion(
     const dirs = Object.keys(asmInstuctions.instructions);
     comps = dirs.map((e) => {
       const ci = new CompletionItem(e, CompletionItemKind.Method);
-      const props = asmInstuctions.instructions[e];
-      const arch = props.arch.length > 0 ? props.arch : "All";
-      ci.documentation = `${props.desc} (${arch})`;
+      ci.documentation = getInstructionDocumentation(e);
       return ci;
     });
   }

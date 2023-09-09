@@ -1,38 +1,43 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextDocument, Position, Hover, Range } from "vscode";
-import { TextStream } from "../text/textStream";
-import { Tokenizer } from "../tokens/tokenizer";
+import { TextDocument, Position, Hover, Range, MarkdownString } from "vscode";
 import { TokenType } from "../tokens/tokens";
-import { AssemblerType, SyntaxConfig } from "../syntaxConfig";
-import { getDirectiveDocumentation } from "./documentation";
+import {
+  getDirectiveDocumentation,
+  getInstructionDocumentation,
+} from "./documentation";
+import { RDT } from "./rdt";
 
 export async function provideHover(
-  document: TextDocument,
+  td: TextDocument,
   position: Position
 ): Promise<Hover> {
-  const nextLine = Math.min(position.line + 1, document.lineCount - 1);
-  const start = new Position(0, 0);
-  const end = document.lineAt(nextLine).range.end;
-  const range = new Range(start, end);
-  const text = document.getText(range);
-  const pt = document.offsetAt(position);
-
-  const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
-  const tokens = t.tokenize(new TextStream(text), 0, text.length, false).tokens;
-
-  const index = tokens.getItemContaining(pt);
-  if (index >= 0) {
-    const token = tokens.getItemAt(index);
-    if (token.tokenType === TokenType.Directive) {
-      var doc = await getDirectiveDocumentation(
-        text.substring(token.start, token.end)
-      );
-      if (doc) {
-        return new Hover(doc);
-      }
-    }
+  const ed = RDT.getEditorDocument(td);
+  if (!ed) {
+    return new Hover("");
   }
-  return new Hover("");
+
+  const offset = td.offsetAt(position);
+  const tokenIndex = ed.tokens.getItemContaining(offset);
+  if (tokenIndex < 0 || ed.isComment(tokenIndex)) {
+    return new Hover("");
+  }
+
+  const token = ed.tokens.getItemAt(tokenIndex);
+  const range = new Range(td.positionAt(token.start), td.positionAt(token.end));
+  const tokenText = td.getText(range);
+
+  let doc: MarkdownString | undefined;
+  switch (token.tokenType) {
+    case TokenType.Directive:
+      doc = await getDirectiveDocumentation(tokenText);
+      break;
+
+    case TokenType.Instruction:
+      doc = getInstructionDocumentation(tokenText);
+      break;
+  }
+
+  return new Hover(doc ?? "");
 }

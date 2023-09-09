@@ -1,6 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import * as asmInstuctions from "../arm-instructions.json";
+
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { MarkdownString } from "vscode";
 
@@ -29,4 +31,14 @@ export async function getDirectiveDocumentation(
     const markdown = turndownService.turndown(content);
     return markdown;
   } catch {}
+}
+
+export function getInstructionDocumentation(
+  instructionName: string
+): MarkdownString | undefined {
+  const props = asmInstuctions.instructions[instructionName];
+  if (props) {
+    const arch = props.arch.length > 0 ? props.arch : "All";
+    return new MarkdownString(`${props.desc} (${arch})`);
+  }
 }
