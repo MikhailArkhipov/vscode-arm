@@ -6,6 +6,7 @@ import * as asmInstuctions from "../arm-instructions.json";
 import { HttpClient } from "typed-rest-client/HttpClient";
 import { MarkdownString } from "vscode";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const TurndownService = require("turndown");
 
 export async function getDirectiveDocumentation(
@@ -30,6 +31,7 @@ export async function getDirectiveDocumentation(
     const turndownService = new TurndownService();
     const markdown = turndownService.turndown(content);
     return markdown;
+  // eslint-disable-next-line no-empty
   } catch {}
 }
 

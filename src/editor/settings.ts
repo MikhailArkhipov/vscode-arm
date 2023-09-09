@@ -13,5 +13,5 @@ export function getConfiguration(name: string): vscode.WorkspaceConfiguration {
 }
 export function getSetting<T>(name: string, defaultValue: T): T {
   const config = vscode.workspace.getConfiguration('vscode-arm');
-  return vscode.workspace.getConfiguration('vscode-arm').get(name, defaultValue) as T;
+  return config.get(name, defaultValue) as T;
 }

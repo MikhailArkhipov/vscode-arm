@@ -66,7 +66,7 @@ export class AssemblerConfig {
 
 export namespace SyntaxConfig {
   export function create(assemblerType: AssemblerType): AssemblerConfig {
-    var ac = new AssemblerConfig();
+    const ac = new AssemblerConfig();
 
     switch (assemblerType) {
       case AssemblerType.GNU:

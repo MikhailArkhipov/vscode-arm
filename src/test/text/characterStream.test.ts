@@ -6,7 +6,7 @@ import { CharacterStream } from "../../text/characterStream";
 import { TextStream } from "../../text/textStream";
 
 test("CharacterStream empty", () => {
-  var cs = new CharacterStream(new TextStream(""));
+  const cs = new CharacterStream(new TextStream(""));
   expect(cs.length).toBe(0);
   expect(cs.position).toBe(0);
   expect(cs.isAtNewLine()).toBe(false);
@@ -50,7 +50,7 @@ test("CharacterStream empty", () => {
 });
 
 test("CharacterStream space", () => {
-  var cs = new CharacterStream(new TextStream(" "));
+  const cs = new CharacterStream(new TextStream(" "));
   expect(cs.length).toBe(1);
   expect(cs.position).toBe(0);
   expect(cs.isAtNewLine()).toBe(false);
@@ -64,7 +64,7 @@ test("CharacterStream space", () => {
 });
 
 test("CharacterStream tab", () => {
-  var cs = new CharacterStream(new TextStream("\t"));
+  const cs = new CharacterStream(new TextStream("\t"));
   expect(cs.length).toBe(1);
   expect(cs.position).toBe(0);
   expect(cs.isAtNewLine()).toBe(false);
@@ -78,7 +78,7 @@ test("CharacterStream tab", () => {
 });
 
 test("CharacterStream line feed", () => {
-  var cs = new CharacterStream(new TextStream(" \n"));
+  const cs = new CharacterStream(new TextStream(" \n"));
   expect(cs.length).toBe(2);
   expect(cs.position).toBe(0);
   expect(cs.isAtNewLine()).toBe(false);
@@ -97,7 +97,7 @@ test("CharacterStream line feed", () => {
 });
 
 test("CharacterStream carriage return", () => {
-  var cs = new CharacterStream(new TextStream("\r\n"));
+  const cs = new CharacterStream(new TextStream("\r\n"));
   expect(cs.length).toBe(2);
   expect(cs.position).toBe(0);
   expect(cs.isAtNewLine()).toBe(true);
@@ -121,8 +121,8 @@ test("CharacterStream carriage return", () => {
 });
 
 test("CharacterStream text", () => {
-  var text = "a bc\n\tdef";
-  var cs = new CharacterStream(new TextStream(text));
+  const text = "a bc\n\tdef";
+  const cs = new CharacterStream(new TextStream(text));
   expect(cs.length).toBe(text.length);
   expect(cs.position).toBe(0);
   expect(cs.currentChar).toBe(Char.a);

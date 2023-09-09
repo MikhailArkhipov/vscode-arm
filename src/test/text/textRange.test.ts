@@ -21,17 +21,17 @@ test("TextRange union", () => {
 });
 
 test("TextRange intersectRange 1", () => {
-  var r1 = TextRange.fromBounds(1, 5);
-  var r2 = TextRange.fromBounds(5, 10);
+  const r1 = TextRange.fromBounds(1, 5);
+  const r2 = TextRange.fromBounds(5, 10);
 
   expect(TextRange.intersectRange(r1, r2)).toBe(false);
   expect(TextRange.intersectRange(r2, r1)).toBe(false);
 
   expect(TextRange.intersectRange(r1, r1)).toBe(true);
 
-  var r3 = TextRange.fromBounds(1, 1);
-  var r4 = TextRange.fromBounds(1, 2);
-  var r5 = TextRange.fromBounds(2, 3);
+  const r3 = TextRange.fromBounds(1, 1);
+  const r4 = TextRange.fromBounds(1, 2);
+  const r5 = TextRange.fromBounds(2, 3);
 
   expect(TextRange.intersectRange(r1, r3)).toBe(true);
 
@@ -42,31 +42,31 @@ test("TextRange intersectRange 1", () => {
   expect(TextRange.intersectRange(r4, r1)).toBe(true);
   expect(TextRange.intersectRange(r5, r1)).toBe(true);
 
-  var r6 = TextRange.fromBounds(Number.MIN_VALUE / 2, Number.MAX_VALUE / 2);
+  const r6 = TextRange.fromBounds(Number.MIN_VALUE / 2, Number.MAX_VALUE / 2);
   expect(TextRange.intersectRange(r1, r6)).toBe(true);
   expect(TextRange.intersectRange(r6, r1)).toBe(true);
 
-  var r7 = TextRange.fromBounds(0, 20);
+  const r7 = TextRange.fromBounds(0, 20);
   expect(TextRange.intersectRange(r1, r7)).toBe(true);
   expect(TextRange.intersectRange(r7, r1)).toBe(true);
 
-  var r8 = TextRange.fromBounds(5, 8);
+  const r8 = TextRange.fromBounds(5, 8);
   expect(TextRange.intersectRange(r1, r8)).toBe(false);
   expect(TextRange.intersectRange(r8, r1)).toBe(false);
 });
 
 test("TextRange intersectRange 2", () => {
-  var r1 = TextRange.fromBounds(1, 5);
-  var r2 = TextRange.fromBounds(5, 10);
+  const r1 = TextRange.fromBounds(1, 5);
+  const r2 = TextRange.fromBounds(5, 10);
 
   expect(TextRange.intersectRange(r1, r2)).toBe(false);
   expect(TextRange.intersectRange(r2, r1)).toBe(false);
 
   expect(TextRange.intersectRange(r1, r1)).toBe(true);
 
-  var r3 = TextRange.fromBounds(1, 1);
-  var r4 = TextRange.fromBounds(1, 2);
-  var r5 = TextRange.fromBounds(2, 3);
+  const r3 = TextRange.fromBounds(1, 1);
+  const r4 = TextRange.fromBounds(1, 2);
+  const r5 = TextRange.fromBounds(2, 3);
 
   expect(TextRange.intersectRange(r1, r3)).toBe(true);
 
@@ -77,15 +77,15 @@ test("TextRange intersectRange 2", () => {
   expect(TextRange.intersectRange(r4, r1)).toBe(true);
   expect(TextRange.intersectRange(r5, r1)).toBe(true);
 
-  var r6 = TextRange.fromBounds(Number.MIN_VALUE / 2, Number.MAX_VALUE / 2);
+  const r6 = TextRange.fromBounds(Number.MIN_VALUE / 2, Number.MAX_VALUE / 2);
   expect(TextRange.intersectRange(r1, r6)).toBe(true);
   expect(TextRange.intersectRange(r6, r1)).toBe(true);
 
-  var r7 = TextRange.fromBounds(0, 20);
+  const r7 = TextRange.fromBounds(0, 20);
   expect(TextRange.intersectRange(r1, r7)).toBe(true);
   expect(TextRange.intersectRange(r7, r1)).toBe(true);
 
-  var r8 = TextRange.fromBounds(5, 8);
+  const r8 = TextRange.fromBounds(5, 8);
   expect(TextRange.intersectRange(r1, r8)).toBe(false);
   expect(TextRange.intersectRange(r8, r1)).toBe(false);
 });
@@ -93,18 +93,18 @@ test("TextRange intersectRange 2", () => {
 test("TextRange isValid", () => {
   expect(TextRange.isValid(TextRange.emptyRange())).toBe(false);
 
-  var r1 = TextRange.fromBounds(1, 1);
+  const r1 = TextRange.fromBounds(1, 1);
   expect(TextRange.isValid(r1)).toBe(false);
 
-  var r2 = TextRange.fromBounds(1, 2);
+  const r2 = TextRange.fromBounds(1, 2);
   expect(TextRange.isValid(r2)).toBe(true);
 
-  var r4 = TextRange.fromBounds(2, 3);
+  const r4 = TextRange.fromBounds(2, 3);
   expect(TextRange.isValid(r4)).toBe(true);
 });
 
 test("TextRange construction", () => {
-  var r = TextRange.fromBounds(0, 1);
+  let r = TextRange.fromBounds(0, 1);
   expect(r.start).toBe(0);
   expect(r.length).toBe(1);
   expect(r.end).toBe(1);
@@ -121,7 +121,7 @@ test("TextRange construction", () => {
 });
 
 test("TextRange contains 1", () => {
-  var r = TextRange.fromBounds(1, 3);
+  const r = TextRange.fromBounds(1, 3);
 
   expect(TextRange.contains(r.start, r.length, Number.MIN_VALUE)).toBe(false);
   expect(TextRange.contains(r.start, r.length, 0)).toBe(false);
@@ -134,9 +134,9 @@ test("TextRange contains 1", () => {
 });
 
 test("TextRange contains 2", () => {
-  var r1 = TextRange.fromBounds(1, 5);
+  const r1 = TextRange.fromBounds(1, 5);
 
-  var r2 = TextRange.fromBounds(Number.MIN_VALUE / 2, 0);
+  let r2 = TextRange.fromBounds(Number.MIN_VALUE / 2, 0);
   expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
   r2 = TextRange.fromBounds(0, 1);
   expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
@@ -156,7 +156,7 @@ test("TextRange contains 2", () => {
 });
 
 test("TextRange empty", () => {
-  var r = TextRange.emptyRange();
+  const r = TextRange.emptyRange();
 
   expect(TextRange.isValid(r)).toBe(false);
   expect(r.start).toBe(0);

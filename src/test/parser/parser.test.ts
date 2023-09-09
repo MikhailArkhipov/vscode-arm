@@ -7,28 +7,28 @@ import { TokenType } from "../../tokens/tokens";
 import { TestUtil } from "../utility";
 
 test("Empty string", () => {
-    var root = TestUtil.parseText("");
+    const root = TestUtil.parseText("");
     expect(root).toBeDefined();
     expect(root.children.count).toBe(0);
     expect(root.parent).toBe(root);
 });
 
 test("Label + empty statement", () => {
-    var root = TestUtil.parseText("label: ");
+    const root = TestUtil.parseText("label: ");
     expect(root).toBeDefined();
     expect(root.children.count).toBe(1);
     expect(root.parent).toBe(root);
 
     expect(root.context.errors.count).toBe(0);
-    var c1 = root.children.getItemAt(0); 
+    const c1 = root.children.getItemAt(0); 
     expect(c1).toBeInstanceOf(Statement);
-    var s = c1 as Statement;
+    const s = c1 as Statement;
     expect(s.children.count).toBe(1);
     expect(root.text.getText(s.start, s.length)).toBe("label:");
     
-    var c2 = s.children.getItemAt(0);
+    const c2 = s.children.getItemAt(0);
     expect(c2).toBeInstanceOf(TokenNode);
-    var tn = c2 as TokenNode;
+    const tn = c2 as TokenNode;
     expect(tn.children.count).toBe(0);
     expect(tn.token.tokenType).toBe(TokenType.Label);
     expect(root.text.getText(tn.start, tn.length)).toBe("label:");

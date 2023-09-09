@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { AssemblerConfig } from "../syntaxConfig";
-import { Character } from "../text/charCodes";
 import { TextProvider } from "../text/text";
 import { TokenStream } from "../tokens/tokenStream";
 import { Tokenizer } from "../tokens/tokenizer";
@@ -80,7 +79,7 @@ export class Formatter {
     const lineText: string[] = [];
     // We trust tokenizer so we are not going to check here
     // if there is more than one label or instruction.
-    for (var i = 0; i < tokens.length; i++) {
+    for (let i = 0; i < tokens.length; i++) {
       const t = tokens[i];
       switch (t.tokenType) {
         case TokenType.Label:
@@ -129,7 +128,7 @@ export class Formatter {
     tokens: Token[],
     i: number,
     lineText: string[]
-  ) {
+  ): void {
     // label:<tab>instruction ...
     // <tab>      instruction
     // label:<tab>.directive
@@ -223,10 +222,10 @@ export class Formatter {
 
   private getIndents(): { instructions: number; operands: number } {
     const currentPosition = this._tokens.position;
-    var maxLabelLength = 0;
-    var maxInstructionLength = 0;
+    let maxLabelLength = 0;
+    let maxInstructionLength = 0;
 
-    for (var i = 0; i < this._tokens.length; i++) {
+    for (let i = 0; i < this._tokens.length; i++) {
       const ct = this._tokens.currentToken;
       // Only measure labels that are on the same like as instructions/directives
       switch (ct.tokenType) {
@@ -250,7 +249,7 @@ export class Formatter {
     // label:<tab>instruction<tab>//comment
     const instructionsIndent =
       (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
-    var operandsIndent = instructionsIndent;
+    let operandsIndent = instructionsIndent;
     if (maxInstructionLength > 0) {
       // no instructions found
       operandsIndent = instructionsIndent + maxInstructionLength;

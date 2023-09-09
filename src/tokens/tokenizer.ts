@@ -7,7 +7,7 @@
 import { AssemblerConfig } from "../syntaxConfig";
 import { Char, Character } from "../text/charCodes";
 import { CharacterStream } from "../text/characterStream";
-import { Text, TextProvider } from "../text/text";
+import { TextProvider } from "../text/text";
 import { TextRangeCollection } from "../text/textRangeCollection";
 import { Token, TokenType } from "./tokens";
 

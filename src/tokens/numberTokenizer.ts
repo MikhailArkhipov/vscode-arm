@@ -39,7 +39,7 @@ export namespace NumberTokenizer {
   // A hexadecimal integer is ‘0x’ or ‘0X’ followed by one or more hexadecimal digits chosen from ‘0123456789abcdefABCDEF’.
 
   export function handleNumber(cs: CharacterStream): number {
-    var start = cs.position;
+    const start = cs.position;
     // Optional +/-
     if (cs.currentChar === Char.Plus || cs.currentChar === Char.Minus) {
       cs.moveToNextChar();
@@ -52,9 +52,9 @@ export namespace NumberTokenizer {
       return handleHex(cs, start);
     }
 
-    var integerPartLength = 0;
-    var fractionPartLength = 0;
-    var isDouble = false;
+    let integerPartLength = 0;
+    let fractionPartLength = 0;
+    let isDouble = false;
 
     // collect decimals (there may be none like in .1e+20
     while (Character.isDecimal(cs.currentChar)) {
@@ -77,7 +77,7 @@ export namespace NumberTokenizer {
       return 0; // +e or +.e is not a number and neither is lonely + or -
     }
 
-    var numberLength = 0;
+    let numberLength = 0;
     if (cs.currentChar === Char.e || cs.currentChar === Char.E) {
       isDouble = true;
       numberLength = handleExponent(cs, start);
@@ -93,8 +93,8 @@ export namespace NumberTokenizer {
   }
 
   export function isValidDouble(cs: CharacterStream, start: number, length: number): boolean {
-    var s = cs.text.getText(start, length);
-    var n = parseFloat(s);
+    const s = cs.text.getText(start, length);
+    const n = parseFloat(s);
     return !Number.isNaN(n);
   }
 
@@ -106,7 +106,7 @@ export namespace NumberTokenizer {
   }
 
   function handleExponent(cs: CharacterStream, start: number): number {
-    var hasSign = false;
+    let hasSign = false;
 
     cs.moveToNextChar();
     if (cs.isWhiteSpace() || cs.isEndOfStream()) {
@@ -119,7 +119,7 @@ export namespace NumberTokenizer {
       cs.moveToNextChar();
     }
 
-    var digitsStart = cs.position;
+    const digitsStart = cs.position;
     // collect decimals
     while (Character.isDecimal(cs.currentChar)) {
       cs.moveToNextChar();

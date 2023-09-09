@@ -127,7 +127,7 @@ export class TextRangeCollection<T extends TextRange> {
   }
 
   public getFirstItemBeforePosition(position: number): number {
-    if (this.count == 0 || position < this.getItemAt(0).end) {
+    if (this.count === 0 || position < this.getItemAt(0).end) {
       return -1;
     }
 

@@ -17,7 +17,7 @@ export class Operand extends AstNodeImpl {
     // with any errors like missing braces, incorrect number of operands, etc.
     // Parser only fills data structures for the subsequent analysis pass.
     
-    var ts = context.tokens;
+    const ts = context.tokens;
     // Collect all tokens until comma or EOL.
     while(!ts.isEndOfLine() && ts.currentToken.tokenType !== TokenType.Comma) {
       this.appendChild(new TokenNode(ts.currentToken));

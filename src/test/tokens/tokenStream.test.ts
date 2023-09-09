@@ -10,8 +10,8 @@ function createTokenStream(tokens: Token[]): TokenStream {
 }
 
 test("TokenStream empty", () => {
-  var tokens: Token[] = [];
-  var ts = createTokenStream(tokens);
+  const tokens: Token[] = [];
+  const ts = createTokenStream(tokens);
 
   expect(ts.length).toBe(0);
   expect(ts.isEndOfStream()).toBe(true);
@@ -21,12 +21,12 @@ test("TokenStream empty", () => {
   expect(ts.previousToken.tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
-  var token = ts.advance(10);
+  ts.advance(10);
   expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
   expect(ts.isEndOfStream()).toBe(true);
   expect(ts.position).toBe(0);
 
-  token = ts.advance(-100);
+  ts.advance(-100);
   expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
@@ -44,7 +44,7 @@ test("TokenStream empty", () => {
 });
 
 test("TokenStream test 1", () => {
-  var tokens: Token[] = [
+  const tokens: Token[] = [
     new Token(TokenType.Comma, 0, 1),
     new Token(TokenType.LineComment, 3, 1),
     new Token(TokenType.Label, 6, 2),
@@ -52,7 +52,7 @@ test("TokenStream test 1", () => {
     new Token(TokenType.Unknown, 20, 1),
   ];
 
-  var ts = createTokenStream(tokens);
+  const ts = createTokenStream(tokens);
   expect(ts.length).toBe(5);
 
   expect(ts.isEndOfStream()).toBe(false);

@@ -1,0 +1,6 @@
+**/package-lock.json
+**/out/**
+
+*.json
+*.md
+**/.github/ISSUE_TEMPLATE/**

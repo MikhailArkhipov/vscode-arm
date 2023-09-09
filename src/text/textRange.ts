@@ -43,10 +43,10 @@ export namespace TextRange {
     if (length1 === 0 && length2 === 0) {
       return start1 === start2;
     }
-    if (length1 == 0) {
+    if (length1 === 0) {
       return contains(start2, length2, start1);
     }
-    if (length2 == 0) {
+    if (length2 === 0) {
       return contains(start1, length1, start2);
     }
 

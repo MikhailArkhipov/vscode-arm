@@ -54,7 +54,7 @@ export namespace TestUtil {
     const lines = baselineContent.split("\n");
 
     for(let i = 0; i < lines.length; i++) {
-      var diff = compareLines(lines[i].trim(), actualResult[i]);
+      const diff = compareLines(lines[i].trim(), actualResult[i]);
       expect(diff).toBe(-1);
     }
   }
@@ -63,8 +63,8 @@ export namespace TestUtil {
     const minLength = Math.min(expectedLine.length, actualLine.length);
     let i = 0;
     for (i = 0; i < minLength; i++) {
-        let act = actualLine.charAt(i);
-        let exp = expectedLine.charAt(i);
+        const act = actualLine.charAt(i);
+        const exp = expectedLine.charAt(i);
         if (act !== exp) {
             return i;
         }

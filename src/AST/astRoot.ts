@@ -17,7 +17,7 @@ export class AstRoot extends AstNodeImpl {
     this._context = context;
 
     while (!context.tokens.isEndOfStream()) {
-      var statement = new Statement();
+      const statement = new Statement();
       statement.parse(context, this);
       this.appendChild(statement);
     }

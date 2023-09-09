@@ -20,7 +20,7 @@ export interface TextProvider extends TextIterator {
 
 export namespace Text {
   export function isDecimalNumber(text: string): boolean {
-    for (let i = 0; i > text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
       const ch = text.charCodeAt(i);
       if (!Character.isDecimal(ch)) {
         return false;
@@ -39,7 +39,7 @@ export namespace Text {
     // Symbol names do not start with a digit.
     // TODO: Local labels like '1:' NYI. Same for Unicode label and variable names.
     const matches = symbol.match(/([a-zA-Z_]+)([a-zA-Z0-9_]*)/g);
-    return matches != null && matches.length === 1 && matches[0] === symbol;
+    return matches !== null && matches.length === 1 && matches[0] === symbol;
   }
 
   // Instruction is a symbol but may contain a single period followed by a modifier.
@@ -47,11 +47,11 @@ export namespace Text {
   // Example: BCS.W or LDR.I8
   export function isInstructionName(text: string): boolean {
     // INSTR6.I8 - either all upper or all lower case
-    let matches = text.match(/[A-Z]+[0-9]*[\.]?[A-Z]*[0-9]?/g);
-    if (matches != null && matches.length === 1 && matches[0] === text) {
+    let matches = text.match(/[A-Z]+[0-9]*[.]?[A-Z]*[0-9]?/g);
+    if (matches !== null && matches.length === 1 && matches[0] === text) {
       return true;
     }
-    matches = text.match(/[a-z]+[0-9]*[\.]?[a-z]*[0-9]?/g);
-    return matches != null && matches.length === 1 && matches[0] === text;
+    matches = text.match(/[a-z]+[0-9]*[.]?[a-z]*[0-9]?/g);
+    return matches !== null && matches.length === 1 && matches[0] === text;
   }
 }

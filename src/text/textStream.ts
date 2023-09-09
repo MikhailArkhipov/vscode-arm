@@ -45,7 +45,7 @@ export class TextStream implements TextProvider {
 
   public compareTo(position: number, length: number, text: string, ignoreCase: boolean): boolean {
     if (position < 0 || position >= this._text.length) {
-      return text.length == 0;
+      return text.length === 0;
     }
 
     const start = Math.max(position, 0);

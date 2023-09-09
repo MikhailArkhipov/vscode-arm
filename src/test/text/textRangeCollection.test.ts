@@ -5,7 +5,7 @@ import { TextRange } from "../../text/textRange";
 import { TextRangeCollection } from "../../text/textRangeCollection";
 
 function makeCollection(): TextRangeCollection<TextRange> {
-  var ranges: TextRange[] = [];
+  const ranges: TextRange[] = [];
   ranges.push(TextRange.fromBounds(1, 2));
   ranges.push(TextRange.fromBounds(3, 5));
   ranges.push(TextRange.fromBounds(5, 7));
@@ -13,7 +13,7 @@ function makeCollection(): TextRangeCollection<TextRange> {
 }
 
 test("TextRangeCollection construction 1", () => {
-  var target = new TextRangeCollection<TextRange>();
+  const target = new TextRangeCollection<TextRange>();
   expect(target.count).toBe(0);
   expect(target.start).toBe(0);
   expect(target.end).toBe(0);
@@ -21,7 +21,7 @@ test("TextRangeCollection construction 1", () => {
 });
 
 test("TextRangeCollection construction 2", () => {
-  var target = makeCollection();
+  const target = makeCollection();
 
   expect(target.count).toBe(3);
   expect(target.start).toBe(1);
@@ -34,7 +34,7 @@ test("TextRangeCollection construction 2", () => {
 });
 
 test("TextRangeCollection contans", () => {
-  var target = makeCollection();
+  const target = makeCollection();
 
   expect(target.contains(1)).toBe(true);
   expect(target.contains(2)).toBe(true);
@@ -50,7 +50,7 @@ test("TextRangeCollection contans", () => {
 });
 
 test("TextRangeCollection getItemAtPosition", () => {
-  var target = makeCollection();
+  const target = makeCollection();
 
   expect(target.getItemAtPosition(0)).toBe(-1);
   expect(target.getItemAtPosition(-2)).toBe(-1);
@@ -67,7 +67,7 @@ test("TextRangeCollection getItemAtPosition", () => {
 });
 
 test("TextRangeCollection getItemContaining", () => {
-  var target = makeCollection();
+  const target = makeCollection();
 
   expect(target.getItemContaining(0)).toBe(-1);
   expect(target.getItemContaining(-2)).toBe(-1);

@@ -3,8 +3,7 @@
 
 import { ParseContext } from "../parser/parseContext";
 import { ErrorLocation, ParseError, ParseErrorType } from "../parser/parseError";
-import { Char } from "../text/charCodes";
-import { Token, TokenType } from "../tokens/tokens";
+import { TokenType } from "../tokens/tokens";
 import { AstNode, AstNodeImpl } from "./astNode";
 import { Operand } from "./operand";
 import { TokenNode } from "./tokenNode";
@@ -44,7 +43,7 @@ export class Statement extends AstNodeImpl {
     // GCC: https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
     // Label is a symbol followed by colon.
     const ct = context.tokens.currentToken;
-    if (ct.tokenType != TokenType.Label) {
+    if (ct.tokenType !== TokenType.Label) {
       return false;
     }
 
@@ -56,7 +55,7 @@ export class Statement extends AstNodeImpl {
   }
 
   private parseName(context: ParseContext): boolean {
-    var ct = context.tokens.currentToken;
+    const ct = context.tokens.currentToken;
 
     if (!context.tokens.isEndOfLine()) {
       switch (ct.tokenType) {

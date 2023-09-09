@@ -8,7 +8,7 @@ import {
   Position,
   Range,
 } from "vscode";
-import { FormatOptions, Formatter } from "../format/formatter";
+import { FormatOptions, Formatter } from "./formatter";
 import { SyntaxConfig, AssemblerType } from "../syntaxConfig";
 import { TextStream } from "../text/textStream";
 

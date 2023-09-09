@@ -22,7 +22,7 @@ export class EditorDocument {
 
   public get ast(): AstRoot {
     if (!this._ast || this._ast.context.version !== this._td.version) {
-      var p = new Parser();
+      const p = new Parser();
       this._ast = p.parse(
         new TextStream(this._td.getText()),
         EditorDocument.syntaxConfig,
