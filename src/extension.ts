@@ -8,7 +8,6 @@ import {
   TextDocument,
   FormattingOptions,
   TextEdit,
-  Disposable,
   CompletionItem,
   CancellationToken,
   ProviderResult,

@@ -17,11 +17,9 @@ import {
 } from "vscode";
 import { getDirectiveDocumentation } from "./documentation";
 import { RDT } from "./rdt";
-import { Token, TokenType } from "../tokens/tokens";
+import { TokenType } from "../tokens/tokens";
 import { Settings, getSetting } from "./settings";
 import { EditorDocument } from "./document";
-import { Char, Character } from "../text/charCodes";
-import { off } from "process";
 
 export function provideCompletions(
   td: TextDocument,
@@ -39,7 +37,7 @@ export function provideCompletions(
     return [];
   }
 
-  let comps = handleDirectivesCompletion(ed, tokenIndex, context);
+  let comps = handleDirectivesCompletion(ed, offset, tokenIndex, context);
   if (comps.length === 0) {
     comps = handleInstructionsCompletion(ed, offset, tokenIndex, context);
   }
@@ -74,21 +72,30 @@ function isPositionInComment(ed: EditorDocument, tokenIndex: number): boolean {
 
 function handleDirectivesCompletion(
   ed: EditorDocument,
+  offset: number,
   tokenIndex: number,
   context: CompletionContext
 ): CompletionItem[] {
   let comps: CompletionItem[] = [];
-  let directiveCompletion = false;
 
-  if (
-    context.triggerKind === CompletionTriggerKind.Invoked &&
-    tokenIndex >= 0
-  ) {
-    // Explicit invoke like Ctrl+Space
-    directiveCompletion =
-      ed.tokens.getItemAt(tokenIndex).tokenType === TokenType.Directive;
-  } else {
-    directiveCompletion = context.triggerCharacter === ".";
+  // Explicit trigger always invokes
+  let directiveCompletion = context.triggerCharacter === ".";
+  if (!directiveCompletion) {
+    if (tokenIndex >= 0) {
+      // Explicit invoke like Ctrl+Space? Are we on an existing directive?
+      directiveCompletion =
+        ed.tokens.getItemAt(tokenIndex).tokenType === TokenType.Directive;
+    }
+  }
+
+  if (!directiveCompletion) {
+    // Are we past directive, full or partial like '.alig|'?
+    const prevTokenIndex = ed.tokens.getFirstItemBeforePosition(offset);
+    if (prevTokenIndex >= 0) {
+      const prevToken = ed.tokens.getItemAt(prevTokenIndex);
+      directiveCompletion =
+        prevToken.tokenType === TokenType.Directive && prevToken.end === offset;
+    }
   }
 
   if (directiveCompletion) {
@@ -133,7 +140,13 @@ function handleInstructionsCompletion(
 
   if (instructionCompletion) {
     const dirs = Object.keys(asmInstuctions.instructions);
-    comps = dirs.map((e) => new CompletionItem(e, CompletionItemKind.Method));
+    comps = dirs.map((e) => {
+      const ci = new CompletionItem(e, CompletionItemKind.Method);
+      const props = asmInstuctions.instructions[e];
+      const arch = props.arch.length > 0 ? props.arch : "All";
+      ci.documentation = `${props.desc} (${arch})`;
+      return ci;
+    });
   }
   return comps;
 }
