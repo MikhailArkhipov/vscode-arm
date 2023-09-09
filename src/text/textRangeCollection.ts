@@ -5,9 +5,9 @@ import { TextRange } from "./textRange";
 
 /**
  * A collection of text ranges or objects that implement TextRange.
- * Ranges must not overlap and are sorted by range start positions. 
- * Can be searched for a range that contains given position or range 
- * that starts at a given position. The search is a binary search. 
+ * Ranges must not overlap and are sorted by range start positions.
+ * Can be searched for a range that contains given position or range
+ * that starts at a given position. The search is a binary search.
  */
 export class TextRangeCollection<T extends TextRange> {
   private _items: T[];
@@ -16,28 +16,28 @@ export class TextRangeCollection<T extends TextRange> {
     this._items = items ?? [];
   }
 
-  get start(): number {
+  public get start(): number {
     return this._items.length > 0 ? this._items[0].start : 0;
   }
 
-  get end(): number {
+  public get end(): number {
     const lastItem = this._items[this._items.length - 1];
     return this._items.length > 0 ? lastItem.start + lastItem.length : 0;
   }
 
-  get length(): number {
+  public get length(): number {
     return this.end - this.start;
   }
 
-  get count(): number {
+  public get count(): number {
     return this._items.length;
   }
 
-  contains(position: number) {
+  public contains(position: number) {
     return position >= this.start && position < this.end;
   }
 
-  getItemAt(index: number): T {
+  public getItemAt(index: number): T {
     if (index < 0 || index >= this._items.length) {
       throw new Error("index is out of range");
     }
@@ -49,7 +49,7 @@ export class TextRangeCollection<T extends TextRange> {
    * @param position - Position in a text buffer
    * @returns  Returns index of item that starts at the given position if exists, -1 otherwise
    */
-  getItemAtPosition(position: number): number {
+  public getItemAtPosition(position: number): number {
     if (this.count === 0) {
       return -1;
     }
@@ -68,7 +68,7 @@ export class TextRangeCollection<T extends TextRange> {
       const item = this._items[mid];
 
       if (position === item.start) {
-          return mid;
+        return mid;
       }
 
       if (position < item.start) {
@@ -86,7 +86,7 @@ export class TextRangeCollection<T extends TextRange> {
    * @param position - Position in a text buffer
    * @returns Item index or -1 if not found
    */
-  getItemContaining(position: number): number {
+  public getItemContaining(position: number): number {
     if (this.count === 0) {
       return -1;
     }
@@ -108,7 +108,11 @@ export class TextRangeCollection<T extends TextRange> {
         return mid;
       }
 
-      if (mid < this.count - 1 && item.end <= position && position < this._items[mid + 1].start) {
+      if (
+        mid < this.count - 1 &&
+        item.end <= position &&
+        position < this._items[mid + 1].start
+      ) {
         return -1;
       }
 
@@ -119,6 +123,44 @@ export class TextRangeCollection<T extends TextRange> {
       }
     }
 
+    return -1;
+  }
+
+  public getFirstItemBeforePosition(position: number): number {
+    if (this.count == 0 || position < this.getItemAt(0).end) {
+      return -1;
+    }
+
+    const lastIndex = this.count - 1;
+    let min = 0;
+    let max = this.count - 1;
+
+    if (position >= this._items[lastIndex].end) {
+      return max;
+    }
+
+    while (min <= max) {
+      const mid = min + (max - min) / 2;
+      const item = this._items[mid];
+
+      if (TextRange.contains(item.start, item.length, position)) {
+        return mid - 1;
+      }
+
+      if (
+        mid < lastIndex &&
+        this._items[mid + 1].start >= position &&
+        item.end <= position
+      ) {
+        return mid;
+      }
+
+      if (position < item.start) {
+        max = mid - 1;
+      } else {
+        min = mid + 1;
+      }
+    }
     return -1;
   }
 }

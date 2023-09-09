@@ -52,14 +52,13 @@
     ],
     "configuration": [
       {
-        "title": "arm",
         "properties": {
           "arm.formatting.spaceAfterComma": {
             "type": "boolean",
             "default": true,
             "description": "Insert space after comma during formatting."
           },
-          "arm.completions.showAdvancedDirectives": {
+          "arm.completion.showAdvancedDirectives": {
             "type": "boolean",
             "default": false,
             "description": "Show advanced assembler directives in completion list."

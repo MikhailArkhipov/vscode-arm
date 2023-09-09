@@ -10,18 +10,10 @@ import { TextStream } from "../text/textStream";
 
 const diagnostics = vscode.languages.createDiagnosticCollection('vscode-arm');
 
-const config = SyntaxConfig.create(AssemblerType.GNU);
-let ast: AstRoot | undefined;
+
 
 export function updateDiagnostics(e: vscode.TextEditor) {
 
 }
 
-function getAst(document: TextDocument): AstRoot {
-  if (ast && ast.context.version === document.version) {
-    return ast;
-  }
-  var p = new Parser();
-  ast = p.parse(new TextStream(document.getText()), config, document.version);
-  return ast;
-}
+
