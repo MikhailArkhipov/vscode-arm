@@ -41,6 +41,8 @@ export function getInstructionDocumentation(
   const props = asmInstuctions.instructions[instructionName];
   if (props) {
     const arch = props.arch.length > 0 ? props.arch : "All";
-    return new MarkdownString(`${props.desc} (${arch})`);
+    const baseUrl = "https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions";
+    const docUrl = `${baseUrl}/${props.docName ? props.docName : instructionName}`;
+    return new MarkdownString(`${props.desc}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
   }
 }
