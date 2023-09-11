@@ -31,8 +31,24 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
-    "commands": [],
-    "keybindings": [],
+    "commands": [
+      {
+        "command": "arm.openInstructionDocumentation",
+        "title": "Open ARM instruction documentation in browser",
+        "category": "ARM",
+        "icon": {
+          "light": "images/ArmIcon.png",
+          "dark": "images/ArmIcon.png"
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "arm.openInstructionDocumentation",
+        "key": "ctrl+o ctrl+d",
+        "when": "editorTextFocus"
+      }
+    ],
     "languages": [
       {
         "id": "arm",

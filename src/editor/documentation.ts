@@ -41,8 +41,18 @@ export function getInstructionDocumentation(
   const props = asmInstuctions.instructions[instructionName];
   if (props) {
     const arch = props.arch.length > 0 ? props.arch : "All";
+    const docUrl = getInstructionDocumentationUrl(instructionName);
+    return new MarkdownString(`${props.desc}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
+  }
+}
+
+export function getInstructionDocumentationUrl(
+  instructionName: string
+): string | undefined {
+  const props = asmInstuctions.instructions[instructionName];
+  if (props) {
     const baseUrl = "https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions";
     const docUrl = `${baseUrl}/${props.docName ? props.docName : instructionName}`;
-    return new MarkdownString(`${props.desc}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
+    return docUrl;
   }
 }
