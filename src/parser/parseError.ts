@@ -7,19 +7,29 @@ import { Token } from "../tokens/tokens";
 export enum ParseErrorType {
   None,
   UnexpectedToken,
-  LabelName,
+
+  Label_InvalidName,
+  Label_Unknown,
+
   InstructionOrDirectiveExpected,
-  DirectiveName,
-  InstructionName,
-  UnknownDirective,
-  UnknownInstruction,
+
+  Instruction_Unknown,
+  Instruction_InvalidName,
+  Instruction_DoesNotPermitSuffix,
+  Instruction_DoesNotPermitModifier,
+  Instruction_InvalidModifier,
+  Instruction_UnknownModifier,
+  Instruction_InvalidType,
+  
+  Directive_InvalidName,
+  Directive_Unknown,
+
   OperandExpected,
-  InvalidModifier,
-  DataExpected,
-  NumberExpected,
-  StringExpected,
-  ExpressionExpected,
-  OperatorExpected,
+  //DataExpected,
+  //NumberExpected,
+  //StringExpected,
+  //ExpressionExpected,
+  //OperatorExpected,
   UnexpectedEndOfFile,
 }
 

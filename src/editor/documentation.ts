@@ -38,7 +38,7 @@ export async function getDirectiveDocumentation(
 export function getInstructionDocumentation(
   instructionName: string
 ): MarkdownString | undefined {
-  const props = asmInstuctions.instructions[instructionName];
+  const props = asmInstuctions.instructions[instructionName.toLowerCase()];
   if (props) {
     const arch = props.arch.length > 0 ? props.arch : "All";
     const docUrl = getInstructionDocumentationUrl(instructionName);
