@@ -1,6 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import * as asmInstuctions from "../../arm-instructions.json";
+
 import { Char } from '../../text/charCodes';
 import { TextRange, TextRangeImpl } from '../../text/textRange';
 import { ErrorLocation, ParseError, ParseErrorType } from '../parseError';
@@ -40,11 +42,17 @@ export function parseInstruction(text: string, range: TextRange): Instruction {
   }
 
   // Over to instruction-specific parsing
-  parse(text, i);
+  parseName(text, i);
+
+  // Verify modifier
+  // Verify type/effect
+  // Verify operand syntax
+
   return i;
 }
 
-function parse(text: string, i: InstructionImpl): void {
+// Parse full name verifying instruction-specific syntax where possible.
+function parseName(text: string, i: InstructionImpl): void {
   if (text.length > 0) {
     const parseFunc = parseMap[text.charCodeAt(0)];
     if (parseFunc) {
@@ -53,13 +61,21 @@ function parse(text: string, i: InstructionImpl): void {
   }
 }
 
+function getAllowedSyntax(name: string, i: InstructionImpl): boolean {
+
+}
+
+
+
 function parseModifier(text: string, i: InstructionImpl): void {
   const index = text.lastIndexOf('.');
   if (index >= 0) {
     i.modifier = text.substring(index);
+
+
     if (i.modifier !== '.W' && i.modifier !== '.N' && i.modifier !== '.T') {
       const range = new TextRangeImpl(i.range.end - i.modifier.length, i.modifier.length);
-      i.errors.push(new ParseError(ParseErrorType.Instruction_UnknownModifier, ErrorLocation.Token, range));
+      i.errors.push(new ParseError(ParseErrorType.UnknownModifier, ErrorLocation.Token, range));
     }
   }
 }

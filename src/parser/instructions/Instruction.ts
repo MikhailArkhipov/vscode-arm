@@ -12,6 +12,11 @@ export interface Instruction {
   readonly condition: string; // NE/Z/...
   readonly modifier: string; // .W or .N
   readonly errors: ParseError[];
+
+  readonly allowsSuffix: boolean;
+  readonly allowsModifier: boolean;
+  readonly allowedTypes: string[];
+  readonly operands: string;
 }
 
 export class InstructionImpl implements Instruction {
@@ -24,6 +29,11 @@ export class InstructionImpl implements Instruction {
   public type: string = ''; // 'IA' - type, mode, effect: instruction specific
   public condition: string = ''; // NE/Z/...
   public modifier: string = ''; // .W or .N
+
+  public allowsSuffix: boolean; // Allows 'S' suffix like ADD/ADDS
+  public allowsModifier: boolean; // Allows modifier like .W
+  public allowedTypes: string[] = []; // Allowed types or effects, like CPS/CPSIE/CPSID
+  public operands: string; // Operand syntax, like "*" means any, "RRO" = 'Rd, Rn, Op'.
 
   constructor(fullName: string, range: TextRange) {
     this.fullName = fullName;

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { Char } from '../../text/charCodes';
-import { ErrorLocation, ParseError, ParseErrorType } from '../parseError';
+import { InstructionError, ParseErrorType } from '../parseError';
 import { InstructionImpl } from './Instruction';
 
 // ADC, ADD, ADR, ADRL, AND, ASR
@@ -16,27 +16,27 @@ export function parseName_A(text: string, i: InstructionImpl): void {
     case 'AND':
     case 'ASR':
       if (i.modifier.length > 0) {
-        i.errors.push(new ParseError(ParseErrorType.Instruction_DoesNotPermitModifier, ErrorLocation.Token, i.range));
+        i.errors.push(new InstructionError(ParseErrorType.ModifierNotAllowed, i.range));
       }
       break;
 
     case 'ADR':
       if (i.suffix.length > 0) {
-        i.errors.push(new ParseError(ParseErrorType.Instruction_DoesNotPermitSuffix, ErrorLocation.Token, i.range));
+        i.errors.push(new InstructionError(ParseErrorType.SuffixNotAllowed, i.range));
       }
       break;
 
     case 'ADRL':
       if (i.suffix.length > 0) {
-        i.errors.push(new ParseError(ParseErrorType.Instruction_DoesNotPermitSuffix, ErrorLocation.Token, i.range));
+        i.errors.push(new InstructionError(ParseErrorType.SuffixNotAllowed, i.range));
       }
       if (i.modifier.length > 0) {
-        i.errors.push(new ParseError(ParseErrorType.Instruction_DoesNotPermitModifier, ErrorLocation.Token, i.range));
+        i.errors.push(new InstructionError(ParseErrorType.ModifierNotAllowed, i.range));
       }
       break;
 
     default:
-      i.errors.push(new ParseError(ParseErrorType.Instruction_Unknown, ErrorLocation.Token, i.range));
+      i.errors.push(new InstructionError(ParseErrorType.UnknownInstruction, i.range));
       break;
   }
 }

@@ -13,15 +13,17 @@ export enum ParseErrorType {
 
   InstructionOrDirectiveExpected,
 
-  Instruction_Unknown,
-  Instruction_InvalidName,
-  Instruction_DoesNotPermitSuffix,
-  Instruction_DoesNotPermitModifier,
-  Instruction_InvalidModifier,
-  Instruction_UnknownModifier,
-  Instruction_InvalidType,
+  UnknownInstruction,
+  InvaldInstructionName,
+  SuffixNotAllowed,
+  ModifierNotAllowed,
+  TypeNotAllowed,
+  InvalidModifier,
+  UnknownModifier,
+  InvalidType,
+  InvalidEffect,
   
-  Directive_InvalidName,
+  InvalidDirectiveName,
   Directive_Unknown,
 
   OperandExpected,
@@ -72,5 +74,11 @@ export class ParseError extends TextRangeImpl {
 export class MissingItemParseError extends ParseError {
   constructor(errorType: ParseErrorType, token: Token) {
     super(errorType, ErrorLocation.AfterToken, token);
+  }
+}
+
+export class InstructionError extends ParseError {
+  constructor(errorType: ParseErrorType, range: TextRange) {
+    super(errorType, ErrorLocation.Token, range);
   }
 }

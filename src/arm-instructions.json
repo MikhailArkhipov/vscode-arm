@@ -19,1313 +19,1315 @@
     "XS": "XScale versions of the ARM",
     "Z": "If Security Extensions are implemented"
   },
+  "suffix": "",
+  "modifiers": {
+    "T": ""
+  },
+  "types": {
+    "IA": ""
+  },
   "instructions": {
     "adc": {
       "desc": "Add with Carry",
-      "arch": "",
-      "args": "",
-      "docName": ""
+      "operands": "RRO"
     },
     "add": {
       "desc": "Add",
-      "arch": "",
-      "args": "",
-      "docName": ""
+      "operands": "RRO"
     },
     "adr": {
       "desc": "Load program or register-relative address (short range)",
-      "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "adr--pc-relative-"
     },
     "adrl": {
       "desc": "Load program or register-relative address (medium range)",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "adrl-pseudo-instruction"
     },
     "and": {
       "desc": "Logical AND",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "asr": {
       "desc": "Arithmetic Shift Right",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "b": {
       "desc": "Branch",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bfc": {
       "desc": "Bit Field Clear",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bfi": {
       "desc": "Bit Field Insert",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bic": {
       "desc": "Bit Clear",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bkpt": {
       "desc": "Breakpoint",
       "arch": "5",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bl": {
       "desc": "Branch with Link",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "blx": {
       "desc": "Branch with Link, change instruction set",
       "arch": "T",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bx": {
       "desc": "Branch, change instruction set",
       "arch": "T",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "bxj": {
       "desc": "Branch, change to Jazelle",
       "arch": "J, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "cbz": {
       "desc": "Compare and Branch if Zero",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "cbz-and-cbnz"
     },
     "cbnz": {
       "desc": "Compare and Branch if Non Zero",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "cbz-and-cbnz"
     },
     "cdp": {
       "desc": "Coprocessor Data Processing operation",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "cdp-and-cdp2"
     },
     "cdp2": {
       "desc": "Coprocessor Data Processing operation",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": "cdp-and-cdp2"
     },
     "clrex": {
       "desc": "Clear Exclusive",
       "arch": "K, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "clz": {
       "desc": "Count Leading Zeros",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "cmn": {
       "desc": "Compare Negative",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "cmp-and-cmn"
     },
     "cmp": {
       "desc": "Compare",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "cmp-and-cmn"
     },
     "cps": {
       "desc": "Change Processor State",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "cpy": {
       "desc": "Copy (pseudo instruction)",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": "cpy-pseudo-instruction"
     },
     "dbg": {
       "desc": "Debug",
       "arch": "7",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "dmb": {
       "desc": "Data Memory Barrier",
       "arch": "6M, 7",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "dsb": {
       "desc": "Data Synchronization Barrier",
       "arch": "6M, 7",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "eor": {
       "desc": "Exclusive OR",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "eret": {
       "desc": "Exception Return",
       "arch": "7VE",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "hvc": {
       "desc": "Hypervisor Call",
       "arch": "7VE",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "isb": {
       "desc": "Instruction Synchronization Barrier",
       "arch": "6M, 7",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "it": {
       "desc": "If-Then",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldc": {
       "desc": "Load Coprocessor",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldc-and-ldc2"
     },
     "ldc2": {
       "desc": "Load Coprocessor",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldc-and-ldc2"
     },
     "ldm": {
       "desc": "Load Multiple registers",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldr": {
       "desc": "Load Register with word",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "ldr--immediate-offset-"
     },
     "ldrb": {
       "desc": "Load Register with byte",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrbt": {
       "desc": "Load Register with byte, user mode",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrd": {
       "desc": "Load Register with two words",
       "arch": "5E, x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldr--immediate-offset-"
     },
     "ldrex": {
       "desc": "Load Register Exclusive",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldrex"
     },
     "ldrexb": {
       "desc": "Load Register Exclusive Byte",
       "arch": "K, x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldrex"
     },
     "ldrexh": {
       "desc": "Load Register Exclusive Halfword",
       "arch": "K, x6M",
-      "args": "",
+      "operands": "",
       "docName": "ldrex"
     },
     "ldrexd": {
       "desc": "Load Register Exclusive Doubleword",
       "arch": "K, x7M",
-      "args": "",
+      "operands": "",
       "docName": "ldrex"
     },
     "ldrh": {
       "desc": "Load Register with halfword",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrht": {
       "desc": "Load Register with halfword, user mode",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrsb": {
       "desc": "Load Register with signed byte",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrsbt": {
       "desc": "Load Register with signed byte, user mode",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrsh": {
       "desc": "Load Register with halfword",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrsht": {
       "desc": "Load Register with halfword, user mode",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ldrt": {
       "desc": "Load Register with word, user mode",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "lsl": {
       "desc": "Logical Shift Left",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "lsr": {
       "desc": "Logical Shift Right",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mar": {
       "desc": "Move from Registers to 40-bit Accumulator",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mcr": {
       "desc": "Move from Register to Coprocessor",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "mcr-and-mcr2"
     },
     "mcr2": {
       "desc": "Move from Register to Coprocessor",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mcr-and-mcr2"
     },
     "mcrr": {
       "desc": "Move from Register to Coprocessor",
       "arch": "5E, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mcrr-and-mcrr2"
     },
     "mcrr2": {
       "desc": "Move from Register to Coprocessor",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mcrr-and-mcrr2"
     },
     "mia": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "miaph": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "miabb": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "miabt": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "miatb": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "miatt": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": "mia--miaph--and-miaxy"
     },
     "mla": {
       "desc": "Multiply Accumulate",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mls": {
       "desc": "Multiply and Subtract",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mov": {
       "desc": "Move",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "movt": {
       "desc": "Move Top",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mov32": {
       "desc": "Move 32-bit immediate to register (pseudo instruction)",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "mov32-pseudo-instruction"
     },
     "mra": {
       "desc": "Move from 40-bit Accumulator to Registers",
       "arch": "XS",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mrc": {
       "desc": "Move from Coprocessor to Register",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "mrc-and-mrc2"
     },
     "mrc2": {
       "desc": "Move from Coprocessor to Register",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mrc-and-mrc2"
     },
     "mrrc": {
       "desc": "Move from Coprocessor to Register",
       "arch": "5E, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mrrc-and-mrrc2"
     },
     "mrrc2": {
       "desc": "Move from Coprocessor to Register",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": "mrrc-and-mrrc2"
     },
     "mrs": {
       "desc": "Move from PSR to register",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "mrs--psr-to-general-purpose-register-"
     },
     "msr": {
       "desc": "Move from register to PSR",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "msr--arm-register-to-system-coprocessor-register-"
     },
     "mul": {
       "desc": "Multiply",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "mvn": {
       "desc": "Move NOT",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "neg": {
       "desc": "Negate (pseudo instruction)",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "neg-pseudo-instruction"
     },
     "nop": {
       "desc": "No Operation",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "orn": {
       "desc": "Logical OR NOT (Thumb only)",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "orn--thumb-only-"
     },
     "orr": {
       "desc": "Logical OR",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "pkhbt": {
       "desc": "Pack Halfwords",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "pkhbt-and-pkhtb"
     },
     "pkhtb": {
       "desc": "Pack Halfwords",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "pkhbt-and-pkhtb"
     },
     "pld": {
       "desc": "Preload Data",
       "arch": "5E, x6M",
-      "args": "",
+      "operands": "",
       "docName": "pld--pldw--and-pli"
     },
     "pldw": {
       "desc": "Preload Data with intent to Write",
       "arch": "7MP",
-      "args": "",
+      "operands": "",
       "docName": "pld--pldw--and-pli"
     },
     "pli": {
       "desc": "Preload Instruction",
       "arch": "7",
-      "args": "",
+      "operands": "",
       "docName": "pld--pldw--and-pli"
     },
     "pop": {
       "desc": "POP registers from stack",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "push": {
       "desc": "PUSH registers to stack",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qadd": {
       "desc": "Signed saturating Add",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qadd8": {
       "desc": "Signed saturating parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qadd16": {
       "desc": "Signed saturating parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qasx": {
       "desc": "Signed saturating parallel add and subtract halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qdadd": {
       "desc": "Signed saturating Double and Add",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qdsub": {
       "desc": "Signed saturating Double and Subtract",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qsax": {
       "desc": "Signed saturating parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qsub": {
       "desc": "Signed saturating Subtract",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qsub8": {
       "desc": "Signed saturating parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "qsub16": {
       "desc": "Signed saturating parallel halfword-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rbit": {
       "desc": "Reverse Bits",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rev": {
       "desc": "Reverse byte order in a word",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rev16": {
       "desc": "Reverse byte order in two halfwords",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "revsh": {
       "desc": "Reverse byte order in a halfword and sign extend",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rfe": {
       "desc": "Return From Exception",
       "arch": "T2, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ror": {
       "desc": "Rotate Right Register",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rrx": {
       "desc": "Rotate Right with Extend",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rsb": {
       "desc": "Reverse Subtract",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "rsc": {
       "desc": "Rotate Right Register",
       "arch": "x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sadd8": {
       "desc": "Signed parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sadd16": {
       "desc": "Signed parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sasx": {
       "desc": "Signed parallel add and subtract halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sbc": {
       "desc": "Subtract with Carry",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sbfx": {
       "desc": "Signed Bit Field eXtract",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sdiv": {
       "desc": "Signed divide",
       "arch": "7A, 7M, 7R",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sel": {
       "desc": "Select bytes according to APSR GE flags",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "setend": {
       "desc": "Set Endianness for memory accesses",
       "arch": "6, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sev": {
       "desc": "Set Event",
       "arch": "K, 6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shadd8": {
       "desc": "Signed halving parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shadd16": {
       "desc": "Signed halving parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shasx": {
       "desc": "Signed halving parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shsax": {
       "desc": "Signed halving parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shsub8": {
       "desc": "Signed halving parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "shsub16": {
       "desc": "Signed halving parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smc": {
       "desc": "Secure Monitor Call",
       "arch": "Z",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smlabb": {
       "desc": "Signed Multiply with Accumulate (bottom halves)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlaxy"
     },
     "smlabt": {
       "desc": "Signed Multiply with Accumulate (bottom, top halves)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlaxy"
     },
     "smlatb": {
       "desc": "Signed Multiply with Accumulate (top, bottom halves)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlaxy"
     },
     "smlatt": {
       "desc": "Signed Multiply with Accumulate (top halves)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlaxy"
     },
     "smlad": {
       "desc": "Dual Signed Multiply Accumulate",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smlald": {
       "desc": "Dual Signed Multiply Accumulate Long",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smlawb": {
       "desc": "Signed Multiply with Accumulate (bottom half)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlawy"
     },
     "smlawt": {
       "desc": "Signed Multiply with Accumulate (top half)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smlawy"
     },
     "smlsd": {
       "desc": "Dual Signed Multiply Subtract Accumulate",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smlsld": {
       "desc": "Dual Signed Multiply Subtract Accumulate Long",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smmla": {
       "desc": "Signed top word Multiply with Accumulate (32 <= TopWord(32 x 32 + 32))",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smmls": {
       "desc": "Signed top word Multiply with Subtract (32 <= TopWord(32 - 32 x 32))",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smmul": {
       "desc": "Signed top word Multiply (32 <= TopWord(32 x 32))",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smuad": {
       "desc": "Dual 16-bit Signed Multiply with Addition of products, and optional exchange of operand halves",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smusd": {
       "desc": "Dual 16-bit Signed Multiply with Subtraction of products, and optional exchange of operand halves",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smulbb": {
       "desc": "Signed Multiply (32 <= 32 x 16, bottom, bottom)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulxy"
     },
     "smulbt": {
       "desc": "Signed Multiply (32 <= 32 x 16, bottom, top)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulxy"
     },
     "smultb": {
       "desc": "Signed Multiply (32 <= 32 x 16, top, bottom)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulxy"
     },
     "smultt": {
       "desc": "Signed Multiply (32 <= 32 x 16, top, top)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulxy"
     },
     "smull": {
       "desc": "Signed Multiply (64 <= 32 x 32)",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "smulwb": {
       "desc": "Signed Multiply (32 <= 32 x 16, bottom)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulwy"
     },
     "smulwt": {
       "desc": "Signed Multiply (32 <= 32 x 16, top)",
       "arch": "5E, 7EM",
-      "args": "",
+      "operands": "",
       "docName": "smulwy"
     },
     "srs": {
       "desc": "Store Return State",
       "arch": "T2, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ssat": {
       "desc": "Signed Saturate",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ssat16": {
       "desc": "Signed Saturate, parallel halfwords",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ssax": {
       "desc": "Signed parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ssub8": {
       "desc": "Signed parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ssub16": {
       "desc": "Signed parallel halfword-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "stc": {
       "desc": "Store Coprocessor",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "stc-and-stc2"
     },
     "stc2": {
       "desc": "Store Coprocessor",
       "arch": "5, x6M",
-      "args": "",
+      "operands": "",
       "docName": "stc-and-stc2"
     },
     "stm": {
       "desc": "Store Multiple registers",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "str": {
       "desc": "Store Register with word",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strb": {
       "desc": "Store Register with byte",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strbt": {
       "desc": "Store Register with byte, user mode",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strd": {
       "desc": "Store Registers with two words",
       "arch": "5E, x6M",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strex": {
       "desc": "Store Register Exclusive",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "strexb": {
       "desc": "Store Register Exclusive Byte",
       "arch": "K, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "strexh": {
       "desc": "Store Register Exclusive Halfword",
       "arch": "K, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "strexd": {
       "desc": "Store Register Exclusive Doubleword",
       "arch": "K, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "strh": {
       "desc": "Store Register with halfword",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strht": {
       "desc": "Store Register with halfword, user mode",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "strt": {
       "desc": "Store Register with halfword, user mode",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": "str--immediate-offset-"
     },
     "sub": {
       "desc": "Subtract",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "subs": {
       "desc": "Exception return, no stack",
       "arch": "T2, x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "svc": {
       "desc": "SuperVisor Call",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "swp": {
       "desc": "Swap registers and memory",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "swpb": {
       "desc": "Swap registers and memory",
       "arch": "x7M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxtab": {
       "desc": "Sign extend Byte, with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxtab16": {
       "desc": "Sign extend two Bytes, with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxtah": {
       "desc": "Sign extend Halfword, with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxtb": {
       "desc": "Sign extend Byte",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxtb16": {
       "desc": "Sign extend two Bytes",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sxth": {
       "desc": "Sign extend Halfword",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "sys": {
       "desc": "Execute system coprocessor instruction",
       "arch": "7A, 7R",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "tbb": {
       "desc": "Table Branch Byte",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "tbb-and-tbh"
     },
     "tbh": {
       "desc": "Table Branch Halfword",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": "tbb-and-tbh"
     },
     "teq": {
       "desc": "Test Equivalence",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "tst": {
       "desc": "Test",
       "arch": "",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uadd8": {
       "desc": "Unsigned parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uadd16": {
       "desc": "Unsigned parallel hslfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uasx": {
       "desc": "Unsigned parallel add and subtract halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "ubfx": {
       "desc": "Unsigned Bit Field eXtract",
       "arch": "T2",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "udiv": {
       "desc": "Unsigned divide",
       "arch": "7A, 7M, 7R",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhadd8": {
       "desc": "Unsigned halving parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhadd16": {
       "desc": "Unsigned halving parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhasx": {
       "desc": "Unsigned halving parallel add and subtract halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhsax": {
       "desc": "Unsigned halving parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhsub8": {
       "desc": "Unsigned halving parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uhsub16": {
       "desc": "Unsigned halving parallel halfword-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "umaal": {
       "desc": "Unsigned Multiply Accumulate Accumulate Long (64 <= 32 + 32 + 32 x 32)",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "umlal": {
       "desc": "Unsigned Multiply Accumulate (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "umull": {
       "desc": "Unsigned Multiply (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
       "arch": "x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uquadd8": {
       "desc": "Unsigned saturating parallel byte-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uquadd16": {
       "desc": "Unsigned saturating parallel halfword-wise addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uqasx": {
       "desc": "Unsigned saturating parallel add and subtract halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uqsax": {
       "desc": "Unsigned saturating parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uqsub8": {
       "desc": "Unsigned saturating parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uqsub16": {
       "desc": "Unsigned saturating parallel halfword-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usad8": {
       "desc": "Unsigned Sum of Absolute Differences",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usada8": {
       "desc": "Accumulate Unsigned Sum of Absolute Differences",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usat": {
       "desc": "Unsigned Saturate",
       "arch": "6, x6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usat16": {
       "desc": "Unsigned Saturate, parallel halfwords",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usax": {
       "desc": "Unsigned parallel subtract and add halfwords with exchange",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usub8": {
       "desc": "Unsigned parallel byte-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "usub16": {
       "desc": "Unsigned parallel halfword-wise subtraction",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxtab": {
       "desc": "Zero extend Byte with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxtab16": {
       "desc": "Zero extend two bytes with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxtah": {
       "desc": "Zero extend Halfword with Addition",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxtb": {
       "desc": "Zero extend Byte",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxtb16": {
       "desc": "Zero extend two bytes",
       "arch": "6, 7EM",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "uxth": {
       "desc": "Zero extend Halfword",
       "arch": "6",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "wfe": {
       "desc": "Wait For Event",
       "arch": "T2, 6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "wfi": {
       "desc": "Wait For Interrupt",
       "arch": "T2, 6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     },
     "yield": {
       "desc": "yield",
       "arch": "T2, 6M",
-      "args": "",
+      "operands": "",
       "docName": ""
     }
   },
