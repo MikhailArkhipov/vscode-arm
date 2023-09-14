@@ -24,13 +24,14 @@ export class InstructionImpl implements Instruction {
   public readonly errors: ParseError[] = [];
 
   public name: string = ''; // 'LDM' - core name
-  // 'S' as in ADD/ADDS or 'IA' - type, mode, effect: instruction specific
-  public suffix: string = ''; 
+  public suffix: string = ''; // 'S' as in ADD/ADDS, may be L, X, R, ... instruction specific
+  public type: string = ''; // TT, TB - like suffix, but type is mandatory
   public condition: string = ''; // NE/Z/...
   public modifier: string = ''; // .W or .N
 
   public allowedModifiers: string[]; // Allowed modifiers like .W or .T
-  public allowedSuffixes: string[] = []; // Allowed types or effects, like CPS/CPSIE/CPSID
+  public allowedSuffixes: string[] = []; // Allowed suffixes, like CPS/CPSIE/CPSID
+  public allowedTypes: string[] = []; // Allowed mandatory types, like SMLALxy
   public allowedOperands: string; // Operand syntax, like "*" means any, "RRO" = 'Rd, Rn, Op'.
 
   constructor(fullName: string, range: TextRange) {

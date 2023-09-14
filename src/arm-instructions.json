@@ -228,309 +228,220 @@
       "suffix": "IA IB DA DB"
     },
     "LDR": {
-      "desc": "Load Register with word",
+      "desc": "Load Register with byte/signed byte/halfword/signed halfword",
       "operands": "R*",
       "suffix": "B SB H SH",
       "docName": "ldr--immediate-offset-"
     },
-    "ldrb": {
-      "desc": "Load Register with byte",
-      "arch": "",
-      "operands": "",
-      "docName": ""
-    },
-    "ldrbt": {
-      "desc": "Load Register with byte, user mode",
-      "arch": "x6M",
-      "operands": "",
-      "docName": ""
-    },
-    "ldrd": {
+    "LDRD": {
       "desc": "Load Register with two words",
       "arch": "5E, x6M",
-      "operands": "",
+      "operands": "R*",
       "docName": "ldr--immediate-offset-"
     },
-    "ldrex": {
+    "LDREX": {
       "desc": "Load Register Exclusive",
       "arch": "6, x6M",
-      "operands": "",
-      "docName": "ldrex"
+      "operands": "R*",
+      "suffix": "B H D"
     },
-    "ldrexb": {
-      "desc": "Load Register Exclusive Byte",
-      "arch": "K, x6M",
-      "operands": "",
-      "docName": "ldrex"
+    "LDRBT": {
+      "desc": "Load Register with byte, user mode",
+      "arch": "x6M",
+      "operands": "R*",
+      "docName": "ldr--unprivileged"
     },
-    "ldrexh": {
-      "desc": "Load Register Exclusive Halfword",
-      "arch": "K, x6M",
-      "operands": "",
-      "docName": "ldrex"
-    },
-    "ldrexd": {
-      "desc": "Load Register Exclusive Doubleword",
-      "arch": "K, x7M",
-      "operands": "",
-      "docName": "ldrex"
-    },
-    "ldrh": {
-      "desc": "Load Register with halfword",
-      "arch": "",
-      "operands": "",
-      "docName": ""
-    },
-    "ldrht": {
+    "LDRHT": {
       "desc": "Load Register with halfword, user mode",
       "arch": "T2",
-      "operands": "",
-      "docName": ""
+      "operands": "R*",
+      "docName": "ldr--unprivileged"
     },
-    "ldrsb": {
-      "desc": "Load Register with signed byte",
-      "arch": "",
-      "operands": "",
-      "docName": ""
-    },
-    "ldrsbt": {
+    "LDRSBT": {
       "desc": "Load Register with signed byte, user mode",
       "arch": "T2",
-      "operands": "",
-      "docName": ""
+      "operands": "R*",
+      "docName": "ldr--unprivileged"
     },
-    "ldrsh": {
-      "desc": "Load Register with halfword",
-      "arch": "",
-      "operands": "",
-      "docName": ""
-    },
-    "ldrsht": {
+    "LDRSHT": {
       "desc": "Load Register with halfword, user mode",
       "arch": "T2",
-      "operands": "",
-      "docName": ""
+      "operands": "R*",
+      "docName": "ldr--unprivileged"
     },
-    "ldrt": {
+    "LDRT": {
       "desc": "Load Register with word, user mode",
       "arch": "x6M",
-      "operands": "",
-      "docName": ""
+      "operands": "R*",
+      "docName": "ldr--unprivileged"
     },
-    "lsl": {
+    "LSL": {
       "desc": "Logical Shift Left",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RRR RRN",
+      "suffix": "S"
     },
-    "lsr": {
+    "LSR": {
       "desc": "Logical Shift Right",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RRR RRN",
+      "suffix": "S"
     },
-    "mar": {
+    "MAR": {
       "desc": "Move from Registers to 40-bit Accumulator",
       "arch": "XS",
-      "operands": "",
-      "docName": ""
+      "operands": "*"
     },
-    "mcr": {
+    "MCR": {
       "desc": "Move from Register to Coprocessor",
       "arch": "x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mcr-and-mcr2"
     },
-    "mcr2": {
+    "MCR2": {
       "desc": "Move from Register to Coprocessor",
       "arch": "5, x6M",
       "operands": "",
+      "type": "2 R",
       "docName": "mcr-and-mcr2"
     },
-    "mcrr": {
+    "MCRR": {
       "desc": "Move from Register to Coprocessor",
       "arch": "5E, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mcrr-and-mcrr2"
     },
-    "mcrr2": {
+    "MCRR2": {
       "desc": "Move from Register to Coprocessor",
       "arch": "6, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mcrr-and-mcrr2"
     },
-    "mia": {
+    "MIA": {
       "desc": "Multiply with Internal 40-bit Accumulate",
       "arch": "XS",
-      "operands": "",
+      "operands": "*",
+      "suffix": "PH BB BT TB TT",
       "docName": "mia--miaph--and-miaxy"
     },
-    "miaph": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "miabb": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "miabt": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "miatb": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "miatt": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "mla": {
+    "MLA": {
       "desc": "Multiply Accumulate",
       "arch": "x6M",
-      "operands": "",
-      "docName": ""
+      "operands": "RRRR",
+      "suffix": "S"
     },
-    "mls": {
+    "MLS": {
       "desc": "Multiply and Subtract",
       "arch": "T2",
-      "operands": "",
-      "docName": ""
+      "operands": "RRRR"
     },
-    "mov": {
+    "MOV": {
       "desc": "Move",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RO RN",
+      "suffix": "S"
     },
-    "movt": {
+    "MOVT": {
       "desc": "Move Top",
       "arch": "T2",
-      "operands": "",
-      "docName": ""
+      "operands": "RN"
     },
-    "mov32": {
+    "MOV32": {
       "desc": "Move 32-bit immediate to register (pseudo instruction)",
       "arch": "T2",
-      "operands": "",
+      "operands": "R*",
       "docName": "mov32-pseudo-instruction"
     },
-    "mra": {
+    "MRA": {
       "desc": "Move from 40-bit Accumulator to Registers",
       "arch": "XS",
-      "operands": "",
-      "docName": ""
+      "operands": "RR*"
     },
-    "mrc": {
+    "MRC": {
       "desc": "Move from Coprocessor to Register",
       "arch": "x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mrc-and-mrc2"
     },
-    "mrc2": {
+    "MRC2": {
       "desc": "Move from Coprocessor to Register",
       "arch": "5, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mrc-and-mrc2"
     },
-    "mrrc": {
+    "MRRC": {
       "desc": "Move from Coprocessor to Register",
       "arch": "5E, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mrrc-and-mrrc2"
     },
-    "mrrc2": {
+    "MRRC2": {
       "desc": "Move from Coprocessor to Register",
       "arch": "6, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "mrrc-and-mrrc2"
     },
-    "mrs": {
+    "MRS": {
       "desc": "Move from PSR to register",
-      "arch": "",
-      "operands": "",
+      "operands": "*",
       "docName": "mrs--psr-to-general-purpose-register-"
     },
-    "msr": {
+    "MSR": {
       "desc": "Move from register to PSR",
-      "arch": "",
-      "operands": "",
+      "operands": "*",
       "docName": "msr--arm-register-to-system-coprocessor-register-"
     },
-    "mul": {
+    "MUL": {
       "desc": "Multiply",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RR RRR",
+      "suffix": "S"
     },
-    "mvn": {
+    "MVN": {
       "desc": "Move NOT",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RO",
+      "suffix": "S"
     },
-    "neg": {
+    "NEG": {
       "desc": "Negate (pseudo instruction)",
-      "arch": "",
-      "operands": "",
+      "operands": "RR",
       "docName": "neg-pseudo-instruction"
     },
-    "nop": {
+    "NOP": {
       "desc": "No Operation",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": ""
     },
-    "orn": {
+    "ORN": {
       "desc": "Logical OR NOT (Thumb only)",
       "arch": "T2",
-      "operands": "",
+      "operands": "RR RRO",
+      "suffix": "S",
       "docName": "orn--thumb-only-"
     },
-    "orr": {
+    "ORR": {
       "desc": "Logical OR",
-      "arch": "",
-      "operands": "",
-      "docName": ""
+      "operands": "RR RRO",
+      "suffix": "S"
     },
-    "pkhbt": {
-      "desc": "Pack Halfwords",
+    "PKH": {
+      "desc": "Halfword Packing instructions that combine a halfword from one register with a halfword from another register. One of the operands can be shifted before extraction of the halfword",
       "arch": "6, 7EM",
-      "operands": "",
+      "operands": "RR* RRR*",
+      "type": "BT TB",
       "docName": "pkhbt-and-pkhtb"
     },
-    "pkhtb": {
-      "desc": "Pack Halfwords",
-      "arch": "6, 7EM",
-      "operands": "",
-      "docName": "pkhbt-and-pkhtb"
-    },
-    "pld": {
+    "PLD": {
       "desc": "Preload Data",
       "arch": "5E, x6M",
-      "operands": "",
+      "operands": "*",
       "docName": "pld--pldw--and-pli"
     },
-    "pldw": {
+    "PLDW": {
       "desc": "Preload Data with intent to Write",
       "arch": "7MP",
-      "operands": "",
+      "operands": "*",
       "docName": "pld--pldw--and-pli"
     },
-    "pli": {
+    "PLI": {
       "desc": "Preload Instruction",
       "arch": "7",
-      "operands": "",
+      "operands": "*",
       "docName": "pld--pldw--and-pli"
     },
     "POP": {
@@ -616,7 +527,7 @@
       "desc": "Return From Exception",
       "arch": "T2, x7M",
       "operands": "R",
-      "suffix": "IA IB DA DB"
+      "type": "IA IB DA DB"
     },
     "ROR": {
       "desc": "Rotate Right Register",
@@ -732,7 +643,7 @@
       "desc": "Signed Multiply with Accumulate (32 <= 16 x 16 + 32)",
       "arch": "5E, 7EM",
       "operands": "RRRR",
-      "suffix": "BB BT TB TT",
+      "type": "BB BT TB TT",
       "docName": "smlaxy"
     },
     "SMLALD": {
@@ -775,7 +686,7 @@
       "desc": "Signed Multiply-Accumulate Wide, with one 32-bit operand and one 16-bit operand, and a 32-bit accumulate value, providing the top 32 bits of the result (T = top half, B = bottom half)",
       "arch": "5E, 7EM",
       "operands": "RRRR",
-      "suffix": "B T",
+      "type": "B T",
       "docName": "smlawy"
     },
     "SMLSD": {
@@ -817,7 +728,7 @@
     "SMUL": {
       "desc": "Signed Multiply (32 <= 32 x 16, top, top)",
       "arch": "5E, 7EM",
-      "suffix": "BB BT TB TT",
+      "type": "BB BT TB TT",
       "operands": "RR RRR",
       "docName": "smulxy"
     },
@@ -831,7 +742,7 @@
       "desc": "Signed Multiply (32 <= 32 x 16, top)",
       "arch": "5E, 7EM",
       "operands": "RR RRR",
-      "suffix": "B T",
+      "type": "B T",
       "docName": "smulwy"
     },
     "SMUSD": {
