@@ -74,10 +74,20 @@
             "default": true,
             "description": "Insert space after comma during formatting."
           },
+          "arm.formatting.upperCaseInstructions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Emit instructions in uppercase during formatting and completion."
+          },
           "arm.completion.showAdvancedDirectives": {
             "type": "boolean",
             "default": false,
             "description": "Show advanced assembler directives in completion list."
+          },
+          "arm.diagnostics.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show code diagnostics."
           }
         }
       }
