@@ -79,21 +79,32 @@
             "default": true,
             "description": "Emit instructions in uppercase during formatting and completion."
           },
+          "arm.formatting.upperCaseDirectives": {
+            "type": "boolean",
+            "default": true,
+            "description": "Emit directives in uppercase during formatting and completion."
+          },
           "arm.completion.showAdvancedDirectives": {
             "type": "boolean",
             "default": false,
-            "description": "Show advanced assembler directives in completion list."
+            "description": "Show advanced assembler directives in the completion list."
           },
           "arm.completion.showNeonInstructions": {
             "type": "boolean",
             "default": false,
-            "description": "Show NEON instructions in completion list."
+            "description": "Show NEON instructions in the completion list."
           },
           "arm.completion.showVfpInstructions": {
             "type": "boolean",
             "default": false,
-            "description": "Show VFP in completion list."
+            "description": "Show VFP instructions in the completion list."
           },
+          "arm.completion.showMmxInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show Wireless MMX instructions in the completion list."
+          },
+
           "arm.diagnostics.show": {
             "type": "boolean",
             "default": true,

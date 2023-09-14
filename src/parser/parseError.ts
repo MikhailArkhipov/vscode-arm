@@ -27,9 +27,11 @@ export enum ParseErrorType {
   UnknownSuffix,
 
   // Width specifier is provided, but istruction does not support width modification.
-  WidthNotAllowed,
+  SpecifierNotAllowed,
   // Width specifier is provided but it is not in the list of allowed specifiers.
-  UnknownWidthSpecifier,
+  UnknownSpecifier,
+  // Instruction requires datatype but it is not provided. Ex VADDL.I16.
+  SpecifierMissing,
 
   // Type
   TypeNotAllowed,

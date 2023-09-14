@@ -67,12 +67,16 @@ function handleDirectivesCompletion(
   }
 
   if (directiveCompletion) {
+    const uc = getSetting<boolean>(Settings.formattingUpperCaseDirectives, true);
+
     const dirs = Object.keys(asmDirectives['directives-common']);
-    comps = dirs.map((e) => new CompletionItem(e, CompletionItemKind.Keyword));
+    comps = dirs.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword));
 
     if (getSetting<boolean>(Settings.completionShowAdvancedDirectives, false)) {
       const dirs = Object.keys(asmDirectives['directives-advanced']);
-      comps.push(...dirs.map((e) => new CompletionItem(e, CompletionItemKind.Keyword)));
+      comps.push(
+        ...dirs.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword))
+      );
     }
   }
   return comps;
@@ -106,25 +110,43 @@ function handleInstructionsCompletion(
     return comps;
   }
 
+  const uc = getSetting<boolean>(Settings.formattingUpperCaseInstructions, true);
+
   const instrBaseNames = Object.keys(asmInstuctions.instructions);
   instrBaseNames.forEach((baseName) => {
     const data = asmInstuctions[baseName];
     const baseDoc = getInstructionDocumentation(baseName);
 
-    const suffix = data['suffix'] as string;
-    if (suffix) {
-      const items = suffix.split(' ');
+    const type = data['type'] as string;
+    if (type) {
+      const items = type.split(' ');
       items.forEach((i) => {
-        const ci = new CompletionItem(baseName + i, CompletionItemKind.Method);
+        const name = uc ? (baseName + i).toUpperCase() : (baseName + i).toLowerCase();
+        const ci = new CompletionItem(name, CompletionItemKind.Method);
         ci.documentation = baseDoc;
         comps.push(ci);
       });
     } else {
-      const ci = new CompletionItem(baseName, CompletionItemKind.Method);
+      const ci = new CompletionItem(uc ? baseName.toUpperCase() : baseName.toLowerCase(), CompletionItemKind.Method);
       ci.documentation = baseDoc;
       comps.push(ci);
     }
   });
 
-  return comps;
+  if (getSetting<boolean>(Settings.completionShowNeonInstructions, false)) {
+    const instrNames = Object.keys(asmInstuctions['instructions-neon']);
+    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
+  }
+
+  if (getSetting<boolean>(Settings.completionShowVfpInstructions, false)) {
+    const instrNames = Object.keys(asmInstuctions['instructions-vfp']);
+    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
+  }
+
+  if (getSetting<boolean>(Settings.completionShowNeonInstructions, false)) {
+    const instrNames = Object.keys(asmInstuctions['instructions-mmx']);
+    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
+  }
+  
+   return comps;
 }

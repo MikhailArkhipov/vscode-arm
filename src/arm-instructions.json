@@ -46,7 +46,7 @@
     "ADR": {
       "desc": "Load program or register-relative address (short range)",
       "operands": "RL",
-      "width": "W",
+      "specifier": "W",
       "docName": "adr--pc-relative-"
     },
     "ADRL": {
@@ -68,7 +68,7 @@
     "B": {
       "desc": "Branch",
       "operands": "L",
-      "width": ".W"
+      "specifier": ".W"
     },
     "BFC": {
       "desc": "Bit Field Clear",
@@ -93,13 +93,13 @@
     "BL": {
       "desc": "Branch with Link",
       "operands": "L",
-      "width": ".W"
+      "specifier": ".W"
     },
     "BLX": {
       "desc": "Branch with Link, change instruction set",
       "arch": "T",
       "operands": "L R",
-      "width": ".W"
+      "specifier": ".W"
     },
     "BX": {
       "desc": "Branch, change instruction set",
@@ -1012,7 +1012,7 @@
     },
     "UND": {
       "desc": "Generate an architecturally undefined instruction.",
-      "width": ".W",
+      "specifier": ".W",
       "docName": "und-pseudo-instruction"
     },
     "UQUADD8": {
@@ -1123,6 +1123,5 @@
       "arch": "T2, 6M",
       "operands": ""
     }
-  },
-  "instructions-neon": {}
+  }
 }

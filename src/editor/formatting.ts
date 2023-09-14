@@ -11,6 +11,7 @@ import {
 import { FormatOptions, Formatter } from "./formatter";
 import { SyntaxConfig, AssemblerType } from "../syntaxConfig";
 import { TextStream } from "../text/textStream";
+import { Settings, getSetting } from "./settings";
 
 export function formatDocument(
   document: TextDocument,
@@ -18,7 +19,9 @@ export function formatDocument(
 ): TextEdit[] {
   const fo = new FormatOptions();
   fo.tabSize = options.tabSize;
-  fo.spaceAfterComma = true;
+  fo.spaceAfterComma = getSetting<boolean>(Settings.formattingSpaceAfterComma, true);
+  fo.uppercaseInstructions = getSetting<boolean>(Settings.formattingUpperCaseInstructions, true);
+  fo.uppercaseDirectives = getSetting<boolean>(Settings.formattingUpperCaseDirectives, true);
 
   const formatter = new Formatter();
   const text = document.getText();

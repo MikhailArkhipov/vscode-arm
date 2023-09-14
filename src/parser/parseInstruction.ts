@@ -1,32 +1,33 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as asmInstuctions from '../arm-instructions.json';
+import * as asmInstructions from '../arm-instructions.json';
+import * as asmInstuctionsNeon from '../arm-instructions-neon.json';
 
 import { TextRange, TextRangeImpl } from '../text/textRange';
-import { ErrorLocation, ParseError, ParseErrorType } from './parseError';
+import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from './parseError';
 
 export interface Instruction {
   readonly fullName: string; // LDMIANE.W
   readonly name: string; // 'LDM' - core name
-    // 'S' as in ADD/ADDS or 'IA' - type, mode, effect: instruction specific
+  // 'S' as in ADD/ADDS or 'IA' - type, mode, effect: instruction specific
   readonly suffix: string;
   readonly condition: string; // NE/Z/...
-  readonly width: string; // .W or .N
+  readonly specifier: string; // .W or .N
   readonly errors: ParseError[];
 
-  readonly allowedWidths: readonly string[];
+  readonly allowedSpecifiers: readonly string[];
   readonly allowedSuffixes: readonly string[];
   readonly allowedTypes: readonly string[];
   readonly operandsFormats: readonly string[];
 }
 
-  export function parseInstruction(text: string, range: TextRange): Instruction {
-    text = text.toUpperCase();
-    const i = new InstructionImpl(text, range);
-    i.parse(text);
-    return i;
-  }
+export function parseInstruction(text: string, range: TextRange): Instruction {
+  text = text.toUpperCase();
+  const i = new InstructionImpl(text, range);
+  i.parse(text);
+  return i;
+}
 
 class InstructionImpl implements Instruction {
   public readonly fullName: string; // LDMIANE.W
@@ -38,12 +39,13 @@ class InstructionImpl implements Instruction {
   // TT, TB - like suffix, but type is mandatory. Ex base name is SMLA with types BB, BT, ... yielding SMLABB, SMLABT, ...
   public type: string = '';
   public condition: string = ''; // NE/Z/...
-  public width: string = ''; // .W or .N
+  public specifier: string = ''; // Width, like .W or .N r a datatype, such as NEON .I16, etc.
 
-  public allowedWidths: string[]; // Allowed modifiers like .W or .T
+  public allowedSpecifiers: string[]; // Allowed specifiers like .W or .T or I64
   public allowedSuffixes: readonly string[] = []; // Allowed suffixes, like CPS/CPSIE/CPSID
   public allowedTypes: string[] = []; // Allowed mandatory types, like SMLALxy
   public operandsFormats: string[]; // Operand syntax, like "*" means any, "RRO" = 'Rd, Rn, Op'.
+  public neon: boolean;
 
   // private _parseMap: Map<Char, (i: Instruction, e: string) => void> = new Map([
   // ]);
@@ -55,8 +57,8 @@ class InstructionImpl implements Instruction {
 
   public parse(text: string): void {
     // Get modifier first (the part after period, like B.W)
-    this.parseWidthSpecifier(text);
-    text = text.substring(0, text.length - this.width.length);
+    this.parseSpecifier(text);
+    text = text.substring(0, text.length - this.specifier.length);
 
     // Possible conditional
     this.parseCondition(text);
@@ -68,9 +70,12 @@ class InstructionImpl implements Instruction {
 
     // this.parseSpecific(text);
 
-    this.fillInfo();
-    this.validateWidth();
-    this.validateSuffix();
+    if (this.fillInfo()) {
+      this.validateSpecifier();
+      this.validateSuffix();
+    } else {
+      this.errors.push(new InstructionError(ParseErrorType.UnknownInstruction, this.range));
+    }
   }
 
   // Attempt to separate type from core name.
@@ -98,83 +103,109 @@ class InstructionImpl implements Instruction {
   // }
 
   // Parse possible '.X' width modifiers. Typically .W, .N, .T
-  private parseWidthSpecifier(text: string): void {
-    const index = text.lastIndexOf('.');
+  private parseSpecifier(text: string): void {
+    // In NEON specifier is a datatype modifier and may include period.
+    // For example, see VCVT.S32.F32 - thereforewe must search from the start.
+    const index = text.indexOf('.');
     if (index >= 0) {
-      this.width = text.substring(index);
+      this.specifier = text.substring(index);
     }
   }
 
   private parseCondition(text: string): void {
     // https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions/condition-code-suffixes
+    if (text.length < 2) {
+      return;
+    }
+
+    const ch2 = text.substring(text.length - 2).toUpperCase();
     if (
-      text.endsWith('EQ') ||
-      text.endsWith('NE') ||
-      text.endsWith('CS') ||
-      text.endsWith('HS') ||
-      text.endsWith('CC') ||
-      text.endsWith('LO') ||
-      text.endsWith('MI') ||
-      text.endsWith('PL') ||
-      text.endsWith('VS') ||
-      text.endsWith('VC') ||
-      text.endsWith('HI') ||
-      text.endsWith('LS') ||
-      text.endsWith('GE') ||
-      text.endsWith('LT') ||
-      text.endsWith('GT') ||
-      text.endsWith('LE') ||
-      text.endsWith('AL')
+      ch2 === 'EQ' ||
+      ch2 === 'NE' ||
+      ch2 === 'CS' ||
+      ch2 === 'HS' ||
+      ch2 === 'CC' ||
+      ch2 === 'LO' ||
+      ch2 === 'MI' ||
+      ch2 === 'PL' ||
+      ch2 === 'VS' ||
+      ch2 === 'VC' ||
+      ch2 === 'HI' ||
+      ch2 === 'LS' ||
+      ch2 === 'GE' ||
+      ch2 === 'LT' ||
+      ch2 === 'GT' ||
+      ch2 === 'LE' ||
+      ch2 === 'AL'
     ) {
-      this.condition = text.substring(text.length - 2);
+      this.condition = ch2;
     }
   }
 
-  private fillInfo(): void {
-    const info = asmInstuctions[this.name];
+  private fillInfo(): boolean {
+    let info = asmInstructions[this.name];
     if (!info) {
-      return;
+      info = asmInstuctionsNeon[this.name];
+      if (info) {
+        this.neon = true;
+      }
     }
-    const w = info['width'] as string;
-    if (w) {
-      this.allowedWidths = w.split('');
+
+    if (info) {
+      this.allowedSpecifiers = info['specifier']?.split(' ') ?? [];
+      this.allowedSuffixes = info['suffix']?.split(' ') ?? [];
+      this.allowedTypes = info['type']?.split(' ') ?? [];
+      this.operandsFormats = info['operands']?.split(' ') ?? [];
+      return true;
     }
-    const s = info['suffix'] as string;
-    if (w) {
-      this.allowedSuffixes = s.split('');
-    }
-    const t = info['type'] as string;
-    if (w) {
-      this.allowedTypes = t.split('');
-    }
-    const o = info['operands'] as string;
-    if (w) {
-      this.operandsFormats = o.split('');
-    }
+
+    return false;
   }
 
-  private validateWidth(): void {
-    if (!this.width) {
+  private validateSpecifier(): void {
+    if (!this.allowedSpecifiers) {
       return;
     }
-    const range = new TextRangeImpl(this.range.end - this.width.length, this.width.length);
+
+    if (!this.specifier) {
+      // Width or datatype is not specified in code.
+      // NEON requires datatype spec unless specified otherwise with <none>.
+      if (this.neon && this.allowedSpecifiers.indexOf('<none>') < 0) {
+        // Width or datatype specifier is required (NEON) and must be present.
+        this.errors.push(new ParseError(ParseErrorType.SpecifierMissing, ErrorLocation.Token, this.range));
+      }
+      return; // Width is not required to be present
+    }
+
+    if (this.allowedSpecifiers.length === 1 && this.allowedSpecifiers[0] === '*') {
+      // Assembler ignores the specifier, so it does not matter if it is present ot not.
+      // See, for example, NEON VBIF/VBIT etc.
+      return;
+    }
+
+    const range = new TextRangeImpl(this.range.end - this.specifier.length, this.specifier.length);
     // Does instruction permit width?
-    if (!this.allowedWidths || this.allowedWidths.length === 0) {
-      this.errors.push(new ParseError(ParseErrorType.WidthNotAllowed, ErrorLocation.Token, range));
-    } else if (!(this.width in this.allowedWidths)) {
-      this.errors.push(new ParseError(ParseErrorType.UnknownWidthSpecifier, ErrorLocation.Token, range));
+    if (!this.allowedSpecifiers || this.allowedSpecifiers.length === 0) {
+      // Instruction does not permit width or datatype
+      this.errors.push(new ParseError(ParseErrorType.SpecifierNotAllowed, ErrorLocation.Token, range));
+    } else if (!(this.specifier.toUpperCase() in this.allowedSpecifiers)) {
+      // Specifier is present but not recognized.
+      this.errors.push(new ParseError(ParseErrorType.UnknownSpecifier, ErrorLocation.Token, range));
     }
   }
 
   private validateSuffix(): void {
     if (!this.suffix) {
+      // Instruction does not have any suffix in code.
       return;
     }
     const range = new TextRangeImpl(this.range.start + this.name.length, this.suffix.length);
     // Does instruction permit suffix?
     if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
+      // Instruction does not allow suffix.
       this.errors.push(new ParseError(ParseErrorType.SuffixNotAllowed, ErrorLocation.Token, range));
-    } else if (!(this.suffix in this.allowedSuffixes)) {
+    } else if (!(this.suffix.toUpperCase() in this.allowedSuffixes)) {
+      // Specifier is present but not recognized.
       this.errors.push(new ParseError(ParseErrorType.UnknownSuffix, ErrorLocation.Token, range));
     }
   }

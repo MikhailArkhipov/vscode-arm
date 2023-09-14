@@ -1,0 +1,171 @@
+{
+  "instructions": {
+    "specifierRequired": true,
+    "VABA": {
+      "desc": "Vector Absolute Difference and Accumulate.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VABAL": {
+      "desc": "Vector Absolute Difference and Accumulate.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VABD": {
+      "desc": "Vector Absolute Difference.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VABDL": {
+      "desc": "Vector Absolute Difference.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VAC": {
+      "desc": "Vector Absolute Compare.",
+      "specifier": "F32",
+      "type": "GE GT LE LT"
+    },
+    "VADD": {
+      "desc": "Vector Add.",
+      "specifier": "I8 I16 I32 I64 F32"
+    },
+    "VADDHN": {
+      "desc": "Vector Add and Narrow, selecting High half.",
+      "specifier": "I16 I32 I64"
+    },
+    "VADDL": {
+      "desc": "Vector Add Long.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VADDW": {
+      "desc": "Vector Add Wide.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VAND": {
+      "desc": "Vector bitwise AND immediate pseudo-instruction.",
+      "specifier": "I8 I16 I32 I64 <none>"
+    },
+    "VBIC": {
+      "desc": "Vector Bit Clear.",
+      "specifier": "I8 I16 I32 I64 <none>"
+    },
+    "VBIF": {
+      "desc": "Vector Bitwise Insert if False.",
+      "specifier": "*"
+    },
+    "VBIT": {
+      "desc": "Vector Bitwise Insert if True.",
+      "specifier": "*"
+    },
+    "VBSL": {
+      "desc": "Vector Bitwise Select.",
+      "specifier": "*"
+    },
+    "VCEQ": {
+      "desc": "Vector Compare Equal to zero.",
+      "specifier": "I8 I16 I32 F32"
+    },
+    "VCGE": {
+      "desc": "Vector Compare Greater than or Equal.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VCGT": {
+      "desc": "Vector Compare Greater than.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VCLE": {
+      "desc": "Vector Compare Less than or Equal to zero.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VCLS": {
+      "desc": "Vector Count Leading Sign bits.",
+      "specifier": "S8 S16 S32"
+    },
+    "VCLT": {
+      "desc": "Vector Compare Less than.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VCLZ": {
+      "desc": "Vector Count Leading Zeros.",
+      "specifier": "I8 I16 I32"
+    },
+    "VCNT": {
+      "desc": "Vector Count set bits.",
+      "specifier": "I8"
+    },
+    "VCVT": {
+      "desc": "Vector Convert.",
+      "specifier": "S32.F32 U32.F32 F32.S32 F32.U32 F32.F16 F16.F32"
+    },
+    "VDUP": {
+      "desc": "Vector Duplicate.",
+      "specifier": "8 16 32"
+    },
+    "VEOR": {
+      "desc": "Vector Bitwise Exclusive OR.",
+      "specifier": "*"
+    },
+    "VEXT": {
+      "desc": "Vector Exctract.",
+      "specifier": "8"
+    },
+    "VFMA": {
+      "desc": "Vector Fused Multiply Accumulate.",
+      "specifier": "F32"
+    },
+    "VFMS": {
+      "desc": "Vector Fused Multiply Subtract.",
+      "specifier": "F32"
+    },
+    "VHADD": {
+      "desc": "Vector Halving Add.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VHSUB": {
+      "desc": "Vector Halving Subtract.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VLD": {
+      "desc": "VLDn (n-element structure(s) to lanes).",
+      "type": "1 2 3 4",
+      "specifier": "8 16 32 64"
+    },
+    "VLDM": {
+      "desc": "Extension register load multiple.",
+      "type": "IA DB EA FD"
+    },
+    "VLDR": {
+      "desc": "Extension register load.",
+      "specifier": "I8 I16 I32 I64 S8 S16 S32 S64 U8 U16 U32 U64 F32 I64 <none>"
+    },
+    "VMAX": {
+      "desc": "Vector Maximum.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VMIN": {
+      "desc": "Vector Minimum.",
+      "specifier": "S8 S16 S32 U8 U16 U32 F32"
+    },
+    "VMLA": {
+      "desc": "Vector Multiply Accumulate.",
+      "specifier": "I8 I16 I32 F32"
+    },
+    "VMLAL": {
+      "desc": "Vector Multiply Accumulate.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    }, 
+    "VMLS": {
+      "desc": "Vector Multiply by scalar and Subtract.",
+      "specifier": "I8 I16 I32 F32"
+    },
+    "VMLSL": {
+      "desc": "Vector Multiply Subtract Long.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VMOV": {
+      "desc": "Vector Move.",
+      "specifier": "I8 I16 I32 I64 U8 U16 U32 S8 S16 S32 F32 F64 8 16 32 <none>"
+    },
+    "VMOVL": {
+      "desc": "Vector Move Long.",
+      "specifier": "U8 U16 U32 S8 S16 S32"
+    }
+  }
+}

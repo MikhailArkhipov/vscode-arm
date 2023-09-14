@@ -6,6 +6,11 @@ import * as vscode from 'vscode';
 export namespace Settings {
   export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
   export const formattingSpaceAfterComma = "arm.formatting.spaceAfterComma";
+  export const formattingUpperCaseInstructions = "arm.formatting.upperCaseInstructions";
+  export const formattingUpperCaseDirectives = "arm.formatting.upperCaseDirectives";
+  export const completionShowNeonInstructions = "arm.completion.showNeonInstructions";
+  export const completionShowVfpInstructions = "arm.completion.showVfpInstructions";
+  export const completionShowMmxInstructions = "arm.completion.showMmxInstructions";
 }
 
 export function getConfiguration(name: string): vscode.WorkspaceConfiguration {
