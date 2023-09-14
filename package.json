@@ -84,10 +84,25 @@
             "default": false,
             "description": "Show advanced assembler directives in completion list."
           },
+          "arm.completion.showNeonInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show NEON instructions in completion list."
+          },
+          "arm.completion.showVfpInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show VFP in completion list."
+          },
           "arm.diagnostics.show": {
             "type": "boolean",
             "default": true,
             "description": "Show code diagnostics."
+          },
+          "arm.diagnostics.unknownInstructions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Detect unknown instructions."
           }
         }
       }

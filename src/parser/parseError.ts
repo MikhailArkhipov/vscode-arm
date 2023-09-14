@@ -8,23 +8,36 @@ export enum ParseErrorType {
   None,
   UnexpectedToken,
 
-  Label_InvalidName,
-  Label_Unknown,
+  // Item looks like label but contains characters not allowed in label names.
+  InvalidLabelName,
+  // Instruction references label that is not defined.
+  UndefinedLabel,
 
+  // Assembler expects line to start with label or directive.
   InstructionOrDirectiveExpected,
 
+  // Item looks like instruction but contains characters not allowed in instruction names.
+  InvalidInstructionName,
+  // Instruction is not recognized.
   UnknownInstruction,
-  InvaldInstructionName,
-  SuffixNotAllowed,
-  ModifierNotAllowed,
+
+  // Suffix looks legal, but the instruction does not permit any suffixes.
+  SuffixNotAllowed, 
+   // Suffix is provided but it is not in the list of allowed suffixes.
+  UnknownSuffix,
+
+  // Width specifier is provided, but istruction does not support width modification.
+  WidthNotAllowed,
+  // Width specifier is provided but it is not in the list of allowed specifiers.
+  UnknownWidthSpecifier,
+
+  // Type
   TypeNotAllowed,
-  InvalidModifier,
-  UnknownModifier,
-  InvalidType,
-  InvalidEffect,
   
+  // Token looks like directive but contains invalid characters. Like $%^:
   InvalidDirectiveName,
-  Directive_Unknown,
+  // Unknown directive
+  UnknownDirective,
 
   OperandExpected,
   //DataExpected,
