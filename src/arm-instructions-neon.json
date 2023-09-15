@@ -161,11 +161,69 @@
     },
     "VMOV": {
       "desc": "Vector Move.",
-      "specifier": "I8 I16 I32 I64 U8 U16 U32 S8 S16 S32 F32 F64 8 16 32 <none>"
+      "specifier": "I8 I16 I32 I64 U8 U16 U32 U64 S8 S16 S32 S64 F32 F64 8 16 32 <none>"
     },
     "VMOVL": {
       "desc": "Vector Move Long.",
       "specifier": "U8 U16 U32 S8 S16 S32"
-    }
+    },
+    "VMOVN": {
+      "desc": "Vector Move and Narrow.",
+      "specifier": "I16 I32 I64"
+    },
+    "VMOV2": {
+      "desc": "Pseudo-instruction that generates an immediate value and places it in every element of a NEON vector, without loading a value from a literal pool..",
+      "specifier": "I8 I16 I32 I64 U8 U16 U32 U64 S8 S16 S32 S64 F32"
+    },
+    "VMRS": {
+      "desc": "Transfer the contents of a NEON system register to an ARM register."
+    },
+    "VMSR": {
+      "desc": "Transfer the contents of an ARM register to a NEON system register."
+    },
+    "VMUL": {
+      "desc": "Vector Multiply.",
+      "specifier": "I8 I16 I32 F32 P8"
+    },
+    "VMULL": {
+      "desc": "Vector Multiply Long.",
+      "specifier": "U8 U16 U32 S8 S16 S32 P8"
+    },
+    "VMVN": {
+      "desc": "Vector Move NOT.",
+      "specifier": "*"
+    },
+    "VNEG": {
+      "desc": "Vector Negate.",
+      "specifier": "S8 S16 S32 F32"
+    },
+    "VORN": {
+      "desc": "Vector bitwise OR NOT.",
+      "specifier": "*"
+    },
+    "VORR": {
+      "desc": "Vector bitwise OR.",
+      "specifier": "*"
+    },
+    "VPADAL": {
+      "desc": "Vector Pairwise Add and Accumulate Long.",
+      "specifier": "U8 U16 U32 S8 S16 S32"
+    },
+    "VPADD": {
+      "desc": "Vector Pairwise Add.",
+      "specifier": "I8 I16 I32 F32"
+    },
+    "VPADDL": {
+      "desc": "Vector Pairwise Add Long.",
+      "specifier": "U8 U16 U32 S8 S16 S32"
+    },
+    "VPMAX": {
+      "desc": "Vector Pairwise Maximum.",
+      "specifier": "U8 U16 U32 S8 S16 S32 F32"
+    },
+    "VPMIN": {
+      "desc": "Vector Pairwise Minimum.",
+      "specifier": "U8 U16 U32 S8 S16 S32 F32"
+    } 
   }
 }
