@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as asmInstructions from '../arm-instructions.json';
-import * as asmInstuctionsNeon from '../arm-instructions-neon.json';
+import * as coreArm from '../instructions/core.json';
+import * as neon from '../instructions/neon.json';
 
 import { TextRange, TextRangeImpl } from '../text/textRange';
 import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from './parseError';
@@ -143,9 +143,9 @@ class InstructionImpl implements Instruction {
   }
 
   private fillInfo(): boolean {
-    let info = asmInstructions[this.name];
+    let info = coreArm[this.name];
     if (!info) {
-      info = asmInstuctionsNeon[this.name];
+      info = neon[this.name];
       if (info) {
         this.neon = true;
       }

@@ -1,19 +1,19 @@
 {
   "architectures": {
     "5": "ARMv5T*, ARMv6*, ARMv7",
-    "5E": "ARMv5TE, ARMv6*, ARMv7",
+    "5E": "ARMv5TE ARMv6*, ARMv7",
     "6": "ARMv6*, ARMv7",
-    "6M": "ARMv6-M, ARMv7",
+    "6M": "ARMv6-M ARMv7",
     "x6M": "Not available in ARMv6-M",
     "7": "ARMv7",
     "7A": "ARMv7-A",
     "7M": "ARMv7-M",
-    "x7M": "Not available in ARMv6-M or ARMv7-M, or any ARMv7E-M implementation",
-    "7EM": "ARMv7E-M, but not in the ARMv7-M or ARMv6-M architecture",
+    "x7M": "Not available in ARMv6-M or ARMv7-M or any ARMv7E-M implementation",
+    "7EM": "ARMv7E-M but not in the ARMv7-M or ARMv6-M architecture",
     "7R": "ARMv7-R",
     "7MP": "ARMv7 with Multiprocessing Extensions",
     "J": "ARMv5TEJ, ARMv6*, and ARMv7",
-    "K": "ARMv6K, ARMv7",
+    "K": "ARMv6K ARMv7",
     "T": "ARMv4T, ARMv5T*, ARMv6*, ARMv7",
     "T2": "ARMv6T2 and above",
     "XS": "XScale versions of the ARM",
@@ -68,7 +68,7 @@
     "B": {
       "desc": "Branch",
       "operands": "L",
-      "specifier": ".W"
+      "specifier": "W"
     },
     "BFC": {
       "desc": "Bit Field Clear",
@@ -93,13 +93,13 @@
     "BL": {
       "desc": "Branch with Link",
       "operands": "L",
-      "specifier": ".W"
+      "specifier": "W"
     },
     "BLX": {
-      "desc": "Branch with Link, change instruction set",
+      "desc": "Branch with LinK change instruction set",
       "arch": "T",
       "operands": "L R",
-      "specifier": ".W"
+      "specifier": "W"
     },
     "BX": {
       "desc": "Branch, change instruction set",
@@ -131,18 +131,18 @@
     },
     "CDP2": {
       "desc": "Coprocessor Data Processing operation",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "*",
       "docName": "cdp-and-cdp2"
     },
     "CLREX": {
       "desc": "Clear Exclusive",
-      "arch": "K, x6M",
+      "arch": "K x6M",
       "operands": ""
     },
     "CLZ": {
       "desc": "Count Leading Zeros",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "RR"
     },
     "CMN": {
@@ -174,13 +174,13 @@
     },
     "DMB": {
       "desc": "Data Memory Barrier",
-      "arch": "6M, 7",
+      "arch": "6M 7",
       "operands": "E",
       "E": "SY ST ISH ISHST NSH NSHST OSH OSHST"
     },
     "DSB": {
       "desc": "Data Synchronization Barrier",
-      "arch": "6M, 7",
+      "arch": "6M 7",
       "operands": "E",
       "E": "SY ST ISH ISHST NSH NSHST OSH OSHST"
     },
@@ -200,7 +200,7 @@
     },
     "ISB": {
       "desc": "Instruction Synchronization Barrier",
-      "arch": "6M, 7",
+      "arch": "6M 7",
       "operands": "E",
       "E": "SY"
     },
@@ -217,7 +217,7 @@
     },
     "LDC2": {
       "desc": "Load Coprocessor",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "*",
       "suffix": "L",
       "docName": "ldc-and-ldc2"
@@ -235,18 +235,18 @@
     },
     "LDRD": {
       "desc": "Load Register with two words",
-      "arch": "5E, x6M",
+      "arch": "5E x6M",
       "operands": "R*",
       "docName": "ldr--immediate-offset-"
     },
     "LDREX": {
       "desc": "Load Register Exclusive",
-      "arch": "6, x6M",
+      "arch": "6 x6M",
       "operands": "R*",
       "suffix": "B H D"
     },
     "LDRBT": {
-      "desc": "Load Register with byte, user mode",
+      "desc": "Load Register with bytE user mode",
       "arch": "x6M",
       "operands": "R*",
       "docName": "ldr--unprivileged"
@@ -258,7 +258,7 @@
       "docName": "ldr--unprivileged"
     },
     "LDRSBT": {
-      "desc": "Load Register with signed byte, user mode",
+      "desc": "Load Register with signed bytE user mode",
       "arch": "T2",
       "operands": "R*",
       "docName": "ldr--unprivileged"
@@ -298,20 +298,20 @@
     },
     "MCR2": {
       "desc": "Move from Register to Coprocessor",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "",
       "type": "2 R",
       "docName": "mcr-and-mcr2"
     },
     "MCRR": {
       "desc": "Move from Register to Coprocessor",
-      "arch": "5E, x6M",
+      "arch": "5E x6M",
       "operands": "*",
       "docName": "mcrr-and-mcrr2"
     },
     "MCRR2": {
       "desc": "Move from Register to Coprocessor",
-      "arch": "6, x6M",
+      "arch": "6 x6M",
       "operands": "*",
       "docName": "mcrr-and-mcrr2"
     },
@@ -362,19 +362,19 @@
     },
     "MRC2": {
       "desc": "Move from Coprocessor to Register",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "*",
       "docName": "mrc-and-mrc2"
     },
     "MRRC": {
       "desc": "Move from Coprocessor to Register",
-      "arch": "5E, x6M",
+      "arch": "5E x6M",
       "operands": "*",
       "docName": "mrrc-and-mrrc2"
     },
     "MRRC2": {
       "desc": "Move from Coprocessor to Register",
-      "arch": "6, x6M",
+      "arch": "6 x6M",
       "operands": "*",
       "docName": "mrrc-and-mrrc2"
     },
@@ -421,14 +421,14 @@
     },
     "PKH": {
       "desc": "Halfword Packing instructions that combine a halfword from one register with a halfword from another register. One of the operands can be shifted before extraction of the halfword",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR* RRR*",
       "type": "BT TB",
       "docName": "pkhbt-and-pkhtb"
     },
     "PLD": {
       "desc": "Preload Data",
-      "arch": "5E, x6M",
+      "arch": "5E x6M",
       "operands": "*",
       "docName": "pld--pldw--and-pli"
     },
@@ -454,53 +454,53 @@
     },
     "QADD": {
       "desc": "Signed saturating Add",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RR RRR"
     },
     "QADD8": {
       "desc": "Signed saturating parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "QADD16": {
       "desc": "Signed saturating parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "QASX": {
       "desc": "Signed saturating parallel add and subtract halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "QDADD": {
       "desc": "Signed saturating Double and Add",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RR RRR"
     },
     "QDSUB": {
       "desc": "Signed saturating Double and Subtract",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RR RRR"
     },
     "QSAX": {
       "desc": "Signed saturating parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "QSUB": {
       "desc": "Signed saturating Subtract",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RR RRR",
       "docName": ""
     },
     "QSUB8": {
       "desc": "Signed saturating parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "QSUB16": {
       "desc": "Signed saturating parallel halfword-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "RBIT": {
@@ -525,7 +525,7 @@
     },
     "RFE": {
       "desc": "Return From Exception",
-      "arch": "T2, x7M",
+      "arch": "T2 x7M",
       "operands": "R",
       "type": "IA IB DA DB"
     },
@@ -553,17 +553,17 @@
     },
     "SADD8": {
       "desc": "Signed parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SADD16": {
       "desc": "Signed parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SASX": {
       "desc": "Signed parallel add and subtract halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SBC": {
@@ -579,53 +579,53 @@
     },
     "SDIV": {
       "desc": "Signed divide",
-      "arch": "7A, 7M, 7R",
+      "arch": "7A, 7M 7R",
       "operands": "RR RRR"
     },
     "SEL": {
       "desc": "Select bytes according to APSR GE flags",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SETEND": {
       "desc": "Set Endianness for memory accesses",
-      "arch": "6, x7M",
+      "arch": "6 x7M",
       "operands": "E",
       "E": "BE LE"
     },
     "SEV": {
       "desc": "Set Event",
-      "arch": "K, 6M",
+      "arch": "K 6M",
       "operands": ""
     },
     "SHADD8": {
       "desc": "Signed halving parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SHADD16": {
       "desc": "Signed halving parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SHASX": {
       "desc": "Signed halving parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SHSAX": {
       "desc": "Signed halving parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SHSUB8": {
       "desc": "Signed halving parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SHSUB16": {
       "desc": "Signed halving parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SMC": {
@@ -635,99 +635,99 @@
     },
     "SMLAD": {
       "desc": "Dual 16-bit Signed Multiply with Addition of products and 32-bit accumulation",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "X"
     },
     "SMLA": {
       "desc": "Signed Multiply with Accumulate (32 <= 16 x 16 + 32)",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "type": "BB BT TB TT",
       "docName": "smlaxy"
     },
     "SMLALD": {
       "desc": "Dual 16-bit Signed Multiply with Addition of products and 64-bit Accumulation",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "X"
     },
     "SMLAL": {
-      "desc": "Signed Long Multiply, with optional Accumulate, with 32-bit operands, and 64-bit result and accumulator.",
+      "desc": "Signed Long Multiply, with optional AccumulatE with 32-bit operands, and 64-bit result and accumulator.",
       "operands": "RRRR",
       "suffix": "S",
       "docName": "smlal"
     },
     "SMLALBB": {
       "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0])",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "docName": "smlalxy"
     },
     "SMLALBT": {
       "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0]), T means use the top half (bits [31:16]) ",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "docName": "smlalxy"
     },
     "SMLALTB": {
       "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0]), T means use the top half (bits [31:16])  ",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "docName": "smlalxy"
     },
     "SMLALTT": {
       "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). T means use the top half (bits [31:16]) ",
-      "arch": "5E, 7EM",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "docName": "smlalxy"
     },
     "SMLAW": {
-      "desc": "Signed Multiply-Accumulate Wide, with one 32-bit operand and one 16-bit operand, and a 32-bit accumulate value, providing the top 32 bits of the result (T = top half, B = bottom half)",
-      "arch": "5E, 7EM",
+      "desc": "Signed Multiply-Accumulate WidE with one 32-bit operand and one 16-bit operand, and a 32-bit accumulate valuE providing the top 32 bits of the result (T = top half, B = bottom half)",
+      "arch": "5E 7EM",
       "operands": "RRRR",
       "type": "B T",
       "docName": "smlawy"
     },
     "SMLSD": {
       "desc": "Dual Signed Multiply Subtract Accumulate",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "X"
     },
     "SMLSLD": {
       "desc": "Dual Signed Multiply Subtract Accumulate Long",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "X"
     },
     "SMMLA": {
       "desc": "Signed top word Multiply with Accumulate (32 <= TopWord(32 x 32 + 32)), R = rounded",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "R"
     },
     "SMMLS": {
       "desc": "Signed top word Multiply with Subtract (32 <= TopWord(32 - 32 x 32)), R = rounded",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR",
       "suffix": "R"
     },
     "SMMUL": {
       "desc": "Signed top word Multiply (32 <= TopWord(32 x 32)), R = rounded",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR",
       "suffix": "R"
     },
     "SMUAD": {
       "desc": "Dual 16-bit Signed Multiply with Addition of products, and optional exchange of operand halves",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR",
       "suffix": "X"
     },
     "SMUL": {
-      "desc": "Signed Multiply (32 <= 32 x 16, top, top)",
-      "arch": "5E, 7EM",
+      "desc": "Signed Multiply (32 <= 32 x 16 top, top)",
+      "arch": "5E 7EM",
       "type": "BB BT TB TT",
       "operands": "RR RRR",
       "docName": "smulxy"
@@ -739,47 +739,47 @@
       "suffix": "S"
     },
     "SMULW": {
-      "desc": "Signed Multiply (32 <= 32 x 16, top)",
-      "arch": "5E, 7EM",
+      "desc": "Signed Multiply (32 <= 32 x 16 top)",
+      "arch": "5E 7EM",
       "operands": "RR RRR",
       "type": "B T",
       "docName": "smulwy"
     },
     "SMUSD": {
       "desc": "Dual 16-bit Signed Multiply with Subtraction of products, and optional exchange of operand halves",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR",
       "suffix": "X"
     },
    "SRS": {
       "desc": "Store Return State",
-      "arch": "T2, x7M",
+      "arch": "T2 x7M",
       "operands": "*",
       "suffix":"IA IB DA DB"
     },
     "SSAT": {
       "desc": "Signed Saturate",
-      "arch": "6, x6M",
+      "arch": "6 x6M",
       "operands": "RNR RNRS"
     },
     "SSAT16": {
-      "desc": "Signed Saturate, parallel halfwords",
-      "arch": "6, 7EM",
+      "desc": "Signed SaturatE parallel halfwords",
+      "arch": "6 7EM",
       "operands": "RNR"
     },
     "SSAX": {
       "desc": "Signed parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SSUB8": {
       "desc": "Signed parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "SSUB16": {
       "desc": "Signed parallel halfword-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "STC": {
@@ -791,7 +791,7 @@
     },
     "STC2": {
       "desc": "Store Coprocessor",
-      "arch": "5, x6M",
+      "arch": "5 x6M",
       "operands": "*",
       "suffix": "L",
       "docName": "stc-and-stc2"
@@ -812,35 +812,35 @@
       "docName": "str--immediate-offset-"
     },
     "STRBT": {
-      "desc": "Store Register with byte, user mode",
+      "desc": "Store Register with bytE user mode",
       "arch": "x6M",
       "operands": "R*",
       "docName": "str--immediate-offset-"
     },
     "STRD": {
       "desc": "Store Registers with two words",
-      "arch": "5E, x6M",
+      "arch": "5E x6M",
       "operands": "RR*",
       "docName": "str--immediate-offset-"
     },
     "STREX": {
       "desc": "Store Register Exclusive",
-      "arch": "6, x6M",
+      "arch": "6 x6M",
       "operands": "RR RRR RRRR RRRN"
     },
     "STREXB": {
       "desc": "Store Register Exclusive Byte",
-      "arch": "K, x6M",
+      "arch": "K x6M",
       "operands": "RR RRR"
     },
     "STREXH": {
       "desc": "Store Register Exclusive Halfword",
-      "arch": "K, x6M",
+      "arch": "K x6M",
       "operands": "RR RRR"
     },
     "STREXD": {
       "desc": "Store Register Exclusive Doubleword",
-      "arch": "K, x7M",
+      "arch": "K x7M",
       "operands": "RRR RRRR"
     },
     "STRH": {
@@ -867,7 +867,7 @@
     },
     "SUBS": {
       "desc": "Exception return, no stack",
-      "arch": "T2, x7M"
+      "arch": "T2 x7M"
     },
     "SVC": {
       "desc": "SuperVisor Call",
@@ -883,18 +883,18 @@
       "operands": "RR RRR"
     },
     "SXTAB": {
-      "desc": "Sign extend Byte, with Addition",
-      "arch": "6, 7EM",
+      "desc": "Sign extend BytE with Addition",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "SXTAB16": {
       "desc": "Sign extend two Bytes, with Addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "SXTAH": {
       "desc": "Sign extend Halfword, with Addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "SXTB": {
@@ -904,7 +904,7 @@
     },
     "SXTB16": {
       "desc": "Sign extend two Bytes",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RC RRC"
     },
     "SXTH": {
@@ -940,17 +940,17 @@
     },
     "UADD8": {
       "desc": "Unsigned parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UADD16": {
       "desc": "Unsigned parallel hslfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UASX": {
       "desc": "Unsigned parallel add and subtract halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UBFX": {
@@ -960,42 +960,42 @@
     },
     "UDIV": {
       "desc": "Unsigned divide",
-      "arch": "7A, 7M, 7R",
+      "arch": "7A, 7M 7R",
       "operands": "RR RRR"
     },
     "UHADD8": {
       "desc": "Unsigned halving parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UHADD16": {
       "desc": "Unsigned halving parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UHASX": {
       "desc": "Unsigned halving parallel add and subtract halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UHSAX": {
       "desc": "Unsigned halving parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UHSUB8": {
       "desc": "Unsigned halving parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UHSUB16": {
       "desc": "Unsigned halving parallel halfword-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UMAAL": {
       "desc": "Unsigned Multiply Accumulate Accumulate Long (64 <= 32 + 32 + 32 x 32)",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR"
     },
     "UMLAL": {
@@ -1012,85 +1012,85 @@
     },
     "UND": {
       "desc": "Generate an architecturally undefined instruction.",
-      "specifier": ".W",
+      "specifier": "W",
       "docName": "und-pseudo-instruction"
     },
     "UQUADD8": {
       "desc": "Unsigned saturating parallel byte-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UQUADD16": {
       "desc": "Unsigned saturating parallel halfword-wise addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UQASX": {
       "desc": "Unsigned saturating parallel add and subtract halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UQSAX": {
       "desc": "Unsigned saturating parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UQSUB8": {
       "desc": "Unsigned saturating parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UQSUB16": {
       "desc": "Unsigned saturating parallel halfword-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "USAD8": {
       "desc": "Unsigned Sum of Absolute Differences",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "USADA8": {
       "desc": "Accumulate Unsigned Sum of Absolute Differences",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RRRR"
     },
     "USAT": {
       "desc": "Unsigned Saturate",
-      "arch": "6, x6M"
+      "arch": "6 x6M"
     },
     "USAT16": {
-      "desc": "Unsigned Saturate, parallel halfwords",
-      "arch": "6, 7EM"
+      "desc": "Unsigned SaturatE parallel halfwords",
+      "arch": "6 7EM"
     },
     "USAX": {
       "desc": "Unsigned parallel subtract and add halfwords with exchange",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "USUB8": {
       "desc": "Unsigned parallel byte-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "USUB16": {
       "desc": "Unsigned parallel halfword-wise subtraction",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRR"
     },
     "UXTAB": {
       "desc": "Zero extend Byte with Addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "UXTAB16": {
       "desc": "Zero extend two bytes with Addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "UXTAH": {
       "desc": "Zero extend Halfword with Addition",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RRC RRR RRRC"
     },
     "UXTB": {
@@ -1100,7 +1100,7 @@
     },
     "UXTB16": {
       "desc": "Zero extend two bytes",
-      "arch": "6, 7EM",
+      "arch": "6 7EM",
       "operands": "RR RC RRC"
     },
     "UXTH": {
@@ -1110,17 +1110,17 @@
     },
     "WFE": {
       "desc": "Wait For Event",
-      "arch": "T2, 6M",
+      "arch": "T2 6M",
       "operands": ""
     },
     "WFI": {
       "desc": "Wait For Interrupt",
-      "arch": "T2, 6M",
+      "arch": "T2 6M",
       "operands": ""
     },
     "YIELD": {
       "desc": "Yield",
-      "arch": "T2, 6M",
+      "arch": "T2 6M",
       "operands": ""
     }
   }

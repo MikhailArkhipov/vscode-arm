@@ -150,7 +150,7 @@
     "VMLAL": {
       "desc": "Vector Multiply Accumulate.",
       "specifier": "S8 S16 S32 U8 U16 U32"
-    }, 
+    },
     "VMLS": {
       "desc": "Vector Multiply by scalar and Subtract.",
       "specifier": "I8 I16 I32 F32"
@@ -224,6 +224,65 @@
     "VPMIN": {
       "desc": "Vector Pairwise Minimum.",
       "specifier": "U8 U16 U32 S8 S16 S32 F32"
-    } 
+    },
+    "VPOP": {
+      "desc": "Pop extension registers from the stack."
+    },
+    "VPUSH": {
+      "desc": "Push extension registers onto the stack."
+    },
+    "VQABS": {
+      "desc": "Vector Saturating Absolute.",
+      "specifier": "S8 S16 S32"
+    },
+    "VQADD": {
+      "desc": "Vector Saturating Add.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+    },
+    "VQDMLAL": {
+      "desc": "VVector Saturating Doubling Multiply Accumulate Long.",
+      "specifier": "S16 S32"
+    },
+    "VQDMLSL": {
+      "desc": "Vector Saturating Doubling Multiply Subtract Long.",
+      "specifier": "S16 S32"
+    },
+    "VQDMULH": {
+      "desc": "Vector Saturating Doubling Multiply Returning High Half.",
+      "specifier": "S16 S32"
+    },
+    "VQDMULL": {
+      "desc": "Vector Saturating Doubling Multiply Long.",
+      "specifier": "S16 S32"
+    },
+    "VQMOVN": {
+      "desc": "Vector Saturating Move and Narrow.",
+      "specifier": "S16 S32 S64"
+    },
+    "VQMOVUN": {
+      "desc": "Vector Saturating Move and Narrow.",
+      "specifier": "S16 S32 S64"
+    },
+    "VQNEG": {
+      "desc": "Vector Saturating Negate.",
+      "specifier": "S16 S32 S64"
+    },
+    "VQRDMULH": {
+      "desc": "Vector Saturating Rounding Doubling Multiply Returning High Half.",
+      "specifier": "S16 S32"
+    },
+    "VQRSHL": {
+      "desc": "Vector Saturating Rounding Shift Left by signed variable.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+    },
+    "VQRSHRN": {
+      "desc": "Vector Saturating Shift Right, Narrow, with Rounding.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+    },
+    "VQRSHRUN": {
+      "desc": "Vector Saturating Rounding Shift Left by signed variable.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+    }
+
   }
 }
