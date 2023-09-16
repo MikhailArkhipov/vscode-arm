@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { CancellationToken } from 'vscode-languageclient';
-import * as asmDirectives from '../asm-directives-gas.json';
-import * as asmInstuctions from '../arm-instructions.json';
+import * as asmDirectives from '../instructions/directives-gas.json';
+import * as asmInstuctions from '../instructions/arch32.json';
 
 import { TextDocument, Position, CompletionContext, CompletionItem, CompletionItemKind } from 'vscode';
 import { getDirectiveDocumentation, getInstructionDocumentation } from './documentation';

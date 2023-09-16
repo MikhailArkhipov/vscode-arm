@@ -1,24 +1,27 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as vscode from 'vscode';
 import {
   ExtensionContext,
   languages,
   TextDocument,
   FormattingOptions,
   TextEdit,
-  CompletionItem,
+  //CompletionItem,
   CancellationToken,
-  ProviderResult,
+  //ProviderResult,
   TextEditor,
+  window,
+  workspace,
+  commands,
 } from 'vscode';
-import { provideHover } from './editor/hover';
+//import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';
-import { provideCompletions, resolveCompletionItem } from './editor/completions';
+//import { provideCompletions, resolveCompletionItem } from './editor/completions';
 import { updateDiagnostics } from './editor/diagnostics';
 import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
+import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
 
 const languageName = 'arm';
 
@@ -33,34 +36,47 @@ export async function deactivate(): Promise<void> {}
 
 function registerCapabilities(context: ExtensionContext): void {
   context.subscriptions.push(
+    // Formatter
     languages.registerDocumentFormattingEditProvider(languageName, {
       provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions): TextEdit[] {
         return formatDocument(document, options);
       },
     }),
-    languages.registerCompletionItemProvider(
-      languageName,
+    // Competions
+    // languages.registerCompletionItemProvider(
+    //   languageName,
+    //   {
+    //     provideCompletionItems(document, position, token, context): ProviderResult<CompletionItem[]> {
+    //       return provideCompletions(document, position, context);
+    //     },
+    //     resolveCompletionItem(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem> {
+    //       return resolveCompletionItem(item, token);
+    //     },
+    //   },
+    //   '.'
+    // ),
+    // // Hover tooltip
+    // languages.registerHoverProvider(languageName, {
+    //   provideHover(document, position, token) {
+    //     return provideHover(document, position);
+    //   },
+    // }),
+    // Colorizer
+    languages.registerDocumentSemanticTokensProvider(
+      { language: languageName, scheme: 'file' },
       {
-        provideCompletionItems(document, position, token, context): ProviderResult<CompletionItem[]> {
-          return provideCompletions(document, position, context);
-        },
-        resolveCompletionItem(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem> {
-          return resolveCompletionItem(item, token);
+        provideDocumentSemanticTokens(document: TextDocument, ct: CancellationToken) {
+          return provideSemanticTokens(document, ct);
         },
       },
-      '.'
-    ),
-    languages.registerHoverProvider(languageName, {
-      provideHover(document, position, token) {
-        return provideHover(document, position);
-      },
-    })
+      semanticTokensLegend
+    )
   );
 }
 
 function registerEditorEvents(context: ExtensionContext) {
   context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((e: TextEditor | undefined) => {
+    window.onDidChangeActiveTextEditor((e: TextEditor | undefined) => {
       if (!e) {
         return;
       }
@@ -68,16 +84,16 @@ function registerEditorEvents(context: ExtensionContext) {
         updateDiagnostics(e);
       }
     }),
-    vscode.workspace.onDidOpenTextDocument((e: TextDocument) => {
+    workspace.onDidOpenTextDocument((e: TextDocument) => {
       RDT.addTextDocument(e);
     }),
-    vscode.workspace.onDidCloseTextDocument((e: TextDocument) => {
+    workspace.onDidCloseTextDocument((e: TextDocument) => {
       RDT.removeTextDocument(e);
     })
   );
 
-  vscode.workspace.textDocuments.forEach((e) => {
-    if (e.languageId.toUpperCase() === 'ARM') {
+  workspace.textDocuments.forEach((e) => {
+    if (e.languageId.toLowerCase() === languageName) {
       RDT.addTextDocument(e);
     }
   });
@@ -85,6 +101,6 @@ function registerEditorEvents(context: ExtensionContext) {
 
 function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand('arm.openInstructionDocumentation', openCurrentInstructionDocumenation)
+    commands.registerCommand('arm.openInstructionDocumentation', openCurrentInstructionDocumenation)
   );
 }

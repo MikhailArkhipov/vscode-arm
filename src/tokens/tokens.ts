@@ -16,15 +16,25 @@ export enum TokenType {
   Directive = 2,
   // Instruction is like directive above except it does not start with .
   Instruction = 3,
+  Comma = 4,
   // Anything between commas like label: instr a, b, #(1 + 2)
-  Sequence = 4,
-  Comma = 5,
+  String = 5,
+  Number = 6,
+  Register = 7,
+  OpenBracket = 8,
+  CloseBracket = 9,
+  OpenBrace = 10,
+  CloseBrace = 11,
+  OpenCurly = 12,
+  CloseCurly = 13,
+  Sequence = 14,
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
-  LineComment = 6, // C-type // or GNU @, ARM ; or # (legacy).
-  BlockComment = 7, // /* ... */, GNU
-  EndOfLine = 8,
-  EndOfStream = 9,
+  LineComment = 15, // C-type // or GNU @, ARM ; or # (legacy).
+  BlockComment = 16, // /* ... */, GNU
+  Operator = 17,
+  EndOfLine = 18,
+  EndOfStream = 19
 }
 
 /**

@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as coreArm from '../instructions/core.json';
-import * as neon from '../instructions/neon.json';
+import * as coreArm from '../instructions/arch32.json';
+import * as neon from '../instructions/neon32.json';
 
 import { TextRange, TextRangeImpl } from '../text/textRange';
 import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from './parseError';

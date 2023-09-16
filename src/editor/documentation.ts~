@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as asmInstuctions from '../arm-instructions.json';
+import * as asmInstuctions from '../instructions/arch32.json';
 
 import { HttpClient } from 'typed-rest-client/HttpClient';
 import { MarkdownString } from 'vscode';

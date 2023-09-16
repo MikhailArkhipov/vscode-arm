@@ -1,0 +1,16 @@
+{
+  "instructions": {
+    "ADRP": {
+      "desc": "Form PC-relative address to 4KB page adds an immediate value that is shifted left by 12 bits, to the PC value to form a PC-relative address, with the bottom 12 bits masked out, and writes the result to the destination register.",
+      "docName": "",
+      "operands": "RL"
+    },
+    "ASRV": {
+      "desc": "Arithmetic Shift Right Variable shifts a register value right by a variable number of bits, shifting in copies of its sign bit, and writes the result to the destination register.",
+      "operands": "RR RRR"
+    },    
+    "AT": {
+      "desc": "Address Translate. An alias of SYS."
+    }
+  }
+}

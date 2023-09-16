@@ -1,4 +1,7 @@
 {
+  "displayName": "Arm A-profile A32/T32 Instruction Set",
+  "feature": "AArch32",
+  "docUrl": "https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions",
   "architectures": {
     "5": "ARMv5T*, ARMv6*, ARMv7",
     "5E": "ARMv5TE ARMv6*, ARMv7",
@@ -28,7 +31,8 @@
     "R": "Register",
     "O": "Any operand",
     "C": "Rotation",
-    "N": "A number",
+    "N": "Number",
+    "L": "Label",
     "*": "Any sequence of operands",
     "<empty>": "No operands"
   },

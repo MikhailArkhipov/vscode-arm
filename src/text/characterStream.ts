@@ -140,7 +140,7 @@ export class CharacterStream {
   }
 
   public isAtString(): boolean {
-    return this.currentChar === Char.DoubleQuote;
+    return this.currentChar === Char.DoubleQuote || this.currentChar === Char.SingleQuote;
   }
 }
 

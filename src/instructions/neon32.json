@@ -1,4 +1,12 @@
 {
+  "displayName": "NEON SIMD extension for the Arm Cortex-A and Arm Cortex-R",
+  "feature": "NEON",
+  "docUrl": "https://developer.arm.com/documentation/dui0473/m/neon-instructions",
+  "readme": [
+    "'desc' is documentation that appears in hover and completions.",
+    "'specifier' lists valid instruction datatypes. Ex VABA.S8",
+    "'type' lists instruction variations. Ex VAC appears as VACGE, VACLT, ..."
+  ],
   "instructions": {
     "specifierRequired": true,
     "VABA": {
@@ -249,19 +257,23 @@
     },
     "VQDMULH": {
       "desc": "Vector Saturating Doubling Multiply Returning High Half.",
-      "specifier": "S16 S32"
+      "specifier": "S16 S32",
+      "docName": "vqdmulh--by-vector-or-by-scalar-"
     },
     "VQDMULL": {
       "desc": "Vector Saturating Doubling Multiply Long.",
-      "specifier": "S16 S32"
+      "specifier": "S16 S32",
+      "docName": "vqdmull--by-vector-or-by-scalar-"
     },
     "VQMOVN": {
       "desc": "Vector Saturating Move and Narrow.",
-      "specifier": "S16 S32 S64"
+      "specifier": "S16 S32 S64",
+      "docName": "vqmovn-and-vqmovun"
     },
     "VQMOVUN": {
       "desc": "Vector Saturating Move and Narrow.",
-      "specifier": "S16 S32 S64"
+      "specifier": "S16 S32 S64",
+      "docName": "vqmovn-and-vqmovun"
     },
     "VQNEG": {
       "desc": "Vector Saturating Negate.",
@@ -269,20 +281,23 @@
     },
     "VQRDMULH": {
       "desc": "Vector Saturating Rounding Doubling Multiply Returning High Half.",
-      "specifier": "S16 S32"
+      "specifier": "S16 S32",
+      "docName": "vqrdmulh--by-vector-or-by-scalar-"
     },
     "VQRSHL": {
       "desc": "Vector Saturating Rounding Shift Left by signed variable.",
-      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vqrshl--by-signed-variable-"
     },
     "VQRSHRN": {
       "desc": "Vector Saturating Shift Right, Narrow, with Rounding.",
-      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vqrshrn-and-vqrshrun--by-immediate-"
     },
     "VQRSHRUN": {
       "desc": "Vector Saturating Rounding Shift Left by signed variable.",
-      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vqrshrn-and-vqrshrun--by-immediate-"
     }
-
   }
 }

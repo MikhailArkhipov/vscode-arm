@@ -1,0 +1,12 @@
+{
+  "displayName": "Common Short Sequence Compression instructions",
+  "feature": "FEAT_CSSC",
+  "infoSource": "https://developer.arm.com/downloads/-/exploration-tools/feature-names-for-a-profile",
+  "docUrl": "https://developer.arm.com/documentation/ddi0602/2023-06/Base-Instructions/",
+  "instructions": {
+    "ABS": {
+      "desc": "Absolute value computes the absolute value of the signed integer value in the source register, and writes the result to the destination register.",
+      "docName": "ABS--Absolute-value-"
+    }
+  }
+}

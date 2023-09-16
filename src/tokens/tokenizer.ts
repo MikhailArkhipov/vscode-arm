@@ -4,12 +4,12 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
-import { AssemblerConfig } from "../syntaxConfig";
-import { Char, Character } from "../text/charCodes";
-import { CharacterStream } from "../text/characterStream";
-import { TextProvider } from "../text/text";
-import { TextRangeCollection } from "../text/textRangeCollection";
-import { Token, TokenType } from "./tokens";
+import { AssemblerConfig } from '../syntaxConfig';
+import { Char, Character } from '../text/charCodes';
+import { CharacterStream } from '../text/characterStream';
+import { TextProvider } from '../text/text';
+import { TextRangeCollection } from '../text/textRangeCollection';
+import { Token, TokenType } from './tokens';
 
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
@@ -49,7 +49,7 @@ export class Tokenizer {
       // If token was added, the position must change.
       if (this._cs.position === start && !this._cs.isEndOfStream()) {
         // We must advance or tokenizer hangs
-        throw new Error("Tokenizer: infinite loop");
+        throw new Error('Tokenizer: infinite loop');
       }
     }
     return {
@@ -111,7 +111,7 @@ export class Tokenizer {
 
     const length = this._cs.position - start;
     if (length > 0) {
-      if (this._cs.text.getText(start, 1) === ".") {
+      if (this._cs.text.getText(start, 1) === '.') {
         this.addToken(TokenType.Directive, start, length);
       } else {
         this.addToken(TokenType.Instruction, start, length);
@@ -127,23 +127,74 @@ export class Tokenizer {
       this.skipWhitespace();
       // Possible /* */
       this.handleCBlockComment();
+      this.skipWhitespace();
+
+      if (this._cs.isAtString()) {
+        this.handleString();
+        continue;
+      }
+
+      if (Character.isDecimal(this._cs.currentChar)) {
+        this.handleNumber();
+        continue;
+      }
+
+      switch (this._cs.currentChar) {
+        case Char.Hash:
+          this.handleImmediate();
+          continue;
+
+        case Char.Equal:
+        case Char.Plus:
+        case Char.Minus:
+        case Char.ExclamationMark:
+          this.addTokenAndMove(TokenType.Operator, this._cs.position);
+          continue;
+
+        case Char.OpenBracket:
+          this.addTokenAndMove(TokenType.OpenBracket, this._cs.position);
+          continue;
+        case Char.CloseBracket:
+          this.addTokenAndMove(TokenType.CloseBracket, this._cs.position);
+          continue;
+        case Char.OpenBrace:
+          this.addTokenAndMove(TokenType.OpenCurly, this._cs.position);
+          continue;
+        case Char.CloseBrace:
+          this.addTokenAndMove(TokenType.CloseCurly, this._cs.position);
+          continue;
+        case Char.OpenParenthesis:
+          this.addTokenAndMove(TokenType.OpenBrace, this._cs.position);
+          continue;
+        case Char.CloseParenthesis:
+          this.addTokenAndMove(TokenType.CloseBrace, this._cs.position);
+          continue;
+        case Char.Comma:
+          this.addTokenAndMove(TokenType.Comma, this._cs.position);
+          continue;
+      }
 
       const start = this._cs.position;
-      this.skipSequence();
+      if (Character.isAnsiLetter(this._cs.currentChar)) {
+        this.skipIdentifier();
+      } else {
+        this.skipWord(false);
+      }
+      
       const length = this._cs.position - start;
-      if (length > 0) {
+      if (length === 0) {
+        break;
+      }
+
+      if (this.isRegister(start, length)) {
+        this.addToken(TokenType.Register, start, length);
+      } else {
         this.addToken(TokenType.Sequence, start, length);
       }
 
       this.skipWhitespace();
       // Possible /* */
       this.handleCBlockComment();
-
-      if (this._cs.currentChar === Char.Comma) {
-        this.addTokenAndMove(TokenType.Comma, this._cs.position);
-      } else {
-        break;
-      }
     }
   }
 
@@ -156,27 +207,18 @@ export class Tokenizer {
         // GNU # comment, must start at the beginning of the line.
         // TODO: support GNU preprocessing instructions, like #IF? This
         // would be for semantic coloring or special completions after #.
-        return (
-          this._config.hashComments &&
-          (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0)
-        );
+        return this._config.hashComments && (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0);
 
       case Char.Slash:
         return this._config.cLineComments && this._cs.nextChar === Char.Slash;
 
       default:
-        return (
-          this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar
-        );
+        return this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar;
     }
   }
 
   private isAtBlockComment(): boolean {
-    return (
-      this._config.cBlockComments &&
-      this._cs.currentChar === Char.Slash &&
-      this._cs.nextChar === Char.Asterisk
-    );
+    return this._config.cBlockComments && this._cs.currentChar === Char.Slash && this._cs.nextChar === Char.Asterisk;
   }
 
   private handleLineComment(): void {
@@ -201,10 +243,7 @@ export class Tokenizer {
     const start = this._cs.position;
     this._cs.advance(2); // Skip /*
     while (!this._cs.isEndOfStream()) {
-      if (
-        this._cs.currentChar === Char.Asterisk &&
-        this._cs.nextChar === Char.Slash
-      ) {
+      if (this._cs.currentChar === Char.Asterisk && this._cs.nextChar === Char.Slash) {
         this._cs.advance(2);
         break;
       }
@@ -221,11 +260,7 @@ export class Tokenizer {
     }
   }
 
-  private addComment(
-    tokenType: TokenType,
-    start: number,
-    length: number
-  ): void {
+  private addComment(tokenType: TokenType, start: number, length: number): void {
     if (this._separateComments) {
       this._comments.push(new Token(tokenType, start, length));
     } else {
@@ -253,6 +288,83 @@ export class Tokenizer {
     }
   }
 
+  private handleString(): void {
+    const start = this._cs.position;
+    const ch = this._cs.currentChar;
+
+    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
+      if (this._cs.currentChar === ch) {
+        this._cs.moveToNextChar();
+        break;
+      }
+      this._cs.moveToNextChar();
+    }
+    const length = this._cs.position - start;
+    if (length > 0) {
+      this.addToken(TokenType.String, start, length);
+    }
+  }
+
+  private handleImmediate(): void {
+    const start = this._cs.position;
+    this._cs.moveToNextChar();
+    this.skipNumber();
+
+    const length = this._cs.position - start;
+    if (length > 0) {
+      this.addToken(TokenType.Number, start, length);
+    }
+  }
+
+  private handleNumber() {
+    const start = this._cs.position;
+    this.skipNumber();
+
+    const length = this._cs.position - start;
+    if (length > 0) {
+      this.addToken(TokenType.Number, start, length);
+    }
+  }
+
+  private skipNumber(): void {
+    // Skip leading '0x', if any
+    const hex = this._cs.currentChar === Char._0 && (this._cs.nextChar === Char.x || this._cs.nextChar === Char.X);
+    if (hex) {
+      this._cs.advance(2);
+    }
+
+    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
+      if (hex) {
+        if (!Character.isHex(this._cs.currentChar)) {
+          break;
+        }
+      } else {
+        if (!Character.isDecimal(this._cs.currentChar)) {
+          break;
+        }
+      }
+      this._cs.moveToNextChar();
+    }
+  }
+
+  private skipIdentifier(): void {
+    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
+      if (Character.isLetter(this._cs.currentChar)) {
+        this._cs.moveToNextChar();
+        continue;
+      }
+      if (Character.isDecimal(this._cs.currentChar)) {
+        this._cs.moveToNextChar();
+        continue;
+      }
+      if (this._cs.currentChar === Char.$) {
+        this._cs.moveToNextChar();
+        continue;
+      }
+      break;
+    }
+  }
+
   // Word is any non-whitespace sequence, optionally breaking after colon.
   // Help with extraction of labels and instruction names.
   private skipWord(breakOnColon: boolean): void {
@@ -272,29 +384,28 @@ export class Tokenizer {
     }
   }
 
-  // Sequence may contain whitepace and strings. For example,
-  // expression between commas: INSTR x1, x2, (1 + 'a').
-  // This may change if expression parsing gets implemented.
-  private skipSequence(): void {
-    const start = this._cs.position;
-    let lastNonWsPosition = this._cs.position;
-    while (
-      !this._cs.isEndOfStream() &&
-      !this._cs.isAtNewLine() &&
-      this._cs.currentChar !== Char.Comma &&
-      !this.isAtLineComment() &&
-      !this.isAtBlockComment()
-    ) {
-      if (!this._cs.isWhiteSpace()) {
-        lastNonWsPosition = this._cs.position;
+  private isRegister(start: number, length: number): boolean {
+    if (length < 2 || length > 3) {
+      return false;
+    }
+
+    const t = this._cs.text.getText(start, length).toUpperCase();
+    const ch1 = t.charCodeAt(0);
+    const ch2 = t.charCodeAt(1);
+    const ch3 = length === 3 ? t.charCodeAt(2) : Char._1;
+
+    if ((ch1 === Char.R || ch1 === Char.X) && Character.isDecimal(ch2) && Character.isDecimal(ch3)) {
+      return true;
+    }
+
+    if (length === 2) {
+      if (ch1 === Char.S && ch2 === Char.P) {
+        return true;
       }
-      this._cs.moveToNextChar();
+      if (ch1 === Char.F && ch2 === Char.P) {
+        return true;
+      }
     }
-    if (
-      this._cs.position > start &&
-      Character.isWhitespace(this._cs.prevChar)
-    ) {
-      this._cs.position = lastNonWsPosition + 1;
-    }
+    return false;
   }
 }

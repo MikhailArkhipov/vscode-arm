@@ -1,4 +1,6 @@
 {
+  "displayName": "Vector Floating-Point (VFP)",
+  "feature": "VFP",
   "instructions": {
     "VABS": {
       "desc": "Floating-point absolute value.",
