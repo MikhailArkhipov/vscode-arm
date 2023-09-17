@@ -37,6 +37,13 @@ test("Single directive", () => {
   expect(result.getItemAt(0).tokenType).toBe(TokenType.Directive);
 });
 
+test("Single string", () => {
+  const result = TestUtil.tokenizeToArray("'string'");
+  expect(result.length).toBe(8);
+  expect(result.count).toBe(1);
+  expect(result.getItemAt(0).tokenType).toBe(TokenType.String);
+});
+
 test("Label with directive", () => {
   const actual = TestUtil.tokenizeToArray("label: .fill");
   expect(actual.length).toBe(12);

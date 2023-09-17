@@ -33,8 +33,9 @@ export enum TokenType {
   LineComment = 15, // C-type // or GNU @, ARM ; or # (legacy).
   BlockComment = 16, // /* ... */, GNU
   Operator = 17,
-  EndOfLine = 18,
-  EndOfStream = 19
+  Exclamation = 18,
+  EndOfLine = 19,
+  EndOfStream = 20
 }
 
 /**

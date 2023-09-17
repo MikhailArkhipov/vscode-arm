@@ -11,6 +11,8 @@ import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { Token, TokenType } from './tokens';
 
+const endOfStreamToken = new Token(TokenType.EndOfStream, 0, 0);
+
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
   private _cs: CharacterStream;
@@ -18,6 +20,8 @@ export class Tokenizer {
   private _separateComments: boolean;
   private _comments: Token[] = [];
   private _text: TextProvider;
+  private _pastLabel = false;
+  private _pastInstruction = false;
 
   constructor(config: AssemblerConfig) {
     this._config = config;
@@ -39,13 +43,12 @@ export class Tokenizer {
     this._comments = [];
     this._tokens = [];
     this._text = textProvider;
+    this._pastLabel = this._pastInstruction = false;
 
     const end = Math.min(textProvider.length, start + length);
     while (!this._cs.isEndOfStream() && this._cs.position < end) {
       const start = this._cs.position;
-      this.addNextLine();
-      this.handleLineBreak();
-
+      this.addNextToken();
       // If token was added, the position must change.
       if (this._cs.position === start && !this._cs.isEndOfStream()) {
         // We must advance or tokenizer hangs
@@ -59,142 +62,189 @@ export class Tokenizer {
   }
 
   // [label:] [instruction] [sequence[, sequence[, ...]]] [//|@] comment <eol>
-  private addNextLine(): void {
-    // Possible /* */ before label
-    this.skipWhitespace();
-    this.handleCBlockComment();
-
-    this.skipWhitespace();
-    this.handleLabel();
+  private addNextToken(): void {
     this.skipWhitespace();
 
-    // Possible /* */ before instruction
-    this.handleCBlockComment();
-    this.skipWhitespace();
+    switch (this._cs.currentChar) {
+      case Char.Equal:
+      case Char.Plus:
+      case Char.Minus:
+        this.addTokenAndMove(TokenType.Operator, this._cs.position);
+        return;
+      case Char.ExclamationMark:
+        this.addTokenAndMove(TokenType.Exclamation, this._cs.position);
+        return;
+      case Char.OpenBracket:
+        this.addTokenAndMove(TokenType.OpenBracket, this._cs.position);
+        return;
+      case Char.CloseBracket:
+        this.addTokenAndMove(TokenType.CloseBracket, this._cs.position);
+        return;
+      case Char.OpenBrace:
+        this.addTokenAndMove(TokenType.OpenCurly, this._cs.position);
+        return;
+      case Char.CloseBrace:
+        this.addTokenAndMove(TokenType.CloseCurly, this._cs.position);
+        return;
+      case Char.OpenParenthesis:
+        this.addTokenAndMove(TokenType.OpenBrace, this._cs.position);
+        return;
+      case Char.CloseParenthesis:
+        this.addTokenAndMove(TokenType.CloseBrace, this._cs.position);
+        return;
+      case Char.Comma:
+        this.addTokenAndMove(TokenType.Comma, this._cs.position);
+        return;
 
-    this.handleInstruction();
-    this.skipWhitespace();
+      case Char.LineFeed:
+      case Char.CarriageReturn:
+        this.handleLineBreak();
+        this._pastLabel = this._pastInstruction = false;
+        return;
 
-    // Possible /* */ before operands
-    this.handleCBlockComment();
-    this.handleOperands();
-    this.skipWhitespace();
+      case Char.SingleQuote:
+      case Char.DoubleQuote:
+        this.handleString();
+        return;
 
-    // Possible /* */ before line comment
-    this.handleCBlockComment();
-    this.skipWhitespace();
+      default:
+        // Handle possible comments
+        this.handleCBlockComment();
+        if (this.isAtLineComment()) {
+          this.handleLineComment();
+        }
 
-    this.handleLineComment();
-    this.skipWhitespace();
+        this.handleOtherChars();
+        break;
+    }
   }
 
-  private handleLabel(): void {
-    const start = this._cs.position;
-    // Try label. Skip to after :, to comma, whitespace or <eol>
-    this.skipWord(true);
+  // Handle more complicated cases.
+  private handleOtherChars(): void {
+    // Labels only appear first in line.
+    // TODO: At the moment we don't care about cases like
+    // /* */ /* */ ... label: instruction.
+    if (!this._pastLabel && this.tryLabel()) {
+      this._pastLabel = true;
+      return;
+    }
+    // Not a label. Try instruction. Instructions appear first in line of after a label.
+    if (!this._pastInstruction && this.tryInstructionOrDirective()) {
+      this._pastLabel = this._pastInstruction = true;
+      return;
+    }
+    // Handle other cases
+    this.handleOperands();
+  }
 
-    const length = this._cs.position - start;
-    if (length > 0) {
-      if (this._cs.prevChar === Char.Colon) {
-        // Looks like a label. We are not going to ensure that this is indeed
-        // a label, we'll let parser to perform name check.
-        this.addToken(TokenType.Label, start, length);
-        return;
+  private tryLabel(): boolean {
+    if (!this.isPositionFirstInLine()) {
+      return false;
+    }
+    // https://sourceware.org/binutils/docs/as/Symbol-Names.html
+    // Symbol starts with _, $ or a letter, then can contain underscores,/ dollar signs, letters or digits.
+    // Exception is local labels which are numbers possible ending with dollar signs and optionally, 'b' or 'f'.
+    // TODO: Currently we consider labels ending in colon. ARM labels without colons are not yet supported.
+    const start = this._cs.position;
+    const ch = this._cs.currentChar;
+
+    if (Character.isAnsiLetter(ch) || ch === Char.Underscore) {
+      // Regular label. Skip first char, then letters, underscores, digits,
+      // dollar signs until colon, whitespace, odd characters or EOL/EOF.
+      this._cs.moveToNextChar();
+      this.skipSequence((ch: number): boolean => {
+        return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
+      });
+    } else if (Character.isDecimal(ch)) {
+      // Local label. 22:, 33$: or .L77$:
+      this.skipSequence((ch: number): boolean => {
+        return Character.isDecimal(ch);
+      });
+      if (this._cs.currentChar === Char.$) {
+        this.skipSequence((ch: number): boolean => {
+          return ch === Char.$;
+        });
       }
+    } else if (ch === Char.Period && this._cs.nextChar === Char.L) {
+      // Local label .L77$: this is rare since it mostly appears in generated code
+      // after as or ld transform local label names into .L?? form. Also allow dash here.
+      this._cs.advance(2);
+      this.skipSequence((ch: number): boolean => {
+        return (
+          Character.isAnsiLetter(ch) ||
+          Character.isDecimal(ch) ||
+          ch === Char.Underscore ||
+          ch === Char.$ ||
+          ch === Char.Minus
+        );
+      });
+    }
+
+    // We must be at : now or else it is not label.
+    if (this._cs.currentChar === Char.Colon) {
+      this._cs.moveToNextChar();
+      this.addToken(TokenType.Label, start, this._cs.position - start);
+      return true;
     }
     this._cs.position = start;
+    return false;
   }
 
-  private handleInstruction(): void {
+  private tryInstructionOrDirective(): boolean {
+    if (!this.isPositionAfterLabelOrAtLineStart()) {
+      return false;
+    }
+    // Instructions begin with letters. Numbers can appear before period.
+    // Instructions allow suffixes that may contain other periods. Ex .F32.F64 suffix in NEON.
+    // Here we do not perform complete syntax check or verify against list
+    // of valid instructions. Tokenizer only supplies candidates: reasonable name
+    // filtration as well as check in the caller that the instruction either appear
+    // first in line or sits right after the label.
     const start = this._cs.position;
-    this.skipWord(false);
+    this.skipSequence((ch: number): boolean => {
+      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Period;
+    });
 
     const length = this._cs.position - start;
-    if (length > 0) {
-      if (this._cs.text.getText(start, 1) === '.') {
-        this.addToken(TokenType.Directive, start, length);
-      } else {
-        this.addToken(TokenType.Instruction, start, length);
-      }
+    if (length === 0) {
+      return false;
     }
+
+    if (length > 1 && this._cs.text.getText(start, 1).charCodeAt(0) === Char.Period) {
+      this.addToken(TokenType.Directive, start, length);
+    } else {
+      this.addToken(TokenType.Instruction, start, length);
+    }
+    return true;
   }
 
   private handleOperands(): void {
-    // Split sequence into '? comma ? comma ...' where '?' is any character
-    // sequence except comments. The sequence may include inner whitespace,
-    // leading and trailing are trimmed down.
-    while (!this._cs.isAtNewLine() && !this._cs.isEndOfStream()) {
-      this.skipWhitespace();
-      // Possible /* */
-      this.handleCBlockComment();
-      this.skipWhitespace();
+    if (this._cs.currentChar === Char.Hash) {
+      this.handleImmediate();
+      return;
+    }
 
-      if (this._cs.isAtString()) {
-        this.handleString();
-        continue;
-      }
+    if (Character.isDecimal(this._cs.currentChar)) {
+      this.handleNumber();
+      return;
+    }
 
-      if (Character.isDecimal(this._cs.currentChar)) {
-        this.handleNumber();
-        continue;
-      }
+    const start = this._cs.position;
+    if (Character.isAnsiLetter(this._cs.currentChar)) {
+      this.skipSequence((ch: number): boolean => {
+        return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
+      });
+    }
 
-      switch (this._cs.currentChar) {
-        case Char.Hash:
-          this.handleImmediate();
-          continue;
+    const length = this._cs.position - start;
+    if (length === 0) {
+      return;
+    }
 
-        case Char.Equal:
-        case Char.Plus:
-        case Char.Minus:
-        case Char.ExclamationMark:
-          this.addTokenAndMove(TokenType.Operator, this._cs.position);
-          continue;
-
-        case Char.OpenBracket:
-          this.addTokenAndMove(TokenType.OpenBracket, this._cs.position);
-          continue;
-        case Char.CloseBracket:
-          this.addTokenAndMove(TokenType.CloseBracket, this._cs.position);
-          continue;
-        case Char.OpenBrace:
-          this.addTokenAndMove(TokenType.OpenCurly, this._cs.position);
-          continue;
-        case Char.CloseBrace:
-          this.addTokenAndMove(TokenType.CloseCurly, this._cs.position);
-          continue;
-        case Char.OpenParenthesis:
-          this.addTokenAndMove(TokenType.OpenBrace, this._cs.position);
-          continue;
-        case Char.CloseParenthesis:
-          this.addTokenAndMove(TokenType.CloseBrace, this._cs.position);
-          continue;
-        case Char.Comma:
-          this.addTokenAndMove(TokenType.Comma, this._cs.position);
-          continue;
-      }
-
-      const start = this._cs.position;
-      if (Character.isAnsiLetter(this._cs.currentChar)) {
-        this.skipIdentifier();
-      } else {
-        this.skipWord(false);
-      }
-
-      const length = this._cs.position - start;
-      if (length === 0) {
-        break;
-      }
-
-      if (this.isRegister(start, length)) {
-        this.addToken(TokenType.Register, start, length);
-      } else {
-        this.addToken(TokenType.Sequence, start, length);
-      }
-
-      this.skipWhitespace();
-      // Possible /* */
-      this.handleCBlockComment();
+    if (this.isRegister(start, length)) {
+      this.addToken(TokenType.Register, start, length);
+    } else {
+      this.addToken(TokenType.Sequence, start, length);
     }
   }
 
@@ -222,10 +272,6 @@ export class Tokenizer {
   }
 
   private handleLineComment(): void {
-    if (!this.isAtLineComment()) {
-      return;
-    }
-
     const start = this._cs.position;
     this._cs.moveToEol();
 
@@ -290,20 +336,17 @@ export class Tokenizer {
 
   private handleString(): void {
     const start = this._cs.position;
-    const ch = this._cs.currentChar;
+    const openQuote = this._cs.currentChar;
 
     this._cs.moveToNextChar();
-    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
-      if (this._cs.currentChar === ch) {
-        this._cs.moveToNextChar();
-        break;
-      }
+    this.skipSequence((ch: number): boolean => {
+      return ch !== openQuote;
+    });
+
+    if (this._cs.currentChar === openQuote) {
       this._cs.moveToNextChar();
     }
-    const length = this._cs.position - start;
-    if (length > 0) {
-      this.addToken(TokenType.String, start, length);
-    }
+    this.addToken(TokenType.String, start, this._cs.position - start);
   }
 
   private handleImmediate(): void {
@@ -312,19 +355,17 @@ export class Tokenizer {
     this.skipNumber();
 
     const length = this._cs.position - start;
-    if (length > 0) {
+    if (length > 1) {
       this.addToken(TokenType.Number, start, length);
+    } else {
+      this.addToken(TokenType.Sequence, start, length);
     }
   }
 
   private handleNumber() {
     const start = this._cs.position;
     this.skipNumber();
-
-    const length = this._cs.position - start;
-    if (length > 0) {
-      this.addToken(TokenType.Number, start, length);
-    }
+    this.addToken(TokenType.Number, start, this._cs.position - start);
   }
 
   private skipNumber(): void {
@@ -345,43 +386,6 @@ export class Tokenizer {
         }
       }
       this._cs.moveToNextChar();
-    }
-  }
-
-  private skipIdentifier(): void {
-    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
-      if (Character.isLetter(this._cs.currentChar)) {
-        this._cs.moveToNextChar();
-        continue;
-      }
-      if (Character.isDecimal(this._cs.currentChar)) {
-        this._cs.moveToNextChar();
-        continue;
-      }
-      if (this._cs.currentChar === Char.$) {
-        this._cs.moveToNextChar();
-        continue;
-      }
-      break;
-    }
-  }
-
-  // Word is any non-whitespace sequence, optionally breaking after colon.
-  // Help with extraction of labels and instruction names.
-  private skipWord(breakOnColon: boolean): void {
-    while (
-      !this._cs.isEndOfStream() &&
-      !this._cs.isAtNewLine() &&
-      !this._cs.isWhiteSpace() &&
-      this._cs.currentChar !== Char.Comma &&
-      !this._cs.isAtString() &&
-      !this.isAtLineComment() &&
-      !this.isAtBlockComment()
-    ) {
-      this._cs.moveToNextChar();
-      if (breakOnColon && this._cs.prevChar === Char.Colon) {
-        break;
-      }
     }
   }
 
@@ -408,5 +412,69 @@ export class Tokenizer {
       }
     }
     return false;
+  }
+
+  // Checks if position is first in line OR is preceded by block comments only.
+  // Example: \nFoo, \n/* */ Foo, \n/* */ /* */ Foo, etc.
+  private isPositionFirstInLine(): boolean {
+    for (let i = this._tokens.length - 1; i >= 0; i--) {
+      const t = this._tokens[i];
+      switch (t.tokenType) {
+        case TokenType.EndOfLine:
+          return true;
+        case TokenType.BlockComment:
+          continue;
+        default:
+          return false;
+      }
+    }
+    return true;
+  }
+
+  // Checks if position is first in line, preceded by only
+  // block comments or a label.
+  // Example: \nFoo, \n/* */ Foo, \n/* */ Foo: /* */ Bar, etc.
+  private isPositionAfterLabelOrAtLineStart(): boolean {
+    for (let i = this._tokens.length - 1; i >= 0; i--) {
+      const t = this._tokens[i];
+      switch (t.tokenType) {
+        case TokenType.EndOfLine:
+          return true;
+        case TokenType.BlockComment:
+          continue;
+        case TokenType.Label:
+          return true;
+        default:
+          return false;
+      }
+    }
+    return true;
+  }
+
+  private isPositionAfterInstruction(): boolean {
+    for (let i = this._tokens.length - 1; i >= 0; i--) {
+      const t = this._tokens[i];
+      switch (t.tokenType) {
+        case TokenType.EndOfLine:
+          return false;
+        case TokenType.BlockComment:
+          continue;
+        case TokenType.Instruction:
+          return true;
+        default:
+          return false;
+      }
+    }
+    return false;
+  }
+
+  private lastToken(): Token {
+    return this._tokens.length > 0 ? this._tokens[this._tokens.length - 1] : endOfStreamToken;
+  }
+
+  private skipSequence(check: (ch: number) => boolean): void {
+    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine() && check(this._cs.currentChar)) {
+      this._cs.moveToNextChar();
+    }
   }
 }
