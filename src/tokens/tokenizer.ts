@@ -180,7 +180,7 @@ export class Tokenizer {
       } else {
         this.skipWord(false);
       }
-      
+
       const length = this._cs.position - start;
       if (length === 0) {
         break;
@@ -292,6 +292,7 @@ export class Tokenizer {
     const start = this._cs.position;
     const ch = this._cs.currentChar;
 
+    this._cs.moveToNextChar();
     while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
       if (this._cs.currentChar === ch) {
         this._cs.moveToNextChar();

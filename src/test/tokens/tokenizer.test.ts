@@ -70,11 +70,11 @@ test("Label + instruction with operands", () => {
   verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Instruction,
-    TokenType.Sequence,
+    TokenType.Register,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Register,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Register,
   ]);
 });
 
@@ -82,7 +82,7 @@ test("Label + directive + string", () => {
   const text = 'label: .ascii "a b c"';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.Sequence]);
+  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
 });
 
 test("Line breaks", () => {
@@ -92,14 +92,14 @@ test("Line breaks", () => {
   verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Directive,
-    TokenType.Sequence,
+    TokenType.String,
     TokenType.EndOfLine,
     TokenType.Instruction,
-    TokenType.Sequence,
+    TokenType.Register,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Register,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Number,
     TokenType.EndOfLine,
   ]);
 });
