@@ -200,14 +200,14 @@ export class Tokenizer {
     // of valid instructions. Tokenizer only supplies candidates: reasonable name
     // filtration as well as check in the caller that the instruction either appear
     // first in line or sits right after the label.
-    const start = this._cs.position; 
+    const start = this._cs.position;
     const directive = this._cs.currentChar === Char.Period;
-    if(directive) {
+    if (directive) {
       this._cs.moveToNextChar();
     }
 
     const validFirstChar = Character.isAnsiLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore;
-    if(!validFirstChar) {
+    if (!validFirstChar) {
       return false;
     }
 
@@ -249,9 +249,14 @@ export class Tokenizer {
 
     const length = this._cs.position - start;
     if (length === 0) {
+      // Unclear what it is. Just skip to whitespace and record as a sequence.
+      this._cs.skipToWhitespace();
+      if (this._cs.position > start) {
+        this.addToken(TokenType.Sequence, start, this._cs.position - start);
+      }
       return;
-    }
-
+    }  
+    
     if (this._pastInstruction && this.isRegister(start, length)) {
       this.addToken(TokenType.Register, start, length);
     } else {
@@ -367,10 +372,10 @@ export class Tokenizer {
   }
 
   private handleNumber(start: number): void {
-    if(this.skipNumber()) {
+    if (this.skipNumber()) {
       this.addToken(TokenType.Number, start, this._cs.position - start);
     } else {
-      this.addToken(TokenType.Sequence, start, this._cs.position - start);     
+      this.addToken(TokenType.Sequence, start, this._cs.position - start);
     }
   }
 
@@ -396,10 +401,10 @@ export class Tokenizer {
       return true;
     });
 
-    // Sanity check - number ends in whitespace, line break, operator, string, 
+    // Sanity check - number ends in whitespace, line break, operator, string,
     // or a comma. 2R, 1_3 are not numbers.
-    if(!this._cs.isWhiteSpace() && !this._cs.isEndOfStream()) {
-      if(Character.isLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore) {
+    if (!this._cs.isWhiteSpace() && !this._cs.isEndOfStream()) {
+      if (Character.isLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore) {
         return false;
       }
     }

@@ -156,7 +156,7 @@ test('Not an instruction', () => {
     TokenType.Sequence,
     TokenType.Sequence,
     TokenType.Comma,
-    TokenType.Sequence
+    TokenType.Sequence,
   ]);
 });
 
@@ -232,6 +232,18 @@ test('Unclosed C comment', () => {
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   verifyTokenTypes(actual, [TokenType.BlockComment]);
+});
+
+test('Not a comment', () => {
+  const text = '; not a comment \n\n';
+  const actual = TestUtil.tokenizeToArray(text);
+  verifyTokenTypes(actual, [
+    TokenType.Sequence,
+    TokenType.Sequence,
+    TokenType.Sequence,
+    TokenType.Sequence,
+    TokenType.EndOfLine,
+  ]);
 });
 
 function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
