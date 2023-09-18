@@ -31,8 +31,8 @@ test('Align statement + // line comment to instruction', () => {
 });
 
 test('Align statement + ; line comment to instruction', () => {
-  const result = format('        SUBS R7, R0, #1     ; and repeat if R0 != 1');
-  expect(result).toBe('        SUBS R7, R0, #1     ; and repeat if R0 != 1');
+  const result = format('        SUBS R7, R0, #1     // and repeat if R0 != 1');
+  expect(result).toBe('    SUBS    R7, R0, #1 // and repeat if R0 != 1');
 });
 
 function formatWithOptions(original: string, options: FormatOptions): string {

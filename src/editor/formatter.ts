@@ -227,7 +227,7 @@ export class Formatter {
 
     for (let i = 0; i < this._tokens.length; i++) {
       const ct = this._tokens.currentToken;
-      // Only measure labels that are on the same like as instructions/directives
+      // Only measure labels that are on the same line as instructions/directives
       switch (ct.tokenType) {
         case TokenType.Label:
           if (ct.length > maxLabelLength) {
@@ -247,12 +247,15 @@ export class Formatter {
     this._tokens.position = currentPosition;
     const ts = this._options.tabSize;
     // label:<tab>instruction<tab>//comment
-    const instructionsIndent = (Math.floor((maxLabelLength + ts - 1) / ts) + 1) * ts;
+    // Instruction indent is label length + 1 rounded up to the nearest tab multiple.
+    const instructionsIndent = Math.ceil((maxLabelLength + 1) / ts) * ts;
     let operandsIndent = instructionsIndent;
     if (maxInstructionLength > 0) {
       // no instructions found
       operandsIndent = instructionsIndent + maxInstructionLength;
-      operandsIndent = Math.floor((operandsIndent + ts - 1) / ts) * ts;
+      // Operands indent is instruction indent + max instruction + 1
+      // rounded up to the nearest tab multiple
+      operandsIndent = Math.ceil((instructionsIndent + maxInstructionLength + 1) / ts) * ts;
     }
 
     return {
