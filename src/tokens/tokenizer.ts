@@ -200,9 +200,20 @@ export class Tokenizer {
     // of valid instructions. Tokenizer only supplies candidates: reasonable name
     // filtration as well as check in the caller that the instruction either appear
     // first in line or sits right after the label.
-    const start = this._cs.position;
+    const start = this._cs.position; 
+    const directive = this._cs.currentChar === Char.Period;
+    if(directive) {
+      this._cs.moveToNextChar();
+    }
+
+    const validFirstChar = Character.isAnsiLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore;
+    if(!validFirstChar) {
+      return false;
+    }
+
+    this._cs.moveToNextChar();
     this.skipSequence((ch: number): boolean => {
-      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Period;
+      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Period || ch === Char.Underscore;
     });
 
     const length = this._cs.position - start;
@@ -210,7 +221,7 @@ export class Tokenizer {
       return false;
     }
 
-    if (length > 1 && this._cs.text.getText(start, 1).charCodeAt(0) === Char.Period) {
+    if (length > 1 && directive) {
       this.addToken(TokenType.Directive, start, length);
     } else {
       this.addToken(TokenType.Instruction, start, length);
@@ -225,7 +236,7 @@ export class Tokenizer {
     }
 
     if (Character.isDecimal(this._cs.currentChar)) {
-      this.handleNumber();
+      this.handleNumber(this._cs.position);
       return;
     }
 
@@ -241,7 +252,7 @@ export class Tokenizer {
       return;
     }
 
-    if (this.isRegister(start, length)) {
+    if (this._pastInstruction && this.isRegister(start, length)) {
       this.addToken(TokenType.Register, start, length);
     } else {
       this.addToken(TokenType.Sequence, start, length);
@@ -352,41 +363,47 @@ export class Tokenizer {
   private handleImmediate(): void {
     const start = this._cs.position;
     this._cs.moveToNextChar();
-    this.skipNumber();
+    this.handleNumber(start);
+  }
 
-    const length = this._cs.position - start;
-    if (length > 1) {
-      this.addToken(TokenType.Number, start, length);
+  private handleNumber(start: number): void {
+    if(this.skipNumber()) {
+      this.addToken(TokenType.Number, start, this._cs.position - start);
     } else {
-      this.addToken(TokenType.Sequence, start, length);
+      this.addToken(TokenType.Sequence, start, this._cs.position - start);     
     }
   }
 
-  private handleNumber() {
-    const start = this._cs.position;
-    this.skipNumber();
-    this.addToken(TokenType.Number, start, this._cs.position - start);
-  }
-
-  private skipNumber(): void {
+  private skipNumber(): boolean {
     // Skip leading '0x', if any
     const hex = this._cs.currentChar === Char._0 && (this._cs.nextChar === Char.x || this._cs.nextChar === Char.X);
     if (hex) {
       this._cs.advance(2);
     }
 
-    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine()) {
+    // TODO: floating point?
+    const start = this._cs.position;
+    this.skipSequence((ch: number): boolean => {
       if (hex) {
-        if (!Character.isHex(this._cs.currentChar)) {
-          break;
+        if (!Character.isHex(ch)) {
+          return false;
         }
       } else {
-        if (!Character.isDecimal(this._cs.currentChar)) {
-          break;
+        if (!Character.isDecimal(ch)) {
+          return false;
         }
       }
-      this._cs.moveToNextChar();
+      return true;
+    });
+
+    // Sanity check - number ends in whitespace, line break, operator, string, 
+    // or a comma. 2R, 1_3 are not numbers.
+    if(!this._cs.isWhiteSpace() && !this._cs.isEndOfStream()) {
+      if(Character.isLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore) {
+        return false;
+      }
     }
+    return this._cs.position - start > 0;
   }
 
   private isRegister(start: number, length: number): boolean {
