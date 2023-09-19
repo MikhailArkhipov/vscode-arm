@@ -8,7 +8,7 @@ import {
   getInstructionDocumentation,
 } from "./documentation";
 import { RDT } from "./rdt";
-import { Settings, getSetting } from "./settings";
+import { Settings, getSetting } from "../core/settings";
 
 export async function provideHover(
   td: TextDocument,

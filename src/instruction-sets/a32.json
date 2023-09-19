@@ -304,7 +304,6 @@
       "desc": "Move from Register to Coprocessor",
       "arch": "5 x6M",
       "operands": "",
-      "type": "2 R",
       "docName": "mcr-and-mcr2"
     },
     "MCRR": {

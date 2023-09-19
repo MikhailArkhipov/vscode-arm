@@ -1,10 +1,11 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { findInstruction } from '../editor/instructionInfo';
+import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from '../parser/parseError';
 import { TextRange, TextRangeImpl } from '../text/textRange';
-import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from './parseError';
 
+// Fully parsed intruction with attached information
+// that came from the instruction set JSON file.
 export interface Instruction {
   readonly fullName: string; // LDMIANE.W
   readonly name: string; // 'LDM' - core name
@@ -13,12 +14,16 @@ export interface Instruction {
   readonly condition: string; // NE/Z/...
   readonly specifier: string; // .W or .N
   readonly architecture: string; // x6M, etc.
-  // name on ARM documentation site, if different from instruction core name.
-  readonly docName: string; 
+  // Name part of the documentation page URL on ARM documentation site, 
+  // if different from the instruction core name. Ex {baseURL}/pld--pldw--and-pli
+  readonly docName: string;
   readonly description: string;
+  // Name of the parent instruction set.
+  readonly instructionSet: string;
 
   readonly errors: readonly ParseError[];
 
+  // InstructionInfo, split out for convenience.
   readonly allowedSpecifiers: readonly string[];
   readonly allowedSuffixes: readonly string[];
   readonly allowedTypes: readonly string[];
@@ -27,9 +32,9 @@ export interface Instruction {
 
 export function parseInstruction(text: string, range: TextRange): Instruction {
   text = text.toUpperCase();
-  const i = new InstructionImpl(text, range);
-  i.parse(text);
-  return i;
+  const instruction = new InstructionImpl(text, range);
+  instruction.parse(text);
+  return instruction;
 }
 
 class InstructionImpl implements Instruction {
@@ -46,6 +51,7 @@ class InstructionImpl implements Instruction {
   public architecture: string = '';
   public docName: string = '';
   public description: string;
+  public instructionSet: string;
 
   public allowedSpecifiers: string[]; // Allowed specifiers like .W or .T or I64
   public allowedSuffixes: readonly string[] = []; // Allowed suffixes, like CPS/CPSIE/CPSID
@@ -61,8 +67,21 @@ class InstructionImpl implements Instruction {
     this.range = range;
   }
 
+  // Given text fragment figure out what instruction it is, considering
+  // possible suffixes, condifions, type and width modifiers.
+  // General case: NAME{type}{suffix}{condition}{width}.
+
+  // Since we don't know instruction name initially, we cannot just fetch
+  // information on suffixes and types from the instruction set file.
+  // Hence we build list of candidates by first letter, then iterate
+  // over them, finding the right instruction. Selection candidate by
+  // a single letter does not work well with VFP/NEON since FP instructions
+  // all start with V. Therefore if candidate name begins with V, we use
+  // 3 letters since there are no FP instruction with just 2 letters.
+
   public parse(text: string): void {
-    // Get modifier first (the part after period, like B.W)
+    // Get width specifier first (the part after period, like B.W
+    // or, with FP, .I8 or .F32.F64)
     this.parseSpecifier(text);
     text = text.substring(0, text.length - this.specifier.length);
 
@@ -70,6 +89,10 @@ class InstructionImpl implements Instruction {
     this.parseCondition(text);
     text = text.substring(0, text.length - this.condition.length);
 
+    // Chicken and egg issue - in order to parse type and suffix, we need to know 
+    // if instruction supports types. However, in order to get this information
+    // from the instruction set file, we need to know instruction name which 
+    // we don't until we find out core name of the instruction.
     this.parseType(text);
     text = text.substring(0, text.length - this.type.length);
 
@@ -111,8 +134,6 @@ class InstructionImpl implements Instruction {
     });
   }
 
-
-
   // Parse any instruction-specific syntax
   // private parseSpecific(text: string): void {
   //   if (text.length > 0) {
@@ -123,7 +144,7 @@ class InstructionImpl implements Instruction {
   //   }
   // }
 
-  // Parse possible '.X' width modifiers. Typically .W, .N, .T
+  // Parse possible '.X' width specifier. Typically .W, .N, .T.
   private parseSpecifier(text: string): void {
     // In NEON specifier is a datatype modifier and may include period.
     // For example, see VCVT.S32.F32 - thereforewe must search from the start.
@@ -165,7 +186,7 @@ class InstructionImpl implements Instruction {
 
   private fillInfo(): boolean {
     const info = findInstruction(this.name);
-     if (info) {
+    if (info) {
       this.allowedSpecifiers = info.specifier?.split(' ') ?? [];
       this.allowedSuffixes = info.suffix?.split(' ') ?? [];
       this.allowedTypes = info.type?.split(' ') ?? [];
@@ -226,3 +247,6 @@ class InstructionImpl implements Instruction {
     }
   }
 }
+
+
+

@@ -12,7 +12,7 @@ import {
 } from 'vscode';
 import { RDT } from './rdt';
 import { TokenType } from '../tokens/tokens';
-import { Settings, getSetting } from './settings';
+import { Settings, getSetting } from '../core/settings';
 
 const tokenTypes = ['instruction', 'directive', 'register', 'label', 'comment', 'number', 'string', 'operator'];
 const tokenModifiers = [];

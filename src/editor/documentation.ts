@@ -3,8 +3,8 @@
 
 import { HttpClient } from 'typed-rest-client/HttpClient';
 import { MarkdownString } from 'vscode';
-import { Instruction, parseInstruction } from '../parser/parseInstruction';
 import { TextRange } from '../text/textRange';
+import { Instruction, parseInstruction } from '../instructions/instruction';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const TurndownService = require('turndown');

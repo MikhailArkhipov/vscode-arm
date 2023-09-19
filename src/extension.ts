@@ -21,8 +21,8 @@ import { updateDiagnostics } from './editor/diagnostics';
 import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
-import { setExtensionPath } from './editor/utility';
-import { loadInstructionSets } from './editor/instructionInfo';
+import { setExtensionPath } from './core/utility';
+import { loadInstructionSets } from './instructions/instructionSet';
 
 const languageName = 'arm';
 

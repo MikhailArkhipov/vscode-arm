@@ -11,7 +11,7 @@ import {
 import { FormatOptions, Formatter } from "./formatter";
 import { SyntaxConfig, AssemblerType } from "../syntaxConfig";
 import { TextStream } from "../text/textStream";
-import { Settings, getSetting } from "./settings";
+import { Settings, getSetting } from "../core/settings";
 
 export function formatDocument(
   document: TextDocument,
