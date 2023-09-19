@@ -5,6 +5,7 @@ import { HttpClient } from 'typed-rest-client/HttpClient';
 import { MarkdownString } from 'vscode';
 import { TextRange } from '../text/textRange';
 import { Instruction, parseInstruction } from '../instructions/instruction';
+import { getInstructionSet } from '../instructions/instructionSet';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const TurndownService = require('turndown');
@@ -34,14 +35,17 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
 }
 
 export function getInstructionDocumentation(instructionName: string): MarkdownString | undefined {
-    const pi = parseInstruction(instructionName, TextRange.fromBounds(0, 0));
+  const pi = parseInstruction(instructionName, TextRange.fromBounds(0, 0));
+  if (pi.name && pi.name.length > 0) {
     const arch = pi.architecture && pi.architecture.length > 0 ? pi.architecture : 'All';
     const docUrl = getInstructionDocumentationUrl(pi);
     return new MarkdownString(`${pi.description}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
+  }
 }
 
 export function getInstructionDocumentationUrl(instruction: Instruction): string | undefined {
-  const baseUrl = 'https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions';
-  const docUrl = `${baseUrl}/${instruction.docName ? instruction.docName : instruction.name}`;
-  return docUrl;
+  const set = getInstructionSet(instruction.instructionSet);
+  if (set && set.docUrl && set.docUrl.length > 0) {
+    return `${set.docUrl}/${instruction.docName ? instruction.docName : instruction.name}`;
+  }
 }

@@ -1,8 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { Settings, getSetting } from '../core/settings';
 import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from '../parser/parseError';
 import { TextRange, TextRangeImpl } from '../text/textRange';
+import { findInstructionInfo } from './instructionSet';
 
 // Fully parsed intruction with attached information
 // that came from the instruction set JSON file.
@@ -14,7 +16,7 @@ export interface Instruction {
   readonly condition: string; // NE/Z/...
   readonly specifier: string; // .W or .N
   readonly architecture: string; // x6M, etc.
-  // Name part of the documentation page URL on ARM documentation site, 
+  // Name part of the documentation page URL on ARM documentation site,
   // if different from the instruction core name. Ex {baseURL}/pld--pldw--and-pli
   readonly docName: string;
   readonly description: string;
@@ -89,60 +91,18 @@ class InstructionImpl implements Instruction {
     this.parseCondition(text);
     text = text.substring(0, text.length - this.condition.length);
 
-    // Chicken and egg issue - in order to parse type and suffix, we need to know 
-    // if instruction supports types. However, in order to get this information
-    // from the instruction set file, we need to know instruction name which 
-    // we don't until we find out core name of the instruction.
-    this.parseType(text);
-    text = text.substring(0, text.length - this.type.length);
+    if (this.fillInstructionInfo(text)) {
+      this.parseType(text);
+      text = text.substring(0, text.length - this.type.length);
 
-    this.parseSuffix(text);
-    text = text.substring(0, text.length - this.suffix.length);
+      this.parseSuffix(text);
+      this.name = text.substring(0, text.length - this.suffix.length);
 
-    if (this.fillInfo()) {
-      this.validateSpecifier();
-      this.validateSuffix();
+      this.validate();
     } else {
       this.errors.push(new InstructionError(ParseErrorType.UnknownInstruction, this.range));
     }
   }
-
-  // Attempt to separate type from core name.
-  private parseType(text: string): void {
-    if (!this.allowedTypes || this.allowedTypes.length === 0) {
-      return;
-    }
-    this.allowedTypes.forEach((t) => {
-      if (text.endsWith(t)) {
-        this.type = t;
-        this.name = text.substring(0, text.length - t.length);
-        return;
-      }
-    });
-  }
-
-  private parseSuffix(text: string): void {
-    if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
-      return;
-    }
-    this.allowedSuffixes.forEach((t) => {
-      if (text.endsWith(t)) {
-        this.type = t;
-        this.name = text.substring(0, text.length - t.length);
-        return;
-      }
-    });
-  }
-
-  // Parse any instruction-specific syntax
-  // private parseSpecific(text: string): void {
-  //   if (text.length > 0) {
-  //     const parseFunc = this._parseMap[text.charCodeAt(0)];
-  //     if (parseFunc) {
-  //       parseFunc(this, text);
-  //     }
-  //   }
-  // }
 
   // Parse possible '.X' width specifier. Typically .W, .N, .T.
   private parseSpecifier(text: string): void {
@@ -184,8 +144,8 @@ class InstructionImpl implements Instruction {
     }
   }
 
-  private fillInfo(): boolean {
-    const info = findInstruction(this.name);
+  private fillInstructionInfo(candidateName: string): boolean {
+    const info = findInstructionInfo(candidateName);
     if (info) {
       this.allowedSpecifiers = info.specifier?.split(' ') ?? [];
       this.allowedSuffixes = info.suffix?.split(' ') ?? [];
@@ -197,6 +157,42 @@ class InstructionImpl implements Instruction {
       return true;
     }
     return false;
+  }
+
+  // Attempt to separate type from core name.
+  private parseType(text: string): void {
+    if (!this.allowedTypes || this.allowedTypes.length === 0) {
+      return;
+    }
+    for (let i = 0; i < this.allowedTypes.length; i++) {
+      const t = this.allowedTypes[i];
+      if (text.endsWith(t)) {
+        this.type = t;
+        this.name = text.substring(0, text.length - t.length);
+        return;
+      }
+    }
+  }
+
+  private parseSuffix(text: string): void {
+    if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
+      return;
+    }
+    for (let i = 0; i < this.allowedSuffixes.length; i++) {
+      const s = this.allowedSuffixes[i];
+      if (text.endsWith(s)) {
+        this.suffix = s;
+        this.name = text.substring(0, text.length - s.length);
+        return;
+      }
+    }
+  }
+
+  private validate(): void {
+    if (getSetting<boolean>(Settings.editorValidation, true)) {
+      this.validateSpecifier();
+      this.validateSuffix();
+    }
   }
 
   private validateSpecifier(): void {
@@ -225,7 +221,7 @@ class InstructionImpl implements Instruction {
     if (!this.allowedSpecifiers || this.allowedSpecifiers.length === 0) {
       // Instruction does not permit width or datatype
       this.errors.push(new ParseError(ParseErrorType.SpecifierNotAllowed, ErrorLocation.Token, range));
-    } else if (!(this.specifier.toUpperCase() in this.allowedSpecifiers)) {
+    } else if (this.allowedSpecifiers.indexOf(this.specifier.toUpperCase()) < 0) {
       // Specifier is present but not recognized.
       this.errors.push(new ParseError(ParseErrorType.UnknownSpecifier, ErrorLocation.Token, range));
     }
@@ -241,12 +237,9 @@ class InstructionImpl implements Instruction {
     if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
       // Instruction does not allow suffix.
       this.errors.push(new ParseError(ParseErrorType.SuffixNotAllowed, ErrorLocation.Token, range));
-    } else if (!(this.suffix.toUpperCase() in this.allowedSuffixes)) {
+    } else if (this.allowedSuffixes.indexOf(this.suffix.toUpperCase()) < 0) {
       // Specifier is present but not recognized.
       this.errors.push(new ParseError(ParseErrorType.UnknownSuffix, ErrorLocation.Token, range));
     }
   }
 }
-
-
-

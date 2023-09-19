@@ -114,6 +114,11 @@
             "default": true,
             "description": "Editor provides documentation when hovering over instruction and directives."
           },
+          "arm.editor.validation": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor checks for syntax errors, invalid labels and directives, unknown instructions, etc."
+          },
           "arm.instructions": {
             "type": "string",
             "default": "a32;neon32",

@@ -16,6 +16,8 @@ export namespace Settings {
   export const formattingUpperCaseDirectives = "arm.formatting.upperCaseDirectives";
   // Completion options
   export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
+  // Va;idation
+  export const editorValidation = "arm.editor.validation";
 }
 
 export function getConfiguration(name: string): WorkspaceConfiguration {

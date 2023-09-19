@@ -3,7 +3,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Instruction } from './instruction';
 import { Settings, getSetting } from '../core/settings';
 import { getExtensionPath, outputMessage } from '../core/utility';
 
@@ -13,18 +12,18 @@ export interface InstructionSet {
   readonly docUrl: string;
   // Try to parse and locate instruction info based on
   // the instruction name as it appears in the code.
-  findInstruction(candidateName: string): Instruction | undefined;
+  findInstruction(candidateName: string): InstructionJsonInfo | undefined;
 }
 
 interface InstructionSetJson {
   readonly displayName: string;
   readonly feature: string;
   readonly docUrl: string;
-  readonly instructions: readonly { name: string; instr: InstructionJson }[];
+  readonly instructions: readonly { name: string; instr: InstructionJsonInfo }[];
 }
 
 // Instruction information as it appears in the instruction set JSON file.
-export interface InstructionJson {
+export interface InstructionJsonInfo {
   readonly desc: string;
   readonly operands: string | undefined;
   readonly type: string | undefined;
@@ -39,7 +38,7 @@ class InstructionSetImpl implements InstructionSet {
   public readonly feature: string;
   public readonly docUrl: string;
 
-  private _map: Map<string, InstructionJson> = new Map();
+  private _map: Map<string, InstructionJsonInfo> = new Map();
 
   constructor(json: InstructionSetJson) {
     this.displayName = json.displayName;
@@ -53,17 +52,32 @@ class InstructionSetImpl implements InstructionSet {
     }
   }
 
-  public findInstruction(candidateName: string): Instruction | undefined {
-    throw new Error('Method not implemented.');
+  // Chicken and egg issue - in order to parse type and suffix, we need to know
+  // if instruction supports types. However, in order to get this information
+  // from the instruction set file, we need to know instruction name which
+  // we don't until we find out core name of the instruction.
+  public findInstruction(candidateName: string): InstructionJsonInfo | undefined {
+    loadInstructionSets();
+    // Try candidate as is
+    let info = this.findInstructionJsonInfo(candidateName);
+    if (!info && candidateName.length > 1) {
+      // Chop off character assuming there is a suffix.
+      info = this.findInstructionJsonInfo(candidateName.substring(0, candidateName.length - 1));
+      if (!info && candidateName.length > 2) {
+        // Perhaps it is a two-letter type.
+        info = this.findInstructionJsonInfo(candidateName.substring(0, candidateName.length - 2));
+      }
+    }
+    return info;
   }
 
-  private findInstructionJson(name: string): InstructionJson | undefined {
-    loadInstructionSets();
+  private findInstructionJsonInfo(name: string): InstructionJsonInfo | undefined {
     const setNames = Array.from(instructionSets.keys());
-   for(let i = 0; i < setNames.length; i++) {
+    const candidate = name.toUpperCase();
+    for (let i = 0; i < setNames.length; i++) {
       const set = instructionSets.get(setNames[i]);
       if (set) {
-        const instr = this._map.get(name.toUpperCase());
+        const instr = this._map.get(candidate);
         if (instr) {
           return instr;
         }
@@ -77,7 +91,7 @@ const instructionSets: Map<string, InstructionSetImpl> = new Map();
 
 // Loads instruction sets from JSON. Sets to load come from settings.
 export function loadInstructionSets() {
-  const setFolder = path.join(getExtensionPath(), 'src', 'instruction-sets');
+  const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
   const setNames = getSetting<string>(Settings.instructions, 'a32;neon32').split(';');
   setNames.forEach((sn: string): void => {
     loadInstructionSet(setFolder, sn);
@@ -86,6 +100,19 @@ export function loadInstructionSets() {
 
 export function getInstructionSet(name: string): InstructionSet | undefined {
   return instructionSets.get(name);
+}
+
+export function findInstructionInfo(candidateName: string): InstructionJsonInfo | undefined {
+  const setNames = Array.from(instructionSets.keys());
+  for (let i = 0; i < setNames.length; i++) {
+    const set = instructionSets.get(setNames[i]);
+    if (set) {
+      const found = set.findInstruction(candidateName);
+      if (found) {
+        return found;
+      }
+    }
+  }
 }
 
 // Load single instruction set.
