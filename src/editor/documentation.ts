@@ -1,14 +1,16 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as asmInstuctions from '../instructions/arch32.json';
-
 import { HttpClient } from 'typed-rest-client/HttpClient';
 import { MarkdownString } from 'vscode';
+import { Instruction, parseInstruction } from '../parser/parseInstruction';
+import { TextRange } from '../text/textRange';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const TurndownService = require('turndown');
+let turndownService: any;
 
+// Fetches GAS/GCC directive docs from online source.
 export async function getDirectiveDocumentation(directiveName: string): Promise<MarkdownString | undefined> {
   // TODO: caching
   const baseUrl = 'https://sourceware.org/binutils/docs/as';
@@ -24,7 +26,7 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
     }
 
     const content = await response.readBody();
-    const turndownService = new TurndownService();
+    turndownService = turndownService ?? new TurndownService();
     const markdown = turndownService.turndown(content);
     return markdown;
     // eslint-disable-next-line no-empty
@@ -32,21 +34,14 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
 }
 
 export function getInstructionDocumentation(instructionName: string): MarkdownString | undefined {
-  const props = asmInstuctions.instructions[instructionName.toUpperCase()];
-  if (props) {
-    const arch = props.arch.length > 0 ? props.arch : 'All';
-    const docUrl = getInstructionDocumentationUrl(instructionName);
-    return new MarkdownString(`${props.desc}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
-  }
+    const pi = parseInstruction(instructionName, TextRange.fromBounds(0, 0));
+    const arch = pi.architecture && pi.architecture.length > 0 ? pi.architecture : 'All';
+    const docUrl = getInstructionDocumentationUrl(pi);
+    return new MarkdownString(`${pi.description}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
 }
 
-export function getInstructionDocumentationUrl(instructionName: string): string | undefined {
-  const props = asmInstuctions.instructions[instructionName];
-  if (!props) {
-    return;
-  }
-  const docName = props['docName'];
+export function getInstructionDocumentationUrl(instruction: Instruction): string | undefined {
   const baseUrl = 'https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions';
-  const docUrl = `${baseUrl}/${docName ? docName : instructionName}`;
+  const docUrl = `${baseUrl}/${instruction.docName ? instruction.docName : instruction.name}`;
   return docUrl;
 }

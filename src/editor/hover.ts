@@ -8,22 +8,21 @@ import {
   getInstructionDocumentation,
 } from "./documentation";
 import { RDT } from "./rdt";
-
-const emptyHover = new Hover('');
+import { Settings, getSetting } from "./settings";
 
 export async function provideHover(
   td: TextDocument,
   position: Position
-): Promise<Hover> {
+): Promise<Hover | undefined> {
   const ed = RDT.getEditorDocument(td);
-  if (!ed) {
-    return emptyHover;
+  if (!ed || !getSetting<boolean>(Settings.showHover, true)) {
+    return;
   }
 
   const offset = td.offsetAt(position);
   const tokenIndex = ed.tokens.getItemContaining(offset);
   if (tokenIndex < 0 || ed.isComment(tokenIndex)) {
-    return emptyHover;
+    return;
   }
 
   const token = ed.tokens.getItemAt(tokenIndex);
@@ -41,5 +40,5 @@ export async function provideHover(
       break;
   }
 
-  return doc ? new Hover(doc) : emptyHover;
+  return doc ? new Hover(doc) : undefined;
 }

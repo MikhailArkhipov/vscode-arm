@@ -15,17 +15,21 @@ import {
   workspace,
   commands,
 } from 'vscode';
-//import { provideHover } from './editor/hover';
+import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';
-//import { provideCompletions, resolveCompletionItem } from './editor/completions';
 import { updateDiagnostics } from './editor/diagnostics';
 import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
+import { setExtensionPath } from './editor/utility';
+import { loadInstructionSets } from './editor/instructionInfo';
 
 const languageName = 'arm';
 
 export async function activate(context: ExtensionContext) {
+  setExtensionPath(context.extensionPath);
+  loadInstructionSets();
+
   // Register capabilities
   registerCapabilities(context);
   registerEditorEvents(context);
@@ -55,12 +59,12 @@ function registerCapabilities(context: ExtensionContext): void {
     //   },
     //   '.'
     // ),
-    // // Hover tooltip
-    // languages.registerHoverProvider(languageName, {
-    //   provideHover(document, position, token) {
-    //     return provideHover(document, position);
-    //   },
-    // }),
+    // Hover tooltip
+    languages.registerHoverProvider(languageName, {
+      provideHover(document, position, token) {
+        return provideHover(document, position);
+      },
+    }),
     // Colorizer
     languages.registerDocumentSemanticTokensProvider(
       { language: languageName, scheme: 'file' },

@@ -12,6 +12,7 @@ import {
 } from 'vscode';
 import { RDT } from './rdt';
 import { TokenType } from '../tokens/tokens';
+import { Settings, getSetting } from './settings';
 
 const tokenTypes = ['instruction', 'directive', 'register', 'label', 'comment', 'number', 'string', 'operator'];
 const tokenModifiers = [];
@@ -19,7 +20,7 @@ export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenMo
 
 export function provideSemanticTokens(td: TextDocument, ct: CancellationToken): ProviderResult<SemanticTokens> {
   const ed = RDT.getEditorDocument(td);
-  if (!ed) {
+  if (!ed || !getSetting<boolean>(Settings.showColors, true)) {
     return;
   }
   // on line 1, characters 1-5 are a class declaration

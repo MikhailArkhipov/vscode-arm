@@ -1,9 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as coreArm from '../instructions/arch32.json';
-import * as neon from '../instructions/neon32.json';
-
+import { findInstruction } from '../editor/instructionInfo';
 import { TextRange, TextRangeImpl } from '../text/textRange';
 import { ErrorLocation, InstructionError, ParseError, ParseErrorType } from './parseError';
 
@@ -14,7 +12,12 @@ export interface Instruction {
   readonly suffix: string;
   readonly condition: string; // NE/Z/...
   readonly specifier: string; // .W or .N
-  readonly errors: ParseError[];
+  readonly architecture: string; // x6M, etc.
+  // name on ARM documentation site, if different from instruction core name.
+  readonly docName: string; 
+  readonly description: string;
+
+  readonly errors: readonly ParseError[];
 
   readonly allowedSpecifiers: readonly string[];
   readonly allowedSuffixes: readonly string[];
@@ -40,6 +43,9 @@ class InstructionImpl implements Instruction {
   public type: string = '';
   public condition: string = ''; // NE/Z/...
   public specifier: string = ''; // Width, like .W or .N r a datatype, such as NEON .I16, etc.
+  public architecture: string = '';
+  public docName: string = '';
+  public description: string;
 
   public allowedSpecifiers: string[]; // Allowed specifiers like .W or .T or I64
   public allowedSuffixes: readonly string[] = []; // Allowed suffixes, like CPS/CPSIE/CPSID
@@ -64,11 +70,11 @@ class InstructionImpl implements Instruction {
     this.parseCondition(text);
     text = text.substring(0, text.length - this.condition.length);
 
-    // Over to instruction-specific parsing
     this.parseType(text);
     text = text.substring(0, text.length - this.type.length);
 
-    // this.parseSpecific(text);
+    this.parseSuffix(text);
+    text = text.substring(0, text.length - this.suffix.length);
 
     if (this.fillInfo()) {
       this.validateSpecifier();
@@ -91,6 +97,21 @@ class InstructionImpl implements Instruction {
       }
     });
   }
+
+  private parseSuffix(text: string): void {
+    if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
+      return;
+    }
+    this.allowedSuffixes.forEach((t) => {
+      if (text.endsWith(t)) {
+        this.type = t;
+        this.name = text.substring(0, text.length - t.length);
+        return;
+      }
+    });
+  }
+
+
 
   // Parse any instruction-specific syntax
   // private parseSpecific(text: string): void {
@@ -143,22 +164,17 @@ class InstructionImpl implements Instruction {
   }
 
   private fillInfo(): boolean {
-    let info = coreArm[this.name];
-    if (!info) {
-      info = neon[this.name];
-      if (info) {
-        this.neon = true;
-      }
-    }
-
-    if (info) {
-      this.allowedSpecifiers = info['specifier']?.split(' ') ?? [];
-      this.allowedSuffixes = info['suffix']?.split(' ') ?? [];
-      this.allowedTypes = info['type']?.split(' ') ?? [];
-      this.operandsFormats = info['operands']?.split(' ') ?? [];
+    const info = findInstruction(this.name);
+     if (info) {
+      this.allowedSpecifiers = info.specifier?.split(' ') ?? [];
+      this.allowedSuffixes = info.suffix?.split(' ') ?? [];
+      this.allowedTypes = info.type?.split(' ') ?? [];
+      this.operandsFormats = info.operands?.split(' ') ?? [];
+      this.docName = info.docName ?? '';
+      this.architecture = info.arch ?? '';
+      this.description = info.desc ?? '';
       return true;
     }
-
     return false;
   }
 

@@ -9,8 +9,8 @@ import { TextStream } from "../text/textStream";
 import { Tokenizer } from "../tokens/tokenizer";
 import { Token, TokenType } from "../tokens/tokens";
 import { TextRangeCollection } from '../text/textRangeCollection';
-import { Parser } from '../parser/parser';
-import { AstRoot } from '../AST/astRoot';
+// import { Parser } from '../parser/parser';
+// import { AstRoot } from '../AST/astRoot';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -92,9 +92,9 @@ export namespace TestUtil {
     return -1;
   }
 
-  export function parseText(text: string): AstRoot {
-    const config = SyntaxConfig.create(AssemblerType.GNU);
-    const p = new Parser();
-    return p.parse(new TextStream(text), config, 0);
-  }
+  // export function parseText(text: string): AstRoot {
+  //   const config = SyntaxConfig.create(AssemblerType.GNU);
+  //   const p = new Parser();
+  //   return p.parse(new TextStream(text), config, 0);
+  // }
 }

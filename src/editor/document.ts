@@ -4,8 +4,6 @@
 import * as vscode from 'vscode';
 
 import { Position, Range, TextDocument } from 'vscode';
-import { AstRoot } from '../AST/astRoot';
-import { Parser } from '../parser/parser';
 import { TextStream } from '../text/textStream';
 import { AssemblerType, SyntaxConfig } from '../syntaxConfig';
 import { Tokenizer } from '../tokens/tokenizer';
@@ -14,7 +12,7 @@ import { TextRangeCollection } from '../text/textRangeCollection';
 
 export class EditorDocument {
   private readonly _td: TextDocument;
-  private _ast: AstRoot | undefined;
+  //private _ast: AstRoot | undefined;
   private _tokens: TextRangeCollection<Token>;
   private _version: number;
 
@@ -22,13 +20,13 @@ export class EditorDocument {
     this._td = td;
   }
 
-  public get ast(): AstRoot {
-    if (!this._ast || this._ast.context.version !== this._td.version) {
-      const p = new Parser();
-      this._ast = p.parse(new TextStream(this._td.getText()), EditorDocument.syntaxConfig, this._td.version);
-    }
-    return this._ast;
-  }
+  // public get ast(): AstRoot {
+  //   if (!this._ast || this._ast.context.version !== this._td.version) {
+  //     const p = new Parser();
+  //     this._ast = p.parse(new TextStream(this._td.getText()), EditorDocument.syntaxConfig, this._td.version);
+  //   }
+  //   return this._ast;
+  // }
 
   public get tokens(): TextRangeCollection<Token> {
     // We are not building ASTs just yet, so provide tokens explicitly.

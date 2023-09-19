@@ -21,7 +21,7 @@
     "Assembly"
   ],
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.82.0"
   },
   "categories": [
     "Programming Languages",
@@ -88,17 +88,7 @@
             "type": "boolean",
             "default": false,
             "description": "Show advanced assembler directives in the completion list."
-          },
-          "arm.completion.showNeonInstructions": {
-            "type": "boolean",
-            "default": false,
-            "description": "Show NEON instructions in the completion list."
-          },
-          "arm.completion.A64": {
-            "type": "boolean",
-            "default": true,
-            "description": "Show 64-bit instructions in the completion list."
-          },
+          },        
           "arm.diagnostics.show": {
             "type": "boolean",
             "default": true,
@@ -112,7 +102,22 @@
           "arm.editor.coloring": {
             "type": "boolean",
             "default": true,
-            "description": "Editor provider item coloring."
+            "description": "Editor provides item coloring. Set to false if you prefer other coloring extension."
+          },
+          "arm.editor.completions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides completion list during typing."
+          },
+          "arm.editor.hover": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides documentation when hovering over instruction and directives."
+          },
+          "arm.instructions": {
+            "type": "string",
+            "default": "a32;neon32",
+            "description": "ARM instruction sets to use, separated by semicolon. Names match files in the instructions subfolder: a32, neon32, a64, cssc, mte, pauth, etc. "
           }
         }
       }
@@ -149,13 +154,13 @@
     "prettier": "prettier -c ."
   },
   "devDependencies": {
-    "@jest/globals": "^29.6.4",
-    "@types/jest": "^29.5.4",
-    "@types/node": "^14.18.33",
-    "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^6.6.0",
-    "@typescript-eslint/parser": "^6.6.0",
-    "@vscode/vsce": "^2.15.0",
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.6.2",
+    "@types/vscode": "^1.82.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "@vscode/vsce": "^2.21.0",
     "chai": "^4.3.8",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
@@ -164,7 +169,7 @@
     "eslint-plugin-n": "^16.0.2",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "jest": "^29.6.4",
+    "jest": "^29.7.0",
     "madge": "^6.1.0",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
@@ -172,7 +177,7 @@
   "dependencies": {
     "turndown": "^7.1.2",
     "typed-rest-client": "^1.8.11",
-    "vscode-languageclient": "^8.0.2"
+    "vscode-languageclient": "^8.1.0"
   },
   "jest": {
     "transform": {

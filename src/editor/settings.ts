@@ -1,22 +1,27 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as vscode from 'vscode';
+import { WorkspaceConfiguration, workspace } from "vscode";
 
 export namespace Settings {
-  export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
+  // General functionality
+  export const showCompletions = "arm.editor.completions";
+  export const showHover = "arm.editor.hover";
+  export const showColors = "arm.editor.coloring";
+  // Instruction set to use
+  export const instructions = "arm.instructions";
+  // Formatting options
   export const formattingSpaceAfterComma = "arm.formatting.spaceAfterComma";
   export const formattingUpperCaseInstructions = "arm.formatting.upperCaseInstructions";
   export const formattingUpperCaseDirectives = "arm.formatting.upperCaseDirectives";
-  export const completionShowNeonInstructions = "arm.completion.showNeonInstructions";
-  export const completionShowVfpInstructions = "arm.completion.showVfpInstructions";
-  export const completionShowMmxInstructions = "arm.completion.showMmxInstructions";
+  // Completion options
+  export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
 }
 
-export function getConfiguration(name: string): vscode.WorkspaceConfiguration {
-  return vscode.workspace.getConfiguration('vscode-arm');
+export function getConfiguration(name: string): WorkspaceConfiguration {
+  return workspace.getConfiguration('vscode-arm');
 }
 export function getSetting<T>(name: string, defaultValue: T): T {
-  const config = vscode.workspace.getConfiguration('vscode-arm');
+  const config = workspace.getConfiguration('vscode-arm');
   return config.get(name, defaultValue) as T;
 }

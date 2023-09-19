@@ -4,7 +4,7 @@
 import { Statement } from "../../AST/statement";
 import { TokenNode } from "../../AST/tokenNode";
 import { TokenType } from "../../tokens/tokens";
-import { TestUtil } from "../utility";
+import { TestUtil } from "../../test/utility";
 
 test("Empty string", () => {
     const root = TestUtil.parseText("");

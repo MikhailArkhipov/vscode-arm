@@ -869,10 +869,6 @@
       "operands": "RO RRO RN RRN",
       "suffix": "S"
     },
-    "SUBS": {
-      "desc": "Exception return, no stack",
-      "arch": "T2 x7M"
-    },
     "SVC": {
       "desc": "SuperVisor Call",
       "operands": "N"
