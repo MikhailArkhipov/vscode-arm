@@ -163,7 +163,7 @@ export class Formatter {
         break;
     }
     let text = this._text.getText(ct.start, ct.length);
-    if(ct.tokenType === TokenType.Instruction) {
+    if (ct.tokenType === TokenType.Instruction) {
       text = this._options.uppercaseInstructions ? text.toUpperCase() : text.toLowerCase();
     } else {
       text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
@@ -179,8 +179,8 @@ export class Formatter {
       case TokenType.Instruction:
       case TokenType.Directive:
         // Indent instruction, leave directive as is
-        if(this._options.alignOperands) {
-        lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+        if (this._options.alignOperands) {
+          lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
         } else {
           lineText.push(this.getWhitespace(1));
         }
