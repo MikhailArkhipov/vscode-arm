@@ -84,6 +84,11 @@
             "default": true,
             "description": "Emit directives in uppercase during formatting and completion."
           },
+          "arm.formatting.alignOperands": {
+            "type": "boolean",
+            "default": true,
+            "description": "Align operands on a tab margin."
+          },          
           "arm.completion.showAdvancedDirectives": {
             "type": "boolean",
             "default": false,

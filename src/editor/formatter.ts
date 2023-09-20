@@ -23,6 +23,7 @@ export class FormatOptions {
   public uppercaseDirectives: boolean;
   public uppercaseInstructions: boolean;
   public uppercaseRegisters: boolean;
+  public alignOperands: boolean;
   public ignoreComments: boolean;
 }
 
@@ -161,7 +162,13 @@ export class Formatter {
         lineText.push(this.getWhitespace(1));
         break;
     }
-    lineText.push(this._text.getText(ct.start, ct.length));
+    let text = this._text.getText(ct.start, ct.length);
+    if(ct.tokenType === TokenType.Instruction) {
+      text = this._options.uppercaseInstructions ? text.toUpperCase() : text.toLowerCase();
+    } else {
+      text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
+    }
+    lineText.push(text);
   }
 
   private appendOperand(tokens: Token[], i: number, lineText: string[]) {
@@ -172,7 +179,11 @@ export class Formatter {
       case TokenType.Instruction:
       case TokenType.Directive:
         // Indent instruction, leave directive as is
+        if(this._options.alignOperands) {
         lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+        } else {
+          lineText.push(this.getWhitespace(1));
+        }
         lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
