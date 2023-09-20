@@ -145,8 +145,9 @@ class InstructionImpl implements Instruction {
   }
 
   private async fillInstructionInfo(candidateName: string): Promise<boolean> {
-    const info = await findInstructionInfo(candidateName);
-    if (info) {
+    const infoTuple = await findInstructionInfo(candidateName);
+    if (infoTuple) {
+      const info = infoTuple.info;
       this.allowedSpecifiers = info.specifier?.split(' ') ?? [];
       this.allowedSuffixes = info.suffix?.split(' ') ?? [];
       this.allowedTypes = info.type?.split(' ') ?? [];
@@ -154,6 +155,7 @@ class InstructionImpl implements Instruction {
       this.docName = info.docName ?? '';
       this.architecture = info.arch ?? '';
       this.description = info.desc ?? '';
+      this.instructionSet = infoTuple.setName;
       return true;
     }
     return false;

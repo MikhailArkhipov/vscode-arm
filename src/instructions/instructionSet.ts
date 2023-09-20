@@ -13,7 +13,7 @@ export interface InstructionSet {
   readonly docUrl: string;
   // Try to parse and locate instruction info based on
   // the instruction name as it appears in the code.
-  findInstruction(candidateName: string): Promise<InstructionJsonInfo | undefined>;
+  findInstruction(candidateName: string): InstructionJsonInfo | undefined;
 }
 
 interface InstructionSetJson {
@@ -57,8 +57,7 @@ class InstructionSetImpl implements InstructionSet {
   // if instruction supports types. However, in order to get this information
   // from the instruction set file, we need to know instruction name which
   // we don't until we find out core name of the instruction.
-  public async findInstruction(candidateName: string): Promise<InstructionJsonInfo | undefined> {
-    await loadInstructionSets();
+  public findInstruction(candidateName: string): InstructionJsonInfo | undefined {
     // Try candidate as is
     let info = this.findInstructionJsonInfo(candidateName);
     if (!info && candidateName.length > 1) {
@@ -94,7 +93,7 @@ const instructionSets: Map<string, InstructionSetImpl> = new Map();
 export async function loadInstructionSets(): Promise<void> {
   const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
   const setNames = getSetting<string>(Settings.instructions, 'a32;neon32').split(';');
-  for(let i = 0; i < setNames.length; i++) {
+  for (let i = 0; i < setNames.length; i++) {
     await loadInstructionSet(setFolder, setNames[i]);
   }
 }
@@ -103,14 +102,17 @@ export function getInstructionSet(name: string): InstructionSet | undefined {
   return instructionSets.get(name);
 }
 
-export async function findInstructionInfo(candidateName: string): Promise<InstructionJsonInfo | undefined> {
+export async function findInstructionInfo(
+  candidateName: string
+): Promise<{ info: InstructionJsonInfo; setName: string } | undefined> {
+  await loadInstructionSets();
   const setNames = Array.from(instructionSets.keys());
   for (let i = 0; i < setNames.length; i++) {
     const set = instructionSets.get(setNames[i]);
     if (set) {
-      const found = await set.findInstruction(candidateName);
+      const found = set.findInstruction(candidateName);
       if (found) {
-        return found;
+        return { info: found, setName: setNames[i] };
       }
     }
   }
@@ -119,7 +121,7 @@ export async function findInstructionInfo(candidateName: string): Promise<Instru
 // Load single instruction set.
 function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
   const deferred = createDeferred<void>();
-  
+
   // Is the set already loaded?
   if (instructionSets.get(setName)) {
     deferred.resolve();

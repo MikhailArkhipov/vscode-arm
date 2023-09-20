@@ -37,9 +37,11 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
 export async function getInstructionDocumentation(instructionName: string): Promise<MarkdownString | undefined> {
   const pi = await parseInstruction(instructionName, TextRange.fromBounds(0, 0));
   if (pi.name && pi.name.length > 0) {
-    const arch = pi.architecture && pi.architecture.length > 0 ? pi.architecture : 'All';
     const docUrl = getInstructionDocumentationUrl(pi);
-    return new MarkdownString(`${pi.description}\n\n(CPU: ${arch})\n\n[Documentation](${docUrl})`);
+    if(pi.architecture && pi.architecture.length > 0) {
+      return new MarkdownString(`${pi.description}\n\n(CPU: ${pi.architecture})\n\n[Documentation](${docUrl})`);
+    }
+    return new MarkdownString(`${pi.description}\n\n[Documentation](${docUrl})`);
   }
 }
 

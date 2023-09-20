@@ -380,6 +380,11 @@ export class Tokenizer {
   }
 
   private skipNumber(): boolean {
+    // Skip leading plus or minus
+    if(this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
+      this._cs.moveToNextChar();
+    }
+    
     // Skip leading '0x', if any
     const hex = this._cs.currentChar === Char._0 && (this._cs.nextChar === Char.x || this._cs.nextChar === Char.X);
     if (hex) {
