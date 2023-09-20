@@ -32,10 +32,10 @@ export interface Instruction {
   readonly operandsFormats: readonly string[];
 }
 
-export function parseInstruction(text: string, range: TextRange): Instruction {
+export async function parseInstruction(text: string, range: TextRange): Promise<Instruction> {
   text = text.toUpperCase();
   const instruction = new InstructionImpl(text, range);
-  instruction.parse(text);
+  await instruction.parse(text);
   return instruction;
 }
 
@@ -81,7 +81,7 @@ class InstructionImpl implements Instruction {
   // all start with V. Therefore if candidate name begins with V, we use
   // 3 letters since there are no FP instruction with just 2 letters.
 
-  public parse(text: string): void {
+  public async parse(text: string): Promise<void> {
     // Get width specifier first (the part after period, like B.W
     // or, with FP, .I8 or .F32.F64)
     this.parseSpecifier(text);
@@ -91,7 +91,7 @@ class InstructionImpl implements Instruction {
     this.parseCondition(text);
     text = text.substring(0, text.length - this.condition.length);
 
-    if (this.fillInstructionInfo(text)) {
+    if (await this.fillInstructionInfo(text)) {
       this.parseType(text);
       text = text.substring(0, text.length - this.type.length);
 
@@ -144,8 +144,8 @@ class InstructionImpl implements Instruction {
     }
   }
 
-  private fillInstructionInfo(candidateName: string): boolean {
-    const info = findInstructionInfo(candidateName);
+  private async fillInstructionInfo(candidateName: string): Promise<boolean> {
+    const info = await findInstructionInfo(candidateName);
     if (info) {
       this.allowedSpecifiers = info.specifier?.split(' ') ?? [];
       this.allowedSuffixes = info.suffix?.split(' ') ?? [];

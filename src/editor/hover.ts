@@ -36,7 +36,7 @@ export async function provideHover(
       break;
 
     case TokenType.Instruction:
-      doc = getInstructionDocumentation(tokenText);
+      doc = await getInstructionDocumentation(tokenText);
       break;
   }
 

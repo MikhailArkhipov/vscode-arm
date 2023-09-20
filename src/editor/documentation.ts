@@ -34,8 +34,8 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
   } catch {}
 }
 
-export function getInstructionDocumentation(instructionName: string): MarkdownString | undefined {
-  const pi = parseInstruction(instructionName, TextRange.fromBounds(0, 0));
+export async function getInstructionDocumentation(instructionName: string): Promise<MarkdownString | undefined> {
+  const pi = await parseInstruction(instructionName, TextRange.fromBounds(0, 0));
   if (pi.name && pi.name.length > 0) {
     const arch = pi.architecture && pi.architecture.length > 0 ? pi.architecture : 'All';
     const docUrl = getInstructionDocumentationUrl(pi);
