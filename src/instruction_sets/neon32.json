@@ -291,13 +291,182 @@
     },
     "VQRSHRN": {
       "desc": "Vector Saturating Shift Right, Narrow, with Rounding.",
-      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "specifier": "I16 I32 I64 S16 S32 S64 U16 U32 U64",
       "docName": "vqrshrn-and-vqrshrun--by-immediate-"
     },
     "VQRSHRUN": {
-      "desc": "Vector Saturating Rounding Shift Left by signed variable.",
-      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "desc": "Vector Saturating Shift Right, Narrow, by immediate value, with Rounding.",
+      "specifier": "I16 I32 I64 S16 S32 S64",
       "docName": "vqrshrn-and-vqrshrun--by-immediate-"
+    },
+    "VQSHL": {
+      "desc": "Vector Saturating Shift Left.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vqshl--by-signed-variable-"
+    },
+    "VQSHLU": {
+      "desc": "Vector Saturating Shift Left.",
+      "specifier": "S8 S16 S32 S64",
+      "docName": "vqshl-and-vqshlu--by-immediate-"
+    },
+    "VQSHRN": {
+      "desc": "Vector Saturating Shift Right, Narrow, by immediate value.",
+      "specifier": "I16 I32 I64 S16 S32 S64 U16 U32 U64",
+      "docName": "vqshrn-and-vqshrun--by-immediate-"
+    },
+    "VQSHRUN": {
+      "desc": "Vector Saturating Rounding Shift Left by signed variable.",
+      "specifier": "I16 I32 I64 S16 S32 S64",
+      "docName": "vqshrn-and-vqshrun--by-immediate-"
+    },
+    "VQSUB": {
+      "desc": "Vector Saturating Subtract.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64"
+    },
+    "VRADDHN": {
+      "desc": "Vector Rounding Add and Narrow, selecting High half.",
+      "specifier": "I16 I32 I64"
+    },
+    "VRECPE": {
+      "desc": "Vector Reciprocal Estimate.",
+      "specifier": "U32 F32"
+    },
+    "VRECPS": {
+      "desc": "Vector Reciprocal Step.",
+      "specifier": "F32"
+    },
+    "VREV": {
+      "desc": "Vector Reverse within halfwords, words, or doublewords.",
+      "type": "16 32 64",
+      "specifier": "16 32 64",
+      "docName": "vrev16--vrev32--and-vrev64"
+    },
+    "VRHADD": {
+      "desc": "Vector Rounding Halving Add.",
+      "specifier": "S8 S16 S32 U8 U16 U32"
+    },
+    "VRSHL": {
+      "desc": "Vector Rounding Shift Left by signed variable.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vrshl--by-signed-variable-"
+    },
+    "VRSHR": {
+      "desc": "Vector Rounding Shift Right by immediate value.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vrshr--by-immediate-"
+    },
+    "VRSHRN": {
+      "desc": "Vector Rounding Shift Right, Narrow, by immediate value.",
+      "specifier": "I16 I32 I64",
+      "docName": "vrshrn--by-immediate-"
+    },
+    "VRSQRTE": {
+      "desc": "Vector Reciprocal Square Root Estimate.",
+      "specifier": "U32 F32"
+    },
+    "VRSQRTS": {
+      "desc": "Vector Reciprocal Square Root Step.",
+      "specifier": "F32"
+    },
+    "VRSRA": {
+      "desc": "Vector Rounding Shift Right by immediate value and Accumulate.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vrsra--by-immediate-"
+    },
+    "VRSUBHN": {
+      "desc": "Vector Rounding Subtract and Narrow, selecting High half.",
+      "specifier": "I16 I32 I64"
+    },
+    "VSHL": {
+      "desc": "Vector Shift Left.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64 I8 I16 I32 I64",
+      "docName": "vshl--by-immediate-"
+    },
+    "VSHLL": {
+      "desc": "Vector Shift Left Long.",
+      "specifier": "S8 S16 S32 U8 U16 U32",
+      "docName": "vshll--by-immediate-"
+    },
+    "VSHR": {
+      "desc": "Vector Shift Right by immediate value.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vshr--by-immediate-"
+    },
+    "VSHRN": {
+      "desc": "Vector Shift Right, Narrow, by immediate value.",
+      "specifier": "I16 I32 I64",
+      "docName": "vshrn--by-immediate-"
+    },
+    "VSLI": {
+      "desc": "Vector Shift Left and Insert.",
+      "specifier": "8 16 32 64"
+    },
+    "VSRA": {
+      "desc": "Vector Shift Right by immediate value and Accumulate.",
+      "specifier": "S8 S16 S32 S64 U8 U16 U32 U64",
+      "docName": "vsra--by-immediate-"
+    },
+    "VSRI": {
+      "desc": "Vector Shift Right and Insert.",
+      "specifier": "8 16 32 64"
+    },
+    "VST": {
+      "desc": "Vector Store n-element structures.",
+      "type": "1 2 3 4",
+      "specifier": "8 16 32 64",
+      "docName": "vstn--multiple-n-element-structures-"
+    },
+    "VSTR": {
+      "desc": "Extension register store.",
+      "specifier": "64 <none>"
+    },
+    "VSUB": {
+      "desc": "Vector Subtract.",
+      "specifier": "I8 I16 I32 I64 F32"
+    },
+    "VSUBHN": {
+      "desc": "Vector Subtract and Narrow, selecting High half.",
+      "specifier": "I16 I32 I64"
+    },
+    "VSUBL": {
+      "desc": "Vector Add Long.",
+      "specifier": "S8 S16 S32 U8 U16 U32",
+      "docName": "vsubl-and-vsubw"
+    },
+    "VSUBW": {
+      "desc": "Vector Add Wide.",
+      "specifier": "S8 S16 S32 U8 U16 U32",
+      "docName": "vsubl-and-vsubw"
+    },
+    "VSWP": {
+      "desc": "Vector Swap.",
+      "specifier": "* <none>"
+    },
+    "VTBL": {
+      "desc": "Vector Table Lookup.",
+      "specifier": "8",
+      "docName": "vtbl-and-vtbx"
+    },
+    "VTBX": {
+      "desc": "Vector Table Extension.",
+      "specifier": "8",
+      "docName": "vtbl-and-vtbx"
+    },
+    "VTRN": {
+      "desc": "Vector Transpose.",
+      "specifier": "8 16 32"
+    },
+    "VTST": {
+      "desc": "Vector Test bits.",
+      "specifier": "8 16 32"
+    },
+    "VUZP": {
+      "desc": "Vector Unzip.",
+      "specifier": "8 16 32"
+    },
+    "VZIP": {
+      "desc": "Vector Zip.",
+      "specifier": "8 16 32"
     }
   }
 }
