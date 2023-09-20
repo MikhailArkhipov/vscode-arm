@@ -1,12 +1,11 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from '../../text/textRangeCollection';
-import { Token, TokenType } from '../../tokens/tokens';
+import { TokenType } from '../../tokens/tokens';
 import { TestUtil } from '../utility';
 
 test('Empty string', () => {
-  const result = TestUtil.tokenizeToString('');
+  const result = TestUtil.tokenizeToArray('');
   expect(result.length).toBe(0);
 });
 
@@ -27,7 +26,7 @@ test('Single instruction', () => {
 test('Label with instruction', () => {
   const actual = TestUtil.tokenizeToArray('label: B.N');
   expect(actual.length).toBe(10);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
 });
 
 test('Single directive', () => {
@@ -52,12 +51,12 @@ test('Single number', () => {
 
 test('Numbers', () => {
   const actual = TestUtil.tokenizeToArray(' #0xabcD #1 #0x12A');
-  verifyTokenTypes(actual, [TokenType.Number, TokenType.Number, TokenType.Number]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Number, TokenType.Number, TokenType.Number]);
 });
 
 test('Malformed numbers', () => {
   const actual = TestUtil.tokenizeToArray(' #0x #ZA #0xZ');
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Sequence,
     TokenType.Sequence,
     TokenType.Sequence,
@@ -69,20 +68,20 @@ test('Malformed numbers', () => {
 test('Label with directive', () => {
   const actual = TestUtil.tokenizeToArray('label: .fill');
   expect(actual.length).toBe(12);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
 });
 
 test('Label with instruction no space', () => {
   const actual = TestUtil.tokenizeToArray('label:add');
   expect(actual.length).toBe(9);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Instruction]);
 });
 
 test('Instruction with operands', () => {
   const text = 'add a, b, c';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Instruction,
     TokenType.Sequence,
     TokenType.Comma,
@@ -96,7 +95,7 @@ test('Not a register', () => {
   const text = '2X, R2, R3';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Sequence,
     TokenType.Sequence,
     TokenType.Comma,
@@ -110,7 +109,7 @@ test('Label + instruction with operands', () => {
   const text = 'label: ADD r1, r2, r3 ';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length - 1);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Instruction,
     TokenType.Register,
@@ -125,14 +124,14 @@ test('Label + directive + string', () => {
   const text = 'label: .ascii "a b c"';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
 });
 
 test('Line breaks', () => {
   const text = 'label: .ascii "a b c"\n  ADDS r1, r2, #1\n';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Directive,
     TokenType.String,
@@ -151,7 +150,7 @@ test('Not an instruction', () => {
   const text = '8K R1, R2';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Sequence,
     TokenType.Sequence,
     TokenType.Sequence,
@@ -164,28 +163,28 @@ test('Hash comments', () => {
   const text = '# comment\nabc';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
 test('@ comments', () => {
   const text = 'abc @ comment\nabc';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.Instruction]);
 });
 
 test('C++ comments', () => {
   const text = 'abc // comment\n// abc';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.LineComment]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Instruction, TokenType.LineComment, TokenType.EndOfLine, TokenType.LineComment]);
 });
 
 test('C block comments 1', () => {
   const text = 'abc /* comment */ def\n/* abc\ndef */ klm\n';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Instruction,
     TokenType.BlockComment,
     TokenType.Sequence,
@@ -200,7 +199,7 @@ test('C block comments 2', () => {
   const text = 'label: /**/ abc /* comment */ def\n/* abc\ndef */ klm\n';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.BlockComment,
     TokenType.Instruction,
@@ -217,27 +216,27 @@ test('Nested comments 1', () => {
   const text = '// /* comment */ ';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.LineComment]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.LineComment]);
 });
 
 test('Nested comments 2', () => {
   const text = '/* // comment */';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.BlockComment]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 test('Unclosed C comment', () => {
   const text = '/* comment \n\n';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  verifyTokenTypes(actual, [TokenType.BlockComment]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 test('Not a comment', () => {
   const text = '; not a comment \n\n';
   const actual = TestUtil.tokenizeToArray(text);
-  verifyTokenTypes(actual, [
+  TestUtil.verifyTokenTypes(actual, [
     TokenType.Sequence,
     TokenType.Sequence,
     TokenType.Sequence,
@@ -246,9 +245,3 @@ test('Not a comment', () => {
   ]);
 });
 
-function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
-  expect(actual.count).toBe(expected.length);
-  for (let i = 0; i < actual.count; i++) {
-    expect(actual.getItemAt(i).tokenType).toBe(expected[i]);
-  }
-}

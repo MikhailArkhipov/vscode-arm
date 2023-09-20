@@ -9,17 +9,16 @@ import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
+import { NumberTokenizer } from './numberTokenizer';
 import { Token, TokenType } from './tokens';
-
-const endOfStreamToken = new Token(TokenType.EndOfStream, 0, 0);
 
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
+  private _numberTokenizer: NumberTokenizer;
   private _cs: CharacterStream;
   private _tokens: Token[] = [];
   private _separateComments: boolean;
   private _comments: Token[] = [];
-  private _text: TextProvider;
   private _pastLabel = false;
   private _pastInstruction = false;
 
@@ -42,8 +41,8 @@ export class Tokenizer {
     this._separateComments = separateComments;
     this._comments = [];
     this._tokens = [];
-    this._text = textProvider;
     this._pastLabel = this._pastInstruction = false;
+    this._numberTokenizer = new NumberTokenizer(this._cs);
 
     const end = Math.min(textProvider.length, start + length);
     while (!this._cs.isEndOfStream() && this._cs.position < end) {
@@ -65,58 +64,75 @@ export class Tokenizer {
   private addNextToken(): void {
     this.skipWhitespace();
 
+    if (this.tryNumber()) {
+      return;
+    }
+    if (this.tryBasicChars()) {
+      return;
+    }
+
+    // Handle possible comments
+    this.handleCBlockComment();
+    if (this.isAtLineComment()) {
+      this.handleLineComment();
+    }
+    this.handleOtherChars();
+  }
+
+  private tryNumber(): boolean {
+    const start = this._cs.position;
+    const length = this._numberTokenizer.tryNumber();
+    if (length > 0) {
+      this.addToken(TokenType.Number, start, length);
+      return true;
+    }
+    return false;
+  }
+
+  private tryBasicChars(): boolean {
     switch (this._cs.currentChar) {
       case Char.Equal:
       case Char.Plus:
       case Char.Minus:
         this.addTokenAndMove(TokenType.Operator, this._cs.position);
-        return;
+        return true;
       case Char.ExclamationMark:
         this.addTokenAndMove(TokenType.Exclamation, this._cs.position);
-        return;
+        return true;
       case Char.OpenBracket:
         this.addTokenAndMove(TokenType.OpenBracket, this._cs.position);
-        return;
+        return true;
       case Char.CloseBracket:
         this.addTokenAndMove(TokenType.CloseBracket, this._cs.position);
-        return;
+        return true;
       case Char.OpenBrace:
         this.addTokenAndMove(TokenType.OpenCurly, this._cs.position);
-        return;
+        return true;
       case Char.CloseBrace:
         this.addTokenAndMove(TokenType.CloseCurly, this._cs.position);
-        return;
+        return true;
       case Char.OpenParenthesis:
         this.addTokenAndMove(TokenType.OpenBrace, this._cs.position);
-        return;
+        return true;
       case Char.CloseParenthesis:
         this.addTokenAndMove(TokenType.CloseBrace, this._cs.position);
-        return;
+        return true;
       case Char.Comma:
         this.addTokenAndMove(TokenType.Comma, this._cs.position);
-        return;
+        return true;
 
       case Char.LineFeed:
       case Char.CarriageReturn:
         this.handleLineBreak();
         this._pastLabel = this._pastInstruction = false;
-        return;
+        return true;
 
       case Char.SingleQuote:
       case Char.DoubleQuote:
         this.handleString();
-        return;
-
-      default:
-        // Handle possible comments
-        this.handleCBlockComment();
-        if (this.isAtLineComment()) {
-          this.handleLineComment();
-        }
-
-        this.handleOtherChars();
-        break;
+        return true;
     }
+    return false;
   }
 
   // Handle more complicated cases.
@@ -152,16 +168,16 @@ export class Tokenizer {
       // Regular label. Skip first char, then letters, underscores, digits,
       // dollar signs until colon, whitespace, odd characters or EOL/EOF.
       this._cs.moveToNextChar();
-      this.skipSequence((ch: number): boolean => {
+      this._cs.skipSequence((ch: number): boolean => {
         return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
       });
     } else if (Character.isDecimal(ch)) {
       // Local label. 22:, 33$: or .L77$:
-      this.skipSequence((ch: number): boolean => {
+      this._cs.skipSequence((ch: number): boolean => {
         return Character.isDecimal(ch);
       });
       if (this._cs.currentChar === Char.$) {
-        this.skipSequence((ch: number): boolean => {
+        this._cs.skipSequence((ch: number): boolean => {
           return ch === Char.$;
         });
       }
@@ -169,7 +185,7 @@ export class Tokenizer {
       // Local label .L77$: this is rare since it mostly appears in generated code
       // after as or ld transform local label names into .L?? form. Also allow dash here.
       this._cs.advance(2);
-      this.skipSequence((ch: number): boolean => {
+      this._cs.skipSequence((ch: number): boolean => {
         return (
           Character.isAnsiLetter(ch) ||
           Character.isDecimal(ch) ||
@@ -212,7 +228,7 @@ export class Tokenizer {
     }
 
     this._cs.moveToNextChar();
-    this.skipSequence((ch: number): boolean => {
+    this._cs.skipSequence((ch: number): boolean => {
       return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Period || ch === Char.Underscore;
     });
 
@@ -242,7 +258,7 @@ export class Tokenizer {
 
     const start = this._cs.position;
     if (Character.isAnsiLetter(this._cs.currentChar)) {
-      this.skipSequence((ch: number): boolean => {
+      this._cs.skipSequence((ch: number): boolean => {
         return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
       });
     }
@@ -255,8 +271,8 @@ export class Tokenizer {
         this.addToken(TokenType.Sequence, start, this._cs.position - start);
       }
       return;
-    }  
-    
+    }
+
     if (this._pastInstruction && this.isRegister(start, length)) {
       this.addToken(TokenType.Register, start, length);
     } else {
@@ -355,7 +371,7 @@ export class Tokenizer {
     const openQuote = this._cs.currentChar;
 
     this._cs.moveToNextChar();
-    this.skipSequence((ch: number): boolean => {
+    this._cs.skipSequence((ch: number): boolean => {
       return ch !== openQuote;
     });
 
@@ -381,10 +397,10 @@ export class Tokenizer {
 
   private skipNumber(): boolean {
     // Skip leading plus or minus
-    if(this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
+    if (this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
       this._cs.moveToNextChar();
     }
-    
+
     // Skip leading '0x', if any
     const hex = this._cs.currentChar === Char._0 && (this._cs.nextChar === Char.x || this._cs.nextChar === Char.X);
     if (hex) {
@@ -393,7 +409,7 @@ export class Tokenizer {
 
     // TODO: floating point?
     const start = this._cs.position;
-    this.skipSequence((ch: number): boolean => {
+    this._cs.skipSequence((ch: number): boolean => {
       if (hex) {
         if (!Character.isHex(ch)) {
           return false;
@@ -493,15 +509,5 @@ export class Tokenizer {
       }
     }
     return false;
-  }
-
-  private lastToken(): Token {
-    return this._tokens.length > 0 ? this._tokens[this._tokens.length - 1] : endOfStreamToken;
-  }
-
-  private skipSequence(check: (ch: number) => boolean): void {
-    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine() && check(this._cs.currentChar)) {
-      this._cs.moveToNextChar();
-    }
   }
 }

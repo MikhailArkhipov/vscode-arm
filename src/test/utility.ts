@@ -9,6 +9,8 @@ import { TextStream } from "../text/textStream";
 import { Tokenizer } from "../tokens/tokenizer";
 import { Token, TokenType } from "../tokens/tokens";
 import { TextRangeCollection } from '../text/textRangeCollection';
+import { NumberTokenizer } from '../tokens/numberTokenizer';
+import { CharacterStream } from '../text/characterStream';
 // import { Parser } from '../parser/parser';
 // import { AstRoot } from '../AST/astRoot';
 
@@ -27,21 +29,20 @@ export namespace TestUtil {
     return t.tokenize(new TextStream(text), 0, text.length, separateComments).tokens;
   }
 
-  export function tokenize(text: string, separateComments:boolean = false): 
-  { tokens: TextRangeCollection<Token>, comments: TextRangeCollection<Token>} {
-    const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
-    return t.tokenize(new TextStream(text), 0, text.length, separateComments);
+  export function tokenizeNumber(text: string, start: number = 0): number {
+    const cs = new CharacterStream(new TextStream(text));
+    const nt = new NumberTokenizer(cs);
+    cs.position = start;
+    return nt.tryNumber();
   }
 
-  export function tokenizeToString(text: string): string[] {
-    const tokens = tokenizeToArray(text);
-    const ts: string[] = [];
-    for (let i = 0; i < tokens.count; i++) {
-      ts.push(getTokenString(tokens.getItemAt(i)));
+  export function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
+    expect(actual.count).toBe(expected.length);
+    for (let i = 0; i < actual.count; i++) {
+      expect(actual.getItemAt(i).tokenType).toBe(expected[i]);
     }
-    return ts;
   }
-
+  
   // Compares result to a baseline file line by line.
   export function compareFiles(baselineFile: string, actualResult: string[], regenerateBaseline: boolean): void {
     if(regenerateBaseline) {

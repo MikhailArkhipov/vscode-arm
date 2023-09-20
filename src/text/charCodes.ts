@@ -163,6 +163,14 @@ export namespace Character {
     return ch >= Char._0 && ch <= Char._9;
   }
 
+  export function isOctal(ch: number): boolean {
+    return ch >= Char._0 && ch <= Char._7;
+  }
+
+  export function isBinary(ch: number): boolean {
+    return ch === Char._0 || ch === Char._1;
+  }
+
   export function isWhitespace(ch: number): boolean {
     return isNewLine(ch) || ch === Char.Space || ch === Char.Tab;
   }

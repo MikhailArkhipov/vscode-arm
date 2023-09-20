@@ -80,8 +80,8 @@ export class CharacterStream {
     return this._prevChar;
   }
 
-  public lookAhead(offset: number): string {
-    return this.text.charAt(this.position + offset);
+  public lookAhead(offset: number): number {
+    return this.text.charCodeAt(this.position + offset);
   }
 
   public advance(offset: number) {
@@ -135,6 +135,12 @@ export class CharacterStream {
 
   public skipWhitespace(): void {
     while (!this.isEndOfStream() && this.isWhiteSpace()) {
+      this.moveToNextChar();
+    }
+  }
+
+  public skipSequence(check: (ch: number) => boolean): void {
+    while (!this.isEndOfStream() && !this.isAtNewLine() && check(this.currentChar)) {
       this.moveToNextChar();
     }
   }
