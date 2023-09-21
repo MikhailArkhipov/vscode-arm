@@ -9,7 +9,7 @@
   },
   {
     "name": "ADD",
-    "doc": "Add to PC adds an immediate value to the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias.\n\nThis is a pseudo-instruction of\n        ADR."
+    "doc": "Add to PC adds an immediate value to the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias."
   },
   {
     "name": "ADDS",
@@ -18,6 +18,26 @@
   {
     "name": "SP",
     "doc": "Add to SP (immediate) adds an immediate value to the SP value, and writes the result to the destination register."
+  },
+  {
+    "name": "ADR",
+    "doc": "Form PC-relative address adds an immediate value to the PC value to form a PC-relative address, and writes the result to the destination register."
+  },
+  {
+    "name": "AESD",
+    "doc": "AES single round decryption."
+  },
+  {
+    "name": "AESE",
+    "doc": "AES single round encryption."
+  },
+  {
+    "name": "AESIMC",
+    "doc": "AES inverse mix columns."
+  },
+  {
+    "name": "AESMC",
+    "doc": "AES mix columns."
   },
   {
     "name": "AND",
@@ -36,12 +56,28 @@
     "doc": "Arithmetic Shift Right (immediate) shifts a register value right by an immediate number of bits, shifting in copies of its sign bit, and writes the result to the destination register."
   },
   {
+    "name": "B",
+    "doc": "Branch causes a branch to a target address."
+  },
+  {
+    "name": "BFC",
+    "doc": "Bit Field Clear clears any number of adjacent bits at any position in a register, without affecting the other bits in the register."
+  },
+  {
+    "name": "BFI",
+    "doc": "Bit Field Insert copies any number of low order bits from a register into the same number of adjacent bits at any position in the destination register."
+  },
+  {
     "name": "BIC",
     "doc": "Bitwise Bit Clear (immediate) performs a bitwise AND of a register value and the complement of an immediate value, and writes the result to the destination register."
   },
   {
     "name": "BICS",
     "doc": "Bitwise Bit Clear (immediate) performs a bitwise AND of a register value and the complement of an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "BKPT",
+    "doc": "Breakpoint causes a Breakpoint Instruction exception."
   },
   {
     "name": "BLX",
@@ -52,8 +88,32 @@
     "doc": "Branch with Link calls a subroutine at a PC-relative address, and setting LR to the return address."
   },
   {
+    "name": "BX",
+    "doc": "Branch and Exchange causes a branch to an address and instruction set\n      specified by a register."
+  },
+  {
+    "name": "BXJ",
+    "doc": "Branch and Exchange, previously Branch and Exchange Jazelle."
+  },
+  {
     "name": "CBNZ",
     "doc": "Compare and Branch on Nonzero and Compare and Branch on Zero compare the value in a register with zero, and conditionally branch forward a constant value. They do not affect the condition flags."
+  },
+  {
+    "name": "CBZ",
+    "doc": "Compare and Branch on Nonzero and Compare and Branch on Zero compare the value in a register with zero, and conditionally branch forward a constant value. They do not affect the condition flags."
+  },
+  {
+    "name": "CLRBHB",
+    "doc": "Clear Branch History clears the branch history for the current context to the extent that branch history information created before the CLRBHB instruction cannot be used by code before the CLRBHB instruction to exploitatively control the execution of any indirect branches in code in the current context that appear in program order after the instruction."
+  },
+  {
+    "name": "CLREX",
+    "doc": "Clear-Exclusive clears the local monitor of the executing PE."
+  },
+  {
+    "name": "CLZ",
+    "doc": "Count Leading Zeros returns the number of binary zero bits before the first binary one bit in a value."
   },
   {
     "name": "CMN",
@@ -72,12 +132,36 @@
     "doc": "Change PE State changes one or more of the PSTATE.{A, I, F} interrupt mask bits and, optionally, the PSTATE.M mode field, without changing any other PSTATE bits."
   },
   {
+    "name": "CPSIE",
+    "doc": "Change PE State changes one or more of the PSTATE.{A, I, F} interrupt mask bits and, optionally, the PSTATE.M mode field, without changing any other PSTATE bits."
+  },
+  {
     "name": "CRC",
     "doc": "CRC32 performs a cyclic redundancy check (CRC) calculation on a value held in a general-purpose register. It takes an input CRC value in the first source operand, performs a CRC on the input value in the second source operand, and returns the output CRC value. The second source operand can be 8, 16, or 32 bits. To align with common usage, the bit order of the values is reversed as part of the operation, and the polynomial 0x04C11DB7 is used for the CRC calculation."
   },
   {
+    "name": "C",
+    "doc": "CRC32C performs a cyclic redundancy check\n      (CRC) calculation on a value held in a general-purpose register. It takes\n      an input CRC value in the first source operand, performs a CRC on the\n      input value in the second source operand, and returns the output CRC\n      value. The second source operand can be 8, 16, or 32 bits. To align with\n      common usage, the bit order of the values is reversed as part of the\n      operation, and the polynomial 0x1EDC6F41 is used for the CRC calculation."
+  },
+  {
+    "name": "CSDB",
+    "doc": "Consumption of Speculative Data Barrier is a memory barrier that controls speculative execution and data value prediction."
+  },
+  {
+    "name": "DBG",
+    "doc": "DBG executes as a NOP. Arm deprecates any use of the DBG instruction."
+  },
+  {
     "name": "DCPS",
     "doc": "Debug Change PE State to EL1 allows the debugger to move the PE into EL1 from EL0 or to a specific mode at the current Exception level."
+  },
+  {
+    "name": "DMB",
+    "doc": "Data Memory Barrier is a memory barrier that ensures the ordering of observations of memory accesses, see Data Memory Barrier (DMB)."
+  },
+  {
+    "name": "DSB",
+    "doc": "Data Synchronization Barrier is a memory barrier that ensures the completion of memory accesses, see Data Synchronization Barrier (DSB)."
   },
   {
     "name": "EOR",
@@ -86,6 +170,14 @@
   {
     "name": "EORS",
     "doc": "Bitwise Exclusive-OR (immediate) performs a bitwise exclusive-OR of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "ERET",
+    "doc": "Exception Return."
+  },
+  {
+    "name": "ESB",
+    "doc": "Error Synchronization Barrier is an error synchronization event that might also update DISR and VDISR. This instruction can be used at all Exception levels and in Debug state."
   },
   {
     "name": "FLDM",
@@ -108,6 +200,54 @@
     "doc": "FSTMX stores multiple SIMD&amp;FP registers from the Advanced SIMD and floating-point register file to consecutive locations in using an address from a general-purpose register."
   },
   {
+    "name": "FSTMIAX",
+    "doc": "FSTMX stores multiple SIMD&amp;FP registers from the Advanced SIMD and floating-point register file to consecutive locations in using an address from a general-purpose register."
+  },
+  {
+    "name": "HLT",
+    "doc": "Halting breakpoint causes a software breakpoint to occur."
+  },
+  {
+    "name": "HVC",
+    "doc": "Hypervisor Call causes a Hypervisor Call exception. For more information, see Hypervisor Call (HVC) exception. Software executing at EL1 can use this instruction to call the hypervisor to request a service."
+  },
+  {
+    "name": "ISB",
+    "doc": "Instruction Synchronization Barrier flushes the pipeline in the PE and is a context synchronization event. For more information, see Instruction Synchronization Barrier (ISB)."
+  },
+  {
+    "name": "IT",
+    "doc": "If-Then makes up to four following instructions (the IT block) conditional. The conditions for the instructions in the IT block are the same as, or the inverse of, the condition the IT instruction specifies for the first instruction in the block."
+  },
+  {
+    "name": "LDA",
+    "doc": "Load-Acquire Word loads a word from memory and writes it to a register. The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release"
+  },
+  {
+    "name": "LDAB",
+    "doc": "Load-Acquire Byte loads a byte from memory, zero-extends it to form a 32-bit word and writes it to a register. The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release."
+  },
+  {
+    "name": "LDAEX",
+    "doc": "Load-Acquire Exclusive Word loads a word from memory, writes it to a register and:"
+  },
+  {
+    "name": "LDAEXB",
+    "doc": "Load-Acquire Exclusive Byte loads a byte from memory, zero-extends it to form a 32-bit word, writes it to a register and:"
+  },
+  {
+    "name": "LDAEXD",
+    "doc": "Load-Acquire Exclusive Doubleword loads a doubleword from memory, writes it to two registers and:"
+  },
+  {
+    "name": "LDAEXH",
+    "doc": "Load-Acquire Exclusive Halfword loads a halfword from memory, zero-extends it to form a 32-bit word, writes it to a register and:"
+  },
+  {
+    "name": "LDAH",
+    "doc": "Load-Acquire Halfword loads a halfword from memory, zero-extends it to form a 32-bit word and writes it to a register. The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release."
+  },
+  {
     "name": "LDC",
     "doc": "Load data to System register (immediate) calculates an address from a base register value and an immediate offset, loads a word from memory, and writes it to the DBGDTRTXint System register. It can use offset, post-indexed, pre-indexed, or unindexed addressing. For information about memory accesses see Memory accesses."
   },
@@ -120,7 +260,15 @@
     "doc": "Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register."
   },
   {
+    "name": "LDMFD",
+    "doc": "Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register."
+  },
+  {
     "name": "LDMDA",
+    "doc": "Load Multiple Decrement After (Full Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMFA",
     "doc": "Load Multiple Decrement After (Full Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
   },
   {
@@ -128,8 +276,24 @@
     "doc": "Load Multiple Decrement Before (Empty Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the lowest of those locations can optionally be written back to the base register."
   },
   {
+    "name": "LDMEA",
+    "doc": "Load Multiple Decrement Before (Empty Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the lowest of those locations can optionally be written back to the base register."
+  },
+  {
     "name": "LDMIB",
     "doc": "Load Multiple Increment Before (Empty Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMED",
+    "doc": "Load Multiple Increment Before (Empty Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "U",
+    "doc": "In an EL1 mode other than System mode, Load Multiple (User registers) loads multiple User mode registers from consecutive memory locations using an address from a base register. The registers loaded cannot include the PC. The PE reads the base register value normally, using the current mode to determine the correct Banked version of the register. This instruction cannot writeback to the base register."
+  },
+  {
+    "name": "LDRBT",
+    "doc": "Load Register Byte Unprivileged loads a byte from memory, zero-extends it to form a 32-bit word, and writes it to a register. For information about memory accesses see Memory accesses."
   },
   {
     "name": "LDRB",
@@ -140,16 +304,48 @@
     "doc": "Load Register Dual (immediate) calculates an address from a base register value and an immediate offset, loads two words from memory, and writes them to two registers. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
   },
   {
+    "name": "LDREX",
+    "doc": "Load Register Exclusive calculates an address from a base register value and an immediate offset, loads a word from memory, writes it to a register and:"
+  },
+  {
+    "name": "LDREXB",
+    "doc": "Load Register Exclusive Byte derives an address from a base register value, loads a byte from memory, zero-extends it to form a 32-bit word, writes it to a register and:"
+  },
+  {
+    "name": "LDREXD",
+    "doc": "Load Register Exclusive Doubleword derives an address from a base register value, loads a 64-bit doubleword from memory, writes it to two registers and:"
+  },
+  {
+    "name": "LDREXH",
+    "doc": "Load Register Exclusive Halfword derives an address from a base register value, loads a halfword from memory, zero-extends it to form a 32-bit word, writes it to a register and:"
+  },
+  {
+    "name": "LDRHT",
+    "doc": "Load Register Halfword Unprivileged loads a halfword from memory, zero-extends it to form a 32-bit word, and writes it to a register. For information about memory accesses see Memory accesses."
+  },
+  {
     "name": "LDRH",
     "doc": "Load Register Halfword (immediate) calculates an address from a base register value and an immediate offset, loads a halfword from memory, zero-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRSBT",
+    "doc": "Load Register Signed Byte Unprivileged loads a byte from memory, sign-extends it to form a 32-bit word, and writes it to a register. For information about memory accesses see Memory accesses."
   },
   {
     "name": "LDRSB",
     "doc": "Load Register Signed Byte (immediate) calculates an address from a base register value and an immediate offset, loads a byte from memory, sign-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
   },
   {
+    "name": "LDRSHT",
+    "doc": "Load Register Signed Halfword Unprivileged loads a halfword from memory, sign-extends it to form a 32-bit word, and writes it to a register. For information about memory accesses see Memory accesses."
+  },
+  {
     "name": "LDRSH",
     "doc": "Load Register Signed Halfword (immediate) calculates an address from a base register value and an immediate offset, loads a halfword from memory, sign-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRT",
+    "doc": "Load Register Unprivileged loads a word from memory, and writes it to a register. For information about memory accesses see Memory accesses."
   },
   {
     "name": "LDR",
@@ -172,8 +368,28 @@
     "doc": "Logical Shift Right (immediate) shifts a register value right by an immediate number of bits, shifting in zeros, and writes the result to the destination register."
   },
   {
+    "name": "MCR",
+    "doc": "Move to System register from general-purpose register or execute a System instruction. This instruction copies the value of a general-purpose register to a System register, or executes a System instruction."
+  },
+  {
+    "name": "MCRR",
+    "doc": "Move to System register from two general-purpose registers. This instruction copies the values of two general-purpose registers to a System register."
+  },
+  {
     "name": "MLA",
     "doc": "Multiply Accumulate multiplies two register values, and adds a third register value. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
+    "name": "MLAS",
+    "doc": "Multiply Accumulate multiplies two register values, and adds a third register value. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
+    "name": "MLS",
+    "doc": "Multiply and Subtract multiplies two register values, and subtracts the product from a third register value. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
+    "name": "MOVT",
+    "doc": "Move Top writes an immediate value to the top halfword of the destination register. It does not affect the contents of the bottom halfword."
   },
   {
     "name": "MOV",
@@ -184,8 +400,16 @@
     "doc": "Move (immediate) writes an immediate value to the destination register."
   },
   {
+    "name": "MRC",
+    "doc": "Move to general-purpose register from System register. This instruction copies the value of a System register to a general-purpose register."
+  },
+  {
+    "name": "MRRC",
+    "doc": "Move to two general-purpose registers from System register. This instruction copies the value of a System register to two general-purpose registers."
+  },
+  {
     "name": "MRS",
-    "doc": "Move to Register from Banked or Special register moves the value from the Banked general-purpose register or Saved Program Status Registers (SPSRs) of the specified mode, or the value of ELR_hyp, to a general-purpose register."
+    "doc": "Move Special register to general-purpose register moves the value of the APSR, CPSR, or SPSR_&lt;current_mode&gt; into a general-purpose register."
   },
   {
     "name": "MSR",
@@ -196,12 +420,20 @@
     "doc": "Multiply multiplies two register values. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
   },
   {
+    "name": "MULS",
+    "doc": "Multiply multiplies two register values. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
     "name": "MVN",
     "doc": "Bitwise NOT (immediate) writes the bitwise inverse of an immediate value to the destination register."
   },
   {
     "name": "MVNS",
     "doc": "Bitwise NOT (immediate) writes the bitwise inverse of an immediate value to the destination register."
+  },
+  {
+    "name": "NOP",
+    "doc": "No Operation does nothing. This instruction can be used for instruction alignment purposes."
   },
   {
     "name": "ORN",
@@ -221,7 +453,11 @@
   },
   {
     "name": "PKHBT",
-    "doc": "Pack Halfword combines one halfword of its first operand with the other halfword of its shifted second operand."
+    "doc": "Pack Halfword combines one halfword of its first operand with the other\n      halfword of its shifted second operand."
+  },
+  {
+    "name": "PKHTB",
+    "doc": "Pack Halfword combines one halfword of its first operand with the other\n      halfword of its shifted second operand."
   },
   {
     "name": "PLD",
@@ -237,23 +473,51 @@
   },
   {
     "name": "POP",
-    "doc": "Pop Multiple Registers from Stack loads multiple general-purpose registers from the stack, loading from consecutive memory locations starting at the address in SP, and updates SP to point just above the loaded data.\n\nThis is an alias of\n        LDM, LDMIA, LDMFD."
+    "doc": "Pop Multiple Registers from Stack loads multiple general-purpose registers\n      from the stack, loading from consecutive memory locations starting at the\n      address in SP, and updates SP to point just above the loaded data."
+  },
+  {
+    "name": "PSSBB",
+    "doc": "Physical Speculative Store Bypass Barrier is a memory barrier that prevents speculative loads from bypassing earlier stores to the same physical address under certain conditions. For more information and details of the semantics, see Physical Speculative Store Bypass Barrier (PSSBB)."
   },
   {
     "name": "PUSH",
-    "doc": "Push multiple registers to Stack stores multiple general-purpose registers to the stack, storing to consecutive memory locations ending just below the address in SP, and updates SP to point to the start of the stored data.\n\nThis is an alias of\n        STMDB, STMFD."
+    "doc": "Push Multiple Registers to Stack stores multiple general-purpose registers to the stack, storing to consecutive memory locations ending just below the address in SP, and updates SP to point to the start of the stored data."
   },
   {
     "name": "QADD",
-    "doc": "Saturating Add 16 performs two 16-bit integer additions, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
+    "doc": "Saturating Add adds two register values, saturates the result to the 32-bit signed integer range -231 to (231 - 1), and writes the result to the destination register. If saturation occurs, it sets PSTATE.Q to 1."
+  },
+  {
+    "name": "QASX",
+    "doc": "Saturating Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one 16-bit integer addition and one 16-bit subtraction, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "QDADD",
+    "doc": "Saturating Double and Add adds a doubled register value to another register value, and writes the result to the destination register. Both the doubling and the addition have their results saturated to the 32-bit signed integer range -231 &lt;= x &lt;= 231 - 1. If saturation occurs in either operation, it sets PSTATE.Q to 1."
+  },
+  {
+    "name": "QDSUB",
+    "doc": "Saturating Double and Subtract subtracts a doubled register value from another register value, and writes the result to the destination register. Both the doubling and the subtraction have their results saturated to the 32-bit signed integer range -231 &lt;= x &lt;= 231 - 1. If saturation occurs in either operation, it sets PSTATE.Q to 1."
+  },
+  {
+    "name": "QSAX",
+    "doc": "Saturating Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one 16-bit integer subtraction and one 16-bit addition, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
   },
   {
     "name": "QSUB",
-    "doc": "Saturating Subtract 16 performs two 16-bit integer subtractions, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
+    "doc": "Saturating Subtract subtracts one register value from another register value, saturates the result to the 32-bit signed integer range -231 &lt;= x &lt;= 231 - 1, and writes the result to the destination register. If saturation occurs, it sets PSTATE.Q to 1."
+  },
+  {
+    "name": "RBIT",
+    "doc": "Reverse Bits reverses the bit order in a 32-bit register."
   },
   {
     "name": "REV",
-    "doc": "Byte-Reverse Packed Halfword reverses the byte order in each16-bit halfword of a 32-bit register."
+    "doc": "Byte-Reverse Word reverses the byte order in a 32-bit register."
+  },
+  {
+    "name": "REVSH",
+    "doc": "Byte-Reverse Signed Halfword reverses the byte order in the lower 16-bit halfword of a 32-bit register, and sign-extends the result to 32 bits."
   },
   {
     "name": "RFE",
@@ -272,12 +536,24 @@
     "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
   },
   {
+    "name": "RFEIB",
+    "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
+  },
+  {
     "name": "RORS",
     "doc": "Rotate Right, setting flags (immediate) provides the value of the contents of a register rotated by a constant value. The bits that are rotated off the right end are inserted into the vacated bit positions on the left."
   },
   {
     "name": "ROR",
     "doc": "Rotate Right (immediate) provides the value of the contents of a register rotated by a constant value. The bits that are rotated off the right end are inserted into the vacated bit positions on the left."
+  },
+  {
+    "name": "RRXS",
+    "doc": "Rotate Right with Extend, setting flags provides the value of the contents of a register shifted right by one place, with the Carry flag shifted into bit[31]."
+  },
+  {
+    "name": "RRX",
+    "doc": "Rotate Right with Extend provides the value of the contents of a register shifted right by one place, with the Carry flag shifted into bit[31]."
   },
   {
     "name": "RSB",
@@ -300,6 +576,14 @@
     "doc": "Signed Add 16 performs two 16-bit signed integer additions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the additions."
   },
   {
+    "name": "SASX",
+    "doc": "Signed Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one 16-bit integer addition and one 16-bit subtraction, and writes the results to the destination register. It sets PSTATE.GE according to the results."
+  },
+  {
+    "name": "SB",
+    "doc": "Speculation Barrier is a barrier that controls speculation."
+  },
+  {
     "name": "SBC",
     "doc": "Subtract with Carry (immediate) subtracts an immediate value and the value of NOT (Carry flag) from a register value, and writes the result to the destination register."
   },
@@ -308,24 +592,76 @@
     "doc": "Subtract with Carry (immediate) subtracts an immediate value and the value of NOT (Carry flag) from a register value, and writes the result to the destination register."
   },
   {
+    "name": "SBFX",
+    "doc": "Signed Bit Field Extract extracts any number of adjacent bits at any position from a register, sign-extends them to 32 bits, and writes the result to the destination register."
+  },
+  {
+    "name": "SDIV",
+    "doc": "Signed Divide divides a 32-bit signed integer register value by a 32-bit signed integer register value, and writes the result to the destination register. The condition flags are not affected."
+  },
+  {
+    "name": "SEL",
+    "doc": "Select Bytes selects each byte of its result from either its first operand or its second operand, according to the values of the PSTATE.GE flags."
+  },
+  {
+    "name": "SETEND",
+    "doc": "Set Endianness writes a new value to PSTATE.E."
+  },
+  {
+    "name": "SETPAN",
+    "doc": "Set Privileged Access Never writes a new value to PSTATE.PAN."
+  },
+  {
+    "name": "SEV",
+    "doc": "Send Event is a hint instruction. It causes an event to be signaled to all PEs in the multiprocessor system. For more information, see Wait For Event and Send Event."
+  },
+  {
+    "name": "SEVL",
+    "doc": "Send Event Local is a hint instruction that causes an event to be signaled locally without requiring the event to be signaled to other PEs in the multiprocessor system. It can prime a wait-loop which starts with a WFE instruction."
+  },
+  {
     "name": "SHA",
     "doc": "SHA1 hash update (choose)."
+  },
+  {
+    "name": "H",
+    "doc": "SHA1 fixed rotate."
+  },
+  {
+    "name": "M",
+    "doc": "SHA1 hash update (majority)."
+  },
+  {
+    "name": "P",
+    "doc": "SHA1 hash update (parity)."
   },
   {
     "name": "SU",
     "doc": "SHA1 schedule update 0."
   },
   {
-    "name": "H",
-    "doc": "SHA256 hash update part 2."
-  },
-  {
     "name": "SHADD",
     "doc": "Signed Halving Add 16 performs two signed 16-bit integer additions, halves the results, and writes the results to the destination register."
   },
   {
+    "name": "S",
+    "doc": "This page displays common pseudocode functions shared by many pages"
+  },
+  {
+    "name": "SHASX",
+    "doc": "Signed Halving Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one signed 16-bit integer addition and one signed 16-bit subtraction, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "SHSAX",
+    "doc": "Signed Halving Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one signed 16-bit integer subtraction and one signed 16-bit addition, halves the results, and writes the results to the destination register."
+  },
+  {
     "name": "SHSUB",
     "doc": "Signed Halving Subtract 16 performs two signed 16-bit integer subtractions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "SMC",
+    "doc": "Secure Monitor Call causes a Secure Monitor Call exception.  For more information see Secure Monitor Call (SMC) exception."
   },
   {
     "name": "SMLABB",
@@ -340,11 +676,23 @@
     "doc": "Signed Multiply Accumulate (halfwords) performs a signed multiply accumulate operation. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored.  The 32-bit product is added to a 32-bit accumulate value and the result is written to the destination register."
   },
   {
+    "name": "SMLATT",
+    "doc": "Signed Multiply Accumulate (halfwords) performs a signed multiply accumulate operation. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored.  The 32-bit product is added to a 32-bit accumulate value and the result is written to the destination register."
+  },
+  {
     "name": "SMLAD",
     "doc": "Signed Multiply Accumulate Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 32-bit accumulate operand."
   },
   {
+    "name": "SMLADX",
+    "doc": "Signed Multiply Accumulate Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 32-bit accumulate operand."
+  },
+  {
     "name": "SMLAL",
+    "doc": "Signed Multiply Accumulate Long multiplies two signed 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
+  },
+  {
+    "name": "SMLALS",
     "doc": "Signed Multiply Accumulate Long multiplies two signed 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
   },
   {
@@ -360,7 +708,15 @@
     "doc": "Signed Multiply Accumulate Long (halfwords) multiplies two signed 16-bit values to produce a 32-bit value, and accumulates this with a 64-bit value. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is sign-extended and accumulated with a 64-bit accumulate value."
   },
   {
+    "name": "SMLALTT",
+    "doc": "Signed Multiply Accumulate Long (halfwords) multiplies two signed 16-bit values to produce a 32-bit value, and accumulates this with a 64-bit value. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is sign-extended and accumulated with a 64-bit accumulate value."
+  },
+  {
     "name": "SMLALD",
+    "doc": "Signed Multiply Accumulate Long Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 64-bit accumulate operand."
+  },
+  {
+    "name": "SMLALDX",
     "doc": "Signed Multiply Accumulate Long Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 64-bit accumulate operand."
   },
   {
@@ -368,7 +724,15 @@
     "doc": "Signed Multiply Accumulate (word by halfword) performs a signed multiply accumulate operation. The multiply acts on a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are added to a 32-bit accumulate value and the result is written to the destination register. The bottom 16 bits of the 48-bit product are ignored."
   },
   {
+    "name": "SMLAWT",
+    "doc": "Signed Multiply Accumulate (word by halfword) performs a signed multiply accumulate operation. The multiply acts on a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are added to a 32-bit accumulate value and the result is written to the destination register. The bottom 16 bits of the 48-bit product are ignored."
+  },
+  {
     "name": "SMLSD",
+    "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 32-bit accumulate operand."
+  },
+  {
+    "name": "SMLSDX",
     "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 32-bit accumulate operand."
   },
   {
@@ -376,7 +740,15 @@
     "doc": "Signed Multiply Subtract Long Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 64-bit accumulate operand."
   },
   {
+    "name": "SMLSLDX",
+    "doc": "Signed Multiply Subtract Long Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 64-bit accumulate operand."
+  },
+  {
     "name": "SMMLA",
+    "doc": "Signed Most Significant Word Multiply Accumulate multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and adds an accumulate value."
+  },
+  {
+    "name": "SMMLAR",
     "doc": "Signed Most Significant Word Multiply Accumulate multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and adds an accumulate value."
   },
   {
@@ -384,11 +756,23 @@
     "doc": "Signed Most Significant Word Multiply Subtract multiplies two signed 32-bit values, subtracts the result from a 32-bit accumulate value that is shifted left by 32 bits, and extracts the most significant 32 bits of the result of that subtraction."
   },
   {
+    "name": "SMMLSR",
+    "doc": "Signed Most Significant Word Multiply Subtract multiplies two signed 32-bit values, subtracts the result from a 32-bit accumulate value that is shifted left by 32 bits, and extracts the most significant 32 bits of the result of that subtraction."
+  },
+  {
     "name": "SMMUL",
     "doc": "Signed Most Significant Word Multiply multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and writes those bits to the destination register."
   },
   {
+    "name": "SMMULR",
+    "doc": "Signed Most Significant Word Multiply multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and writes those bits to the destination register."
+  },
+  {
     "name": "SMUAD",
+    "doc": "Signed Dual Multiply Add performs two signed 16 x 16-bit multiplications. It adds the products together, and writes the result to the destination register."
+  },
+  {
+    "name": "SMUADX",
     "doc": "Signed Dual Multiply Add performs two signed 16 x 16-bit multiplications. It adds the products together, and writes the result to the destination register."
   },
   {
@@ -404,7 +788,15 @@
     "doc": "Signed Multiply (halfwords) multiplies two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is written to the destination register. No overflow is possible during this instruction."
   },
   {
+    "name": "SMULTT",
+    "doc": "Signed Multiply (halfwords) multiplies two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is written to the destination register. No overflow is possible during this instruction."
+  },
+  {
     "name": "SMULL",
+    "doc": "Signed Multiply Long multiplies two 32-bit signed values to produce a 64-bit result."
+  },
+  {
+    "name": "SMULLS",
     "doc": "Signed Multiply Long multiplies two 32-bit signed values to produce a 64-bit result."
   },
   {
@@ -412,7 +804,15 @@
     "doc": "Signed Multiply (word by halfword) multiplies a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are written to the destination register. The bottom 16 bits of the 48-bit product are ignored. No overflow is possible during this instruction."
   },
   {
+    "name": "SMULWT",
+    "doc": "Signed Multiply (word by halfword) multiplies a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are written to the destination register. The bottom 16 bits of the 48-bit product are ignored. No overflow is possible during this instruction."
+  },
+  {
     "name": "SMUSD",
+    "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It subtracts one of the products from the other, and writes the result to the destination register."
+  },
+  {
+    "name": "SMUSDX",
     "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It subtracts one of the products from the other, and writes the result to the destination register."
   },
   {
@@ -432,12 +832,56 @@
     "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
   },
   {
+    "name": "SRSIB",
+    "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
+  },
+  {
     "name": "SSAT",
-    "doc": "Signed Saturate 16 saturates two signed 16-bit values to a selected signed range."
+    "doc": "Signed Saturate saturates an optionally-shifted signed value to a selectable signed range."
+  },
+  {
+    "name": "SSAX",
+    "doc": "Signed Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one 16-bit integer subtraction and one 16-bit addition, and writes the results to the destination register. It sets PSTATE.GE according to the results."
+  },
+  {
+    "name": "SSBB",
+    "doc": "Speculative Store Bypass Barrier is a memory barrier that prevents speculative loads from bypassing earlier stores to the same virtual address under certain conditions. For more information and details of the semantics, see Speculative Store Bypass Barrier (SSBB)."
   },
   {
     "name": "SSUB",
     "doc": "Signed Subtract 16 performs two 16-bit signed integer subtractions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the subtractions."
+  },
+  {
+    "name": "STC",
+    "doc": "Store data to System register calculates an address from a base register value and an immediate offset, and stores a word from the DBGDTRRXint System register to memory. It can use offset, post-indexed, pre-indexed, or unindexed addressing. For information about memory accesses, see Memory accesses."
+  },
+  {
+    "name": "STL",
+    "doc": "Store-Release Word stores a word from a register to memory.  The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release."
+  },
+  {
+    "name": "STLB",
+    "doc": "Store-Release Byte stores a byte from a register to memory.  The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release."
+  },
+  {
+    "name": "STLEX",
+    "doc": "Store-Release Exclusive Word stores a word from a register to memory if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STLEXB",
+    "doc": "Store-Release Exclusive Byte stores a byte from a register to memory if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STLEXD",
+    "doc": "Store-Release Exclusive Doubleword stores a doubleword from two registers to memory if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STLEXH",
+    "doc": "Store-Release Exclusive Halfword stores a halfword from a register to memory if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STLH",
+    "doc": "Store-Release Halfword stores a halfword from a register to memory. The instruction also has memory ordering semantics as described in Load-Acquire, Store-Release."
   },
   {
     "name": "STM",
@@ -448,7 +892,15 @@
     "doc": "Store Multiple (Increment After, Empty Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the last of those locations can optionally be written back to the base register."
   },
   {
+    "name": "STMEA",
+    "doc": "Store Multiple (Increment After, Empty Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the last of those locations can optionally be written back to the base register."
+  },
+  {
     "name": "STMDA",
+    "doc": "Store Multiple Decrement After (Empty Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMED",
     "doc": "Store Multiple Decrement After (Empty Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
   },
   {
@@ -456,8 +908,20 @@
     "doc": "Store Multiple Decrement Before (Full Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the first of those locations can optionally be written back to the base register."
   },
   {
+    "name": "STMFD",
+    "doc": "Store Multiple Decrement Before (Full Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the first of those locations can optionally be written back to the base register."
+  },
+  {
     "name": "STMIB",
     "doc": "Store Multiple Increment Before (Full Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMFA",
+    "doc": "Store Multiple Increment Before (Full Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STRBT",
+    "doc": "Store Register Byte Unprivileged stores a byte from a register to memory. For information about memory accesses see Memory accesses."
   },
   {
     "name": "STRB",
@@ -468,8 +932,32 @@
     "doc": "Store Register Dual (immediate) calculates an address from a base register value and an immediate offset, and stores two words from two registers to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
   },
   {
+    "name": "STREX",
+    "doc": "Store Register Exclusive calculates an address from a base register value and an immediate offset, stores a word from a register to the calculated address if the PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STREXB",
+    "doc": "Store Register Exclusive Byte derives an address from a base register value, stores a byte from a register to the derived address if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STREXD",
+    "doc": "Store Register Exclusive Doubleword derives an address from a base register value, stores a 64-bit doubleword from two registers to the derived address if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STREXH",
+    "doc": "Store Register Exclusive Halfword derives an address from a base register value, stores a halfword from a register to the derived address if the executing PE has exclusive access to the memory at that address, and returns a status value of 0 if the store was successful, or of 1 if no store was performed."
+  },
+  {
+    "name": "STRHT",
+    "doc": "Store Register Halfword Unprivileged stores a halfword from a register to memory. For information about memory accesses see Memory accesses."
+  },
+  {
     "name": "STRH",
     "doc": "Store Register Halfword (immediate) calculates an address from a base register value and an immediate offset, and stores a halfword from a register to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "STRT",
+    "doc": "Store Register Unprivileged stores a word from a register to memory. For information about memory accesses see Memory accesses."
   },
   {
     "name": "STR",
@@ -477,22 +965,38 @@
   },
   {
     "name": "SUB",
-    "doc": "Subtract from PC subtracts an immediate value from the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias.\n\nThis is an alias of\n        ADR."
+    "doc": "Subtract from PC subtracts an immediate value from the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias."
   },
   {
     "name": "SUBS",
     "doc": "Subtract (immediate) subtracts an immediate value from a register value, and writes the result to the destination register."
   },
   {
+    "name": "SVC",
+    "doc": "Supervisor Call causes a Supervisor Call exception. For more information, see Supervisor Call (SVC) exception."
+  },
+  {
     "name": "SXTAB",
-    "doc": "Signed Extend and Add Byte 16 extracts two 8-bit values from a register, sign-extends them to 16 bits each, adds the results to two 16-bit values from another register, and writes the final results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+    "doc": "Signed Extend and Add Byte extracts an 8-bit value from a register, sign-extends it to 32 bits, adds the result to the value in another register, and writes the final result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit value."
+  },
+  {
+    "name": "SXTAH",
+    "doc": "Signed Extend and Add Halfword extracts a 16-bit value from a register, sign-extends it to 32 bits, adds the result to a value from another register, and writes the final result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 16-bit value."
   },
   {
     "name": "SXTB",
-    "doc": "Signed Extend Byte 16 extracts two 8-bit values from a register, sign-extends them to 16 bits each, and writes the results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+    "doc": "Signed Extend Byte extracts an 8-bit value from a register, sign-extends it to 32 bits, and writes the result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit value."
+  },
+  {
+    "name": "SXTH",
+    "doc": "Signed Extend Halfword extracts a 16-bit value from a register, sign-extends it to 32 bits, and writes the result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 16-bit value."
   },
   {
     "name": "TBB",
+    "doc": "Table Branch Byte or Halfword causes a PC-relative forward branch using a table of single byte or halfword offsets. A base register provides a pointer to the table, and a second register supplies an index into the table. The branch length is twice the value returned from the table."
+  },
+  {
+    "name": "TBH",
     "doc": "Table Branch Byte or Halfword causes a PC-relative forward branch using a table of single byte or halfword offsets. A base register provides a pointer to the table, and a second register supplies an index into the table. The branch length is twice the value returned from the table."
   },
   {
@@ -504,6 +1008,10 @@
     "doc": "Trace Synchronization Barrier. This instruction is a barrier that synchronizes the trace operations of instructions, see Trace Synchronization Buffer (TSB CSYNC)."
   },
   {
+    "name": "CSYNC",
+    "doc": "Trace Synchronization Barrier. This instruction is a barrier that synchronizes the trace operations of instructions, see Trace Synchronization Buffer (TSB CSYNC)."
+  },
+  {
     "name": "TST",
     "doc": "Test (immediate) performs a bitwise AND operation on a register value and an immediate value. It updates the condition flags based on the result, and discards the result."
   },
@@ -512,15 +1020,47 @@
     "doc": "Unsigned Add 16 performs two 16-bit unsigned integer additions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the additions."
   },
   {
+    "name": "UASX",
+    "doc": "Unsigned Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer addition and one unsigned 16-bit subtraction, and writes the results to the destination register. It sets PSTATE.GE according to the results."
+  },
+  {
+    "name": "UBFX",
+    "doc": "Unsigned Bit Field Extract extracts any number of adjacent bits at any position from a register, zero-extends them to 32 bits, and writes the result to the destination register."
+  },
+  {
+    "name": "UDF",
+    "doc": "Permanently Undefined generates an Undefined Instruction exception."
+  },
+  {
+    "name": "UDIV",
+    "doc": "Unsigned Divide divides a 32-bit unsigned integer register value by a 32-bit unsigned integer register value, and writes the result to the destination register. The condition flags are not affected."
+  },
+  {
     "name": "UHADD",
     "doc": "Unsigned Halving Add 16 performs two unsigned 16-bit integer additions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "UHASX",
+    "doc": "Unsigned Halving Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer addition and one unsigned 16-bit subtraction, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "UHSAX",
+    "doc": "Unsigned Halving Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer subtraction and one unsigned 16-bit addition, halves the results, and writes the results to the destination register."
   },
   {
     "name": "UHSUB",
     "doc": "Unsigned Halving Subtract 16 performs two unsigned 16-bit integer subtractions, halves the results, and writes the results to the destination register."
   },
   {
+    "name": "UMAAL",
+    "doc": "Unsigned Multiply Accumulate Accumulate Long multiplies two unsigned 32-bit values to produce a 64-bit value, adds two unsigned 32-bit values, and writes the 64-bit result to two registers."
+  },
+  {
     "name": "UMLAL",
+    "doc": "Unsigned Multiply Accumulate Long multiplies two unsigned 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
+  },
+  {
+    "name": "UMLALS",
     "doc": "Unsigned Multiply Accumulate Long multiplies two unsigned 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
   },
   {
@@ -528,8 +1068,20 @@
     "doc": "Unsigned Multiply Long multiplies two 32-bit unsigned values to produce a 64-bit result."
   },
   {
+    "name": "UMULLS",
+    "doc": "Unsigned Multiply Long multiplies two 32-bit unsigned values to produce a 64-bit result."
+  },
+  {
     "name": "UQADD",
     "doc": "Unsigned Saturating Add 16 performs two unsigned 16-bit integer additions, saturates the results to the 16-bit unsigned integer range 0 &lt;= x &lt;= 216 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "UQASX",
+    "doc": "Unsigned Saturating Add and Subtract with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer addition and one unsigned 16-bit subtraction, saturates the results to the 16-bit unsigned integer range 0 &lt;= x &lt;= 216 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "UQSAX",
+    "doc": "Unsigned Saturating Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer subtraction and one unsigned 16-bit addition, saturates the results to the 16-bit unsigned integer range 0 &lt;= x &lt;= 216 - 1, and writes the results to the destination register."
   },
   {
     "name": "UQSUB",
@@ -545,7 +1097,11 @@
   },
   {
     "name": "USAT",
-    "doc": "Unsigned Saturate 16 saturates two signed 16-bit values to a selected unsigned range."
+    "doc": "Unsigned Saturate saturates an optionally-shifted signed value to a selected unsigned range."
+  },
+  {
+    "name": "USAX",
+    "doc": "Unsigned Subtract and Add with Exchange exchanges the two halfwords of the second operand, performs one unsigned 16-bit integer subtraction and one unsigned 16-bit addition, and writes the results to the destination register. It sets PSTATE.GE according to the results."
   },
   {
     "name": "USUB",
@@ -553,11 +1109,27 @@
   },
   {
     "name": "UXTAB",
-    "doc": "Unsigned Extend and Add Byte 16 extracts two 8-bit values from a register, zero-extends them to 16 bits each, adds the results to two 16-bit values from another register, and writes the final results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+    "doc": "Unsigned Extend and Add Byte extracts an 8-bit value from a register, zero-extends it to 32 bits, adds the result to the value in another register, and writes the final result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit value."
+  },
+  {
+    "name": "UXTAH",
+    "doc": "Unsigned Extend and Add Halfword extracts a 16-bit value from a register, zero-extends it to 32 bits, adds the result to a value from another register, and writes the final result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 16-bit value."
   },
   {
     "name": "UXTB",
-    "doc": "Unsigned Extend Byte 16 extracts two 8-bit values from a register, zero-extends them to 16 bits each, and writes the results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+    "doc": "Unsigned Extend Byte extracts an 8-bit value from a register, zero-extends it to 32 bits, and writes the result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit value."
+  },
+  {
+    "name": "UXTH",
+    "doc": "Unsigned Extend Halfword extracts a 16-bit value from a register, zero-extends it to 32 bits, and writes the result to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 16-bit value."
+  },
+  {
+    "name": "VABA",
+    "doc": "Vector Absolute Difference and Accumulate subtracts the elements of one vector from the corresponding elements of another vector, and accumulates the absolute values of the results into the elements of the destination vector."
+  },
+  {
+    "name": "VABAL",
+    "doc": "Vector Absolute Difference and Accumulate Long subtracts the elements of one vector from the corresponding elements of another vector, and accumulates the absolute values of the results into the elements of the destination vector."
   },
   {
     "name": "VABDL",
@@ -566,6 +1138,38 @@
   {
     "name": "VABD",
     "doc": "Vector Absolute Difference (floating-point) subtracts the elements of one vector from the corresponding elements of another vector, and places the absolute values of the results in the elements of the destination vector."
+  },
+  {
+    "name": "VABS",
+    "doc": "Vector Absolute takes the absolute value of each element in a vector, and places the results in a second vector. The floating-point version only clears the sign bit."
+  },
+  {
+    "name": "VACGE",
+    "doc": "Vector Absolute Compare Greater Than or Equal takes the absolute value of each element in a vector, and compares it with the absolute value of the corresponding element of a second vector. If the first is greater than or equal to the second, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VACGT",
+    "doc": "Vector Absolute Compare Greater Than takes the absolute value of each element in a vector, and compares it with the absolute value of the corresponding element of a second vector. If the first is greater than the second, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VACLE",
+    "doc": "Vector Absolute Compare Less Than or Equal takes the absolute value of each element in a vector, and compares it with the absolute value of the corresponding element of a second vector. If the first is less than or equal to the second, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VACLT",
+    "doc": "Vector Absolute Compare Less Than takes the absolute value of each element in a vector, and compares it with the absolute value of the corresponding element of a second vector. If the first is less than the second, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VADDHN",
+    "doc": "Vector Add and Narrow, returning High Half adds corresponding elements in two quadword vectors, and places the most significant half of each result in a doubleword vector. The results are truncated. For rounded results, see VRADDHN."
+  },
+  {
+    "name": "VADDL",
+    "doc": "Vector Add Long adds corresponding elements in two doubleword vectors, and places the results in a quadword vector. Before adding, it sign-extends or zero-extends the elements of both operands."
+  },
+  {
+    "name": "VADDW",
+    "doc": "Vector Add Wide adds corresponding elements in one quadword and one doubleword vector, and places the results in a quadword vector. Before adding, it sign-extends or zero-extends the elements of the doubleword operand."
   },
   {
     "name": "VADD",
@@ -578,6 +1182,22 @@
   {
     "name": "VBIC",
     "doc": "Vector Bitwise Bit Clear (immediate) performs a bitwise AND between a register value and the complement of an immediate value, and returns the result into the destination vector."
+  },
+  {
+    "name": "VBIF",
+    "doc": "Vector Bitwise Insert if False inserts each bit from the first source register into the destination register if the corresponding bit of the second source register is 0, otherwise leaves the bit in the destination register unchanged."
+  },
+  {
+    "name": "VBIT",
+    "doc": "Vector Bitwise Insert if True inserts each bit from the first source register into the destination register if the corresponding bit of the second source register is 1, otherwise leaves the bit in the destination register unchanged."
+  },
+  {
+    "name": "VBSL",
+    "doc": "Vector Bitwise Select sets each bit in the destination to the corresponding bit from the first source operand when the original destination bit was 1, otherwise from the second source operand."
+  },
+  {
+    "name": "VCADD",
+    "doc": "Vector Complex Add."
   },
   {
     "name": "VCEQ",
@@ -596,19 +1216,47 @@
     "doc": "Vector Compare Less Than or Equal to Zero takes each element in a vector, and compares it with zero. If it is less than or equal to zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
   },
   {
+    "name": "VCLS",
+    "doc": "Vector Count Leading Sign Bits counts the number of consecutive bits following the topmost bit, that are the same as the topmost bit, in each element in a vector, and places the results in a second vector. The count does not include the topmost bit itself."
+  },
+  {
     "name": "VCLT",
     "doc": "Vector Compare Less Than Zero takes each element in a vector, and compares it with zero.  If it is less than zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
   },
   {
+    "name": "VCLZ",
+    "doc": "Vector Count Leading Zeros counts the number of consecutive zeros, starting from the most significant bit, in each element in a vector, and places the results in a second vector."
+  },
+  {
     "name": "VCMLA",
-    "doc": "Vector Complex Multiply Accumulate (by element)."
+    "doc": "Vector Complex Multiply Accumulate."
+  },
+  {
+    "name": "VCMP",
+    "doc": "Vector Compare compares two floating-point registers, or one floating-point register and zero. It writes the result to the FPSCR flags. These are normally transferred to the PSTATE.{N, Z, C, V} Condition flags by a subsequent VMRS instruction."
+  },
+  {
+    "name": "VCMPE",
+    "doc": "Vector Compare, raising Invalid Operation on NaN compares two floating-point registers, or one floating-point register and zero. It writes the result to the FPSCR flags. These are normally transferred to the PSTATE.{N, Z, C, V} Condition flags by a subsequent VMRS instruction."
+  },
+  {
+    "name": "VCNT",
+    "doc": "Vector Count Set Bits counts the number of bits that are one in each element in a vector, and places the results in a second vector."
   },
   {
     "name": "VCVTA",
     "doc": "Vector Convert floating-point to integer with Round to Nearest with Ties to Away converts each element in a vector from floating-point to integer using the Round to Nearest with Ties to Away rounding mode, and places the results in a second vector."
   },
   {
+    "name": "A",
+    "doc": "Vector Convert floating-point to integer with Round to Nearest with Ties to Away converts each element in a vector from floating-point to integer using the Round to Nearest with Ties to Away rounding mode, and places the results in a second vector."
+  },
+  {
     "name": "VCVTB",
+    "doc": "Convert to or from a half-precision value in the bottom half of a single-precision register does one of the following:"
+  },
+  {
+    "name": "BF",
     "doc": "Converts the single-precision value in a single-precision register to BFloat16 format and writes the result into the bottom half of a single precision register, preserving the top 16 bits of the destination register."
   },
   {
@@ -624,12 +1272,20 @@
     "doc": "Vector Convert floating-point to integer with Round towards +Infinity converts each element in a vector from floating-point to integer using the Round towards +Infinity rounding mode, and places the results in a second vector."
   },
   {
+    "name": "VCVTR",
+    "doc": "Convert floating-point to integer converts a value in a register from floating-point to a 32-bit integer, using the rounding mode specified by the FPSCR and places the result in a second register."
+  },
+  {
     "name": "VCVTT",
-    "doc": "Converts the single-precision value in a single-precision register to BFloat16 format and writes the result in the top half of a single-precision register, preserving the bottom 16 bits of the register."
+    "doc": "Convert to or from a half-precision value in the top half of a single-precision register does one of the following:"
   },
   {
     "name": "VCVT",
     "doc": "Vector Convert from single-precision to BFloat16 converts each 32-bit element in a vector from single-precision floating-point to BFloat16 format, and writes the result into a second vector. The result vector elements are half the width of the source vector elements."
+  },
+  {
+    "name": "VDIV",
+    "doc": "Divide divides one floating-point value by another floating-point value and writes the result to a third floating-point register."
   },
   {
     "name": "VDOT",
@@ -640,8 +1296,16 @@
     "doc": "Duplicate general-purpose register to vector duplicates an element from a general-purpose register into every element of the destination vector."
   },
   {
+    "name": "VEOR",
+    "doc": "Vector Bitwise Exclusive-OR performs a bitwise exclusive-OR operation between two registers, and places the result in the destination register. The operand and result registers can be quadword or doubleword. They must all be the same size."
+  },
+  {
     "name": "VEXT",
     "doc": "Vector Extract extracts elements from the bottom end of the second operand vector and the top end of the first, concatenates them and places the result in the destination vector."
+  },
+  {
+    "name": "VFMA",
+    "doc": "Vector Fused Multiply Accumulate multiplies corresponding elements of two\n      vectors, and accumulates the results into the elements of the destination\n      vector. The instruction does not round the result of the multiply before\n      the accumulation."
   },
   {
     "name": "VFMAL",
@@ -656,8 +1320,36 @@
     "doc": "The Bfloat16 floating-point widening multiply-add long instruction widens the even-numbered (bottom) or odd-numbered (top) 16-bit elements in the first and second source vectors from Bfloat16 to single-precision format. The instruction then multiplies and adds these values to the overlapping single-precision elements of the destination vector."
   },
   {
+    "name": "VFMS",
+    "doc": "Vector Fused Multiply Subtract negates the elements of one vector and multiplies them with the corresponding elements of another vector, adds the products to the corresponding elements of the destination vector, and places the results in the destination vector. The instruction does not round the result of the multiply before the addition."
+  },
+  {
     "name": "VFMSL",
     "doc": "Vector Floating-point Multiply-Subtract Long from accumulator (vector). This instruction negates the values in the vector of one SIMD&amp;FP register, multiplies these with the corresponding values in another vector, and accumulates the product to the corresponding vector element of the destination SIMD&amp;FP register. The instruction does not round the result of the multiply before the accumulation."
+  },
+  {
+    "name": "VFNMA",
+    "doc": "Vector Fused Negate Multiply Accumulate negates one floating-point register value and multiplies it by another floating-point register value, adds the negation of the floating-point value in the destination register to the product, and writes the result back to the destination register. The instruction does not round the result of the multiply before the addition."
+  },
+  {
+    "name": "VFNMS",
+    "doc": "Vector Fused Negate Multiply Subtract multiplies together two floating-point register values, adds the negation of the floating-point value in the destination register to the product, and writes the result back to the destination register. The instruction does not round the result of the multiply before the addition."
+  },
+  {
+    "name": "VHADD",
+    "doc": "Vector Halving Add adds corresponding elements in two vectors of integers, shifts each result right one bit, and places the final results in the destination vector. The results of the halving operations are truncated. For rounded results, see VRHADD)."
+  },
+  {
+    "name": "VHSUB",
+    "doc": "Vector Halving Subtract subtracts the elements of the second operand from the corresponding elements of the first operand, shifts each result right one bit, and places the final results in the destination vector. The results of the halving operations are truncated. There is no rounding version."
+  },
+  {
+    "name": "VINS",
+    "doc": "Vector move Insertion. This instruction copies the lower 16 bits of the 32-bit source SIMD&amp;FP register into the upper 16 bits of the 32-bit destination SIMD&amp;FP register, while preserving the values in the remaining bits."
+  },
+  {
+    "name": "VJCVT",
+    "doc": "Javascript Convert to signed fixed-point, rounding toward Zero. This instruction converts the double-precision floating-point value in the SIMD&amp;FP source register to a 32-bit signed integer using the Round towards Zero rounding mode, and writes the result to the SIMD&amp;FP destination register. If the result is too large to be accommodated as a signed 32-bit integer, then the result is the integer modulo 232, as held in a 32-bit signed integer."
   },
   {
     "name": "VLD",
@@ -672,12 +1364,24 @@
     "doc": "Load Multiple SIMD&amp;FP registers loads multiple registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
   },
   {
+    "name": "VLDMIA",
+    "doc": "Load Multiple SIMD&amp;FP registers loads multiple registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
     "name": "VLDR",
     "doc": "Load SIMD&amp;FP register (immediate) loads a single register from the Advanced SIMD and floating-point register file, using an address from a general-purpose register, with an optional offset."
   },
   {
+    "name": "VMAXNM",
+    "doc": "This instruction determines the floating-point maximum number."
+  },
+  {
     "name": "VMAX",
     "doc": "Vector Maximum compares corresponding elements in two vectors, and copies the larger of each pair into the corresponding element in the destination vector."
+  },
+  {
+    "name": "VMINNM",
+    "doc": "This instruction determines the floating point minimum number."
   },
   {
     "name": "VMIN",
@@ -700,8 +1404,32 @@
     "doc": "Vector Multiply Subtract multiplies corresponding elements in two vectors, subtracts the products from corresponding elements of the destination vector, and places the results in the destination vector."
   },
   {
+    "name": "VMMLA",
+    "doc": "BFloat16 floating-point matrix multiply-accumulate. This instruction multiplies the 2x4 matrix of BF16 values in the first 128-bit source vector by the 4x2 BF16 matrix in the second 128-bit source vector. The resulting 2x2 single-precision matrix product is then added destructively to the 2x2 single-precision matrix in the 128-bit destination vector. This is equivalent to performing a 4-way dot product per destination element. The instruction does not update the FPSCR exception status."
+  },
+  {
+    "name": "VMOVL",
+    "doc": "Vector Move Long takes each element in a doubleword vector, sign or zero-extends them to twice their original length, and places the results in a quadword vector."
+  },
+  {
+    "name": "VMOVN",
+    "doc": "Vector Move and Narrow copies the least significant half of each element of a quadword vector into the corresponding elements of a doubleword vector."
+  },
+  {
+    "name": "VMOVX",
+    "doc": "Vector Move extraction. This instruction copies the upper 16 bits of the 32-bit source SIMD&amp;FP register into the lower 16 bits of the 32-bit destination SIMD&amp;FP register, while clearing the remaining bits to zero."
+  },
+  {
     "name": "VMOV",
     "doc": "Copy two general-purpose registers to or from a SIMD&amp;FP register copies two words from two general-purpose registers into a doubleword register in the Advanced SIMD and floating-point register file, or from a doubleword register in the Advanced SIMD and floating-point register file to two general-purpose registers."
+  },
+  {
+    "name": "VMRS",
+    "doc": "Move SIMD&amp;FP Special register to general-purpose register moves the value of an Advanced SIMD and floating-point System register to a general-purpose register. When the specified System register is the FPSCR, a form of the instruction transfers the FPSCR.{N, Z, C, V} condition flags to the APSR.{N, Z, C, V} condition flags."
+  },
+  {
+    "name": "VMSR",
+    "doc": "Move general-purpose register to SIMD&amp;FP Special register moves the value of a general-purpose register to a floating-point System register."
   },
   {
     "name": "VMULL",
@@ -716,12 +1444,36 @@
     "doc": "Vector Bitwise NOT (immediate) places the bitwise inverse of an immediate integer constant into every element of the destination register."
   },
   {
+    "name": "VNEG",
+    "doc": "Vector Negate negates each element in a vector, and places the results in a second vector. The floating-point version only inverts the sign bit."
+  },
+  {
+    "name": "VNMLA",
+    "doc": "Vector Negate Multiply Accumulate multiplies together two floating-point register values, adds the negation of the floating-point value in the destination register to the negation of the product, and writes the result back to the destination register."
+  },
+  {
+    "name": "VNMLS",
+    "doc": "Vector Negate Multiply Subtract multiplies together two floating-point register values, adds the negation of the floating-point value in the destination register to the product, and writes the result back to the destination register."
+  },
+  {
+    "name": "VNMUL",
+    "doc": "Vector Negate Multiply multiplies together two floating-point register values, and writes the negation of the result to the destination register."
+  },
+  {
     "name": "VORN",
     "doc": "Vector bitwise OR NOT (register) performs a bitwise OR NOT operation between two registers, and places the result in the destination register.  The operand and result registers can be quadword or doubleword.  They must all be the same size."
   },
   {
     "name": "VORR",
     "doc": "Vector Bitwise OR (immediate) performs a bitwise OR between a register value and an immediate value, and returns the result into the destination vector."
+  },
+  {
+    "name": "VPADAL",
+    "doc": "Vector Pairwise Add and Accumulate Long adds adjacent pairs of elements of a vector, and accumulates the results into the elements of the destination vector."
+  },
+  {
+    "name": "VPADDL",
+    "doc": "Vector Pairwise Add Long adds adjacent pairs of elements of two vectors, and places the results in the destination vector."
   },
   {
     "name": "VPADD",
@@ -736,8 +1488,64 @@
     "doc": "Vector Pairwise Minimum compares adjacent pairs of elements in two doubleword vectors, and copies the smaller of each pair into the corresponding element in the destination doubleword vector."
   },
   {
+    "name": "VPOP",
+    "doc": "Pop SIMD&amp;FP registers from stack loads multiple consecutive Advanced SIMD and floating-point register file registers from the stack."
+  },
+  {
+    "name": "VPUSH",
+    "doc": "Push SIMD&amp;FP registers to stack stores multiple consecutive registers from the Advanced SIMD and floating-point register file to the stack."
+  },
+  {
+    "name": "VQABS",
+    "doc": "Vector Saturating Absolute takes the absolute value of each element in a vector, and places the results in the destination vector."
+  },
+  {
+    "name": "VQADD",
+    "doc": "Vector Saturating Add adds the values of corresponding elements of two vectors, and places the results in the destination vector."
+  },
+  {
+    "name": "VQDMLAL",
+    "doc": "Vector Saturating Doubling Multiply Accumulate Long multiplies corresponding elements in two doubleword vectors, doubles the products, and accumulates the results into the elements of a quadword vector."
+  },
+  {
+    "name": "VQDMLSL",
+    "doc": "Vector Saturating Doubling Multiply Subtract Long multiplies corresponding elements in two doubleword vectors, subtracts double the products from corresponding elements of a quadword vector, and places the results in the same quadword vector."
+  },
+  {
+    "name": "VQDMULH",
+    "doc": "Vector Saturating Doubling Multiply Returning High Half multiplies corresponding elements in two vectors, doubles the results, and places the most significant half of the final results in the destination vector. The results are truncated, for rounded results see VQRDMULH."
+  },
+  {
+    "name": "VQDMULL",
+    "doc": "Vector Saturating Doubling Multiply Long multiplies corresponding elements in two doubleword vectors, doubles the products, and places the results in a quadword vector."
+  },
+  {
     "name": "VQMOVN",
     "doc": "Vector Saturating Move and Narrow copies each element of the operand vector to the corresponding element of the destination vector."
+  },
+  {
+    "name": "VQMOVUN",
+    "doc": "Vector Saturating Move and Narrow copies each element of the operand vector to the corresponding element of the destination vector."
+  },
+  {
+    "name": "VQNEG",
+    "doc": "Vector Saturating Negate negates each element in a vector, and places the results in the destination vector."
+  },
+  {
+    "name": "VQRDMLAH",
+    "doc": "Vector Saturating Rounding Doubling Multiply Accumulate Returning High Half. This instruction multiplies the vector elements of the first source SIMD&amp;FP register with either the corresponding vector elements of the second source SIMD&amp;FP register or the value of a vector element of the second source SIMD&amp;FP register, without saturating the multiply results, doubles the results, and accumulates the most significant half of the final results with the vector elements of the destination SIMD&amp;FP register. The results are rounded."
+  },
+  {
+    "name": "VQRDMLSH",
+    "doc": "Vector Saturating Rounding Doubling Multiply Subtract Returning High Half. This instruction multiplies the vector elements of the first source SIMD&amp;FP register with either the corresponding vector elements of the second source SIMD&amp;FP register or the value of a vector element of the second source SIMD&amp;FP register, without saturating the multiply results, doubles the results, and subtracts the most significant half of the final results from the vector elements of the destination SIMD&amp;FP register. The results are rounded."
+  },
+  {
+    "name": "VQRDMULH",
+    "doc": "Vector Saturating Rounding Doubling Multiply Returning High Half multiplies corresponding elements in two vectors, doubles the results, and places the most significant half of the final results in the destination vector. The results are rounded. For truncated results see VQDMULH."
+  },
+  {
+    "name": "VQRSHL",
+    "doc": "Vector Saturating Rounding Shift Left takes each element in a vector, shifts them by a value from the least significant byte of the corresponding element of a second vector, and places the results in the destination vector. If the shift value is positive, the operation is a left shift. Otherwise, it is a right shift."
   },
   {
     "name": "VQRSHRN",
@@ -745,7 +1553,7 @@
   },
   {
     "name": "VQRSHRUN",
-    "doc": "Vector Saturating Rounding Shift Right, Narrow takes each element in a\n      quadword vector of integers, right shifts them by an immediate value, and\n      places the unsigned rounded results in a doubleword vector."
+    "doc": "Vector Saturating Rounding Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the rounded results in a doubleword vector."
   },
   {
     "name": "VQSHL",
@@ -761,11 +1569,31 @@
   },
   {
     "name": "VQSHRUN",
-    "doc": "Vector Saturating Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the unsigned truncated results in a doubleword vector.\n\nThis is a pseudo-instruction of\n        VQMOVN, VQMOVUN."
+    "doc": "Vector Saturating Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the truncated results in a doubleword vector."
+  },
+  {
+    "name": "VQSUB",
+    "doc": "Vector Saturating Subtract subtracts the elements of the second operand vector from the corresponding elements of the first operand vector, and places the results in the destination vector. Signed and unsigned operations are distinct."
+  },
+  {
+    "name": "VRADDHN",
+    "doc": "Vector Rounding Add and Narrow, returning High Half adds corresponding elements in two quadword vectors, and places the most significant half of each result in a doubleword vector. The results are rounded.  For truncated results, see VADDHN."
+  },
+  {
+    "name": "VRECPE",
+    "doc": "Vector Reciprocal Estimate finds an approximate reciprocal of each element in the operand vector, and places the results in the destination vector."
+  },
+  {
+    "name": "VRECPS",
+    "doc": "Vector Reciprocal Step multiplies the elements of one vector by the corresponding elements of another vector, subtracts each of the products from 2.0, and places the results into the elements of the destination vector."
   },
   {
     "name": "VREV",
     "doc": "Vector Reverse in halfwords reverses the order of 8-bit elements in each halfword of the vector, and places the result in the corresponding destination vector."
+  },
+  {
+    "name": "VRHADD",
+    "doc": "Vector Rounding Halving Add adds corresponding elements in two vectors of integers, shifts each result right one bit, and places the final results in the destination vector."
   },
   {
     "name": "VRINTA",
@@ -784,6 +1612,10 @@
     "doc": "Vector Round floating-point to integer towards +Infinity rounds a vector of floating-point values to integral floating-point values of the same size using the Round towards +Infinity rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
   },
   {
+    "name": "VRINTR",
+    "doc": "Round floating-point to integer rounds a floating-point value to an integral floating-point value of the same size using the rounding mode specified in the FPSCR. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
     "name": "VRINTX",
     "doc": "Vector round floating-point to integer inexact rounds a vector of floating-point values to integral floating-point values of the same size, using the Round to Nearest rounding mode, and raises the Inexact exception when the result value is not numerically equal to the input value. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
   },
@@ -792,12 +1624,32 @@
     "doc": "Vector round floating-point to integer towards Zero rounds a vector of floating-point values to integral floating-point values of the same size, using the Round towards Zero rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
   },
   {
-    "name": "VRSHRN",
-    "doc": "Vector Rounding Shift Right and Narrow takes each element in a vector, right shifts them by an immediate value, and places the rounded results in the destination vector.\n\nThis is a pseudo-instruction of\n        VMOVN."
+    "name": "VRSHL",
+    "doc": "Vector Rounding Shift Left takes each element in a vector, shifts them by a value from the least significant byte of the corresponding element of a second vector, and places the results in the destination vector. If the shift value is positive, the operation is a left shift. If the shift value is negative, it is a rounding right shift. For a truncating shift, see VSHL."
   },
   {
     "name": "VRSHR",
-    "doc": "Vector Rounding Shift Right copies the contents of one SIMD register to another.\n\nThis is a pseudo-instruction of\n        VORR (register)."
+    "doc": "Vector Rounding Shift Right takes each element in a vector, right shifts them by an immediate value, and places the rounded results in the destination vector. For truncated results, see VSHR."
+  },
+  {
+    "name": "VRSHRN",
+    "doc": "Vector Rounding Shift Right and Narrow takes each element in a vector, right shifts them by an immediate value, and places the rounded results in the destination vector. For truncated results, see VSHRN."
+  },
+  {
+    "name": "VRSQRTE",
+    "doc": "Vector Reciprocal Square Root Estimate finds an approximate reciprocal square root of each element in a vector, and places the results in a second vector."
+  },
+  {
+    "name": "VRSQRTS",
+    "doc": "Vector Reciprocal Square Root Step multiplies the elements of one vector by the corresponding elements of another vector, subtracts each of the products from 3.0, divides these results by 2.0, and places the results into the elements of the destination vector."
+  },
+  {
+    "name": "VRSRA",
+    "doc": "Vector Rounding Shift Right and Accumulate takes each element in a vector, right shifts them by an immediate value, and accumulates the rounded results into the destination vector. For truncated results, see VSRA."
+  },
+  {
+    "name": "VRSUBHN",
+    "doc": "Vector Rounding Subtract and Narrow, returning High Half subtracts the elements of one quadword vector from the corresponding elements of another quadword vector, takes the most significant half of each result, and places the final results in a doubleword vector. The results are rounded. For truncated results, see VSUBHN."
   },
   {
     "name": "VSDOT",
@@ -816,16 +1668,44 @@
     "doc": "Floating-point conditional select allows the destination register to take the value in either one or the other source register according to the condition codes in the APSR."
   },
   {
+    "name": "VSELVS",
+    "doc": "Floating-point conditional select allows the destination register to take the value in either one or the other source register according to the condition codes in the APSR."
+  },
+  {
+    "name": "VSHLL",
+    "doc": "Vector Shift Left Long takes each element in a doubleword vector, left shifts them by an immediate value, and places the results in a quadword vector."
+  },
+  {
     "name": "VSHL",
     "doc": "Vector Shift Left (immediate) takes each element in a vector of integers, left shifts them by an immediate value, and places the results in the destination vector."
   },
   {
-    "name": "VSHRN",
-    "doc": "Vector Shift Right Narrow takes each element in a vector, right shifts them by an immediate value, and places the truncated results in the destination vector.\n\nThis is a pseudo-instruction of\n        VMOVN."
+    "name": "VSHR",
+    "doc": "Vector Shift Right takes each element in a vector, right shifts them by an immediate value, and places the truncated results in the destination vector. For rounded results, see VRSHR."
   },
   {
-    "name": "VSHR",
-    "doc": "Vector Shift Right copies the contents of one SIMD register to another.\n\nThis is a pseudo-instruction of\n        VORR (register)."
+    "name": "VSHRN",
+    "doc": "Vector Shift Right Narrow takes each element in a vector, right shifts them by an immediate value, and places the truncated results in the destination vector. For rounded results, see VRSHRN."
+  },
+  {
+    "name": "VSLI",
+    "doc": "Vector Shift Left and Insert takes each element in the operand vector, left shifts them by an immediate value, and inserts the results in the destination vector. Bits shifted out of the left of each element are lost."
+  },
+  {
+    "name": "VSMMLA",
+    "doc": "The widening integer matrix multiply-accumulate instruction multiplies the 2x8 matrix of signed 8-bit integer values held in the first source vector by the 8x2 matrix of signed 8-bit integer values in the second source vector. The resulting 2x2 32-bit integer matrix product is destructively added to the 32-bit integer matrix accumulator held in the destination vector. This is equivalent to performing an 8-way dot product per destination element."
+  },
+  {
+    "name": "VSQRT",
+    "doc": "Square Root calculates the square root of the value in a floating-point register and writes the result to another floating-point register."
+  },
+  {
+    "name": "VSRA",
+    "doc": "Vector Shift Right and Accumulate takes each element in a vector, right shifts them by an immediate value, and accumulates the truncated results into the destination vector. For rounded results, see VRSRA."
+  },
+  {
+    "name": "VSRI",
+    "doc": "Vector Shift Right and Insert takes each element in the operand vector, right shifts them by an immediate value, and inserts the results in the destination vector. Bits shifted out of the right of each element are lost."
   },
   {
     "name": "VST",
@@ -840,6 +1720,26 @@
     "doc": "Store multiple SIMD&amp;FP registers stores multiple registers from the Advanced SIMD and floating-point register file to consecutive memory locations using an address from a general-purpose register."
   },
   {
+    "name": "VSTMIA",
+    "doc": "Store multiple SIMD&amp;FP registers stores multiple registers from the Advanced SIMD and floating-point register file to consecutive memory locations using an address from a general-purpose register."
+  },
+  {
+    "name": "VSTR",
+    "doc": "Store SIMD&amp;FP register stores a single register from the Advanced SIMD and floating-point register file to memory, using an address from a general-purpose register, with an optional offset."
+  },
+  {
+    "name": "VSUBHN",
+    "doc": "Vector Subtract and Narrow, returning High Half subtracts the elements of one quadword vector from the corresponding elements of another quadword vector, takes the most significant half of each result, and places the final results in a doubleword vector. The results are truncated. For rounded results, see VRSUBHN."
+  },
+  {
+    "name": "VSUBL",
+    "doc": "Vector Subtract Long subtracts the elements of one doubleword vector from the corresponding elements of another doubleword vector, and places the results in a quadword vector. Before subtracting, it sign-extends or zero-extends the elements of both operands."
+  },
+  {
+    "name": "VSUBW",
+    "doc": "Vector Subtract Wide subtracts the elements of a doubleword vector from the corresponding elements of a quadword vector, and places the results in another quadword vector. Before subtracting, it sign-extends or zero-extends the elements of the doubleword operand."
+  },
+  {
     "name": "VSUB",
     "doc": "Vector Subtract (floating-point) subtracts the elements of one vector from the corresponding elements of another vector, and places the results in the destination vector."
   },
@@ -848,23 +1748,59 @@
     "doc": "Dot Product index form with signed and unsigned integers. This instruction performs the dot product of the four signed 8-bit integer values in each 32-bit element of the first source register with the four unsigned 8-bit integer values in an indexed 32-bit element of the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
   },
   {
+    "name": "VSWP",
+    "doc": "Vector Swap exchanges the contents of two vectors. The vectors can be either doubleword or quadword. There is no distinction between data types."
+  },
+  {
     "name": "VTBL",
     "doc": "Vector Table Lookup uses byte indexes in a control vector to look up byte values in a table and generate a new vector. Indexes out of range return 0."
+  },
+  {
+    "name": "VTBX",
+    "doc": "Vector Table Lookup uses byte indexes in a control vector to look up byte values in a table and generate a new vector. Indexes out of range return 0."
+  },
+  {
+    "name": "VTRN",
+    "doc": "Vector Transpose treats the elements of its operand vectors as elements of 2 x 2 matrices, and transposes the matrices."
+  },
+  {
+    "name": "VTST",
+    "doc": "Vector Test Bits takes each element in a vector, and bitwise ANDs it with the corresponding element of a second vector. If the result is not zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
   },
   {
     "name": "VUDOT",
     "doc": "Dot Product vector form with unsigned integers. This instruction performs the dot product of the four 8-bit elements in each 32-bit element of the first source register with the four 8-bit elements of the corresponding 32-bit element in the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
   },
   {
+    "name": "VUMMLA",
+    "doc": "The widening integer matrix multiply-accumulate instruction multiplies the 2x8 matrix of unsigned 8-bit integer values held in the first source vector by the 8x2 matrix of unsigned 8-bit integer values in the second source vector. The resulting 2x2 32-bit integer matrix product is destructively added to the 32-bit integer matrix accumulator held in the destination vector. This is equivalent to performing an 8-way dot product per destination element."
+  },
+  {
     "name": "VUSDOT",
     "doc": "Dot Product vector form with mixed-sign integers. This instruction performs the dot product of the four unsigned 8-bit integer values in each 32-bit element of the first source register with the four signed 8-bit integer values in the corresponding 32-bit element of the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
   },
   {
+    "name": "VUSMMLA",
+    "doc": "The widening integer matrix multiply-accumulate instruction multiplies the 2x8 matrix of unsigned 8-bit integer values held in the first source vector by the 8x2 matrix of signed 8-bit integer values in the second source vector. The resulting 2x2 32-bit integer matrix product is destructively added to the 32-bit integer matrix accumulator held in the destination vector. This is equivalent to performing an 8-way dot product per destination element."
+  },
+  {
     "name": "VUZP",
-    "doc": "Vector Unzip de-interleaves the elements of two vectors.\n\nThis is a pseudo-instruction of\n        VTRN."
+    "doc": "Vector Unzip de-interleaves the elements of two vectors."
   },
   {
     "name": "VZIP",
-    "doc": "Vector Zip interleaves the elements of two vectors.\n\nThis is a pseudo-instruction of\n        VTRN."
+    "doc": "Vector Zip interleaves the elements of two vectors."
+  },
+  {
+    "name": "WFE",
+    "doc": "Wait For Event is a hint instruction that indicates that the PE can enter a low-power state and remain there until a wakeup event occurs. Wakeup events include the event signaled as a result of executing the SEV instruction on any PE in the multiprocessor system. For more information, see Wait For Event and Send Event."
+  },
+  {
+    "name": "WFI",
+    "doc": "Wait For Interrupt is a hint instruction that indicates that the PE can enter a low-power state and remain there until a wakeup event occurs. For more information, see Wait For Interrupt."
+  },
+  {
+    "name": "YIELD",
+    "doc": "YIELD is a hint instruction. Software with a multithreading capability can use a YIELD instruction to indicate to the PE that it is performing a task, for example a spin-lock, that could be swapped out to improve overall system performance. The PE can use this hint to suspend and resume multiple software threads if it supports the capability."
   }
 ]

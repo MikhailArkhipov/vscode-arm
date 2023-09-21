@@ -47,11 +47,11 @@ import { Character } from '../text/charCodes';
 //   }
 // }
 
-//const armHtmlDocFolderName = '~\\ARM\\ISA_AArch32_xml_A_profile-2023-06\\xhtml';
-//const armHtmlDocFolderName = '~\\ARM\\ISA_A64_xml_A_profile-2023-06\\xhtml';
-const armHtmlDocFolderName = 'C:\\Users\\mikha\\Documents\\ARM\\ISA_AArch32_xml_A_profile-2023-06\\xhtml';
+// const armHtmlDocFolderName = '~\\ARM\\ISA_AArch32_xml_A_profile-2023-06\\xhtml';
+// const armHtmlDocFolderName = '~\\ARM\\ISA_A64_xml_A_profile-2023-06\\xhtml';
+const armHtmlDocFolderName = '~\\ARM\\test';
 const indexFolderName = 'D:\\vscode-arm';
-const setFileName = 'a32.json';
+const setFileName = 'A64.json';
 
 interface InstructionData {
   name: string;
@@ -116,6 +116,10 @@ function getInstructionDataFromHtml(fileName: string, contents: string): Instruc
         name = [];
       }
     }
+  }
+
+  if (name.length > 0) {
+    instrNames.push(name.join(''));
   }
 
   const result: InstructionData[] = [];
