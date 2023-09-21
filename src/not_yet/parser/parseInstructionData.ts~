@@ -1,0 +1,79 @@
+  // Attempt to separate type from core name.
+  private parseType(text: string): void {
+    // Match instruction name until we find the longest match.
+
+    if (!this.allowedTypes || this.allowedTypes.length === 0) {
+      return;
+    }
+    for (let i = 0; i < this.allowedTypes.length; i++) {
+      const t = this.allowedTypes[i];
+      if (text.endsWith(t)) {
+        this.type = t;
+        this.name = text.substring(0, text.length - t.length);
+        return;
+      }
+    }
+  }
+
+  private parseSuffix(text: string): void {
+    if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
+      return;
+    }
+    for (let i = 0; i < this.allowedSuffixes.length; i++) {
+      const s = this.allowedSuffixes[i];
+      if (text.endsWith(s)) {
+        this.suffix = s;
+        this.name = text.substring(0, text.length - s.length);
+        return;
+      }
+    }
+  }
+
+    private validateSpecifier(): void {
+    if (!this.allowedSpecifiers) {
+      return;
+    }
+
+    if (!this.specifier) {
+      // Width or datatype is not specified in code.
+      // NEON requires datatype spec unless specified otherwise with <none>.
+      if (this.neon && this.allowedSpecifiers.indexOf('<none>') < 0) {
+        // Width or datatype specifier is required (NEON) and must be present.
+        this.errors.push(new ParseError(ParseErrorType.SpecifierMissing, ErrorLocation.Token, this.range));
+      }
+      return; // Width is not required to be present
+    }
+
+    if (this.allowedSpecifiers.length >= 1 && this.allowedSpecifiers[0] === '*') {
+      // Assembler ignores the specifier, so it does not matter if it is present ot not.
+      // See, for example, NEON VBIF/VBIT etc.
+      return;
+    }
+
+    const range = new TextRangeImpl(this.range.end - this.specifier.length, this.specifier.length);
+    // Does instruction permit width?
+    if (this.allowedSpecifiers.length === 0) {
+      // Instruction does not permit width or datatype
+      this.errors.push(new ParseError(ParseErrorType.SpecifierNotAllowed, ErrorLocation.Token, range));
+    } else if (this.allowedSpecifiers.indexOf(this.specifier.toUpperCase()) < 0) {
+      // Specifier is present but not recognized.
+      this.errors.push(new ParseError(ParseErrorType.UnknownSpecifier, ErrorLocation.Token, range));
+    }
+  }
+
+  private validateSuffix(): void {
+    if (!this.suffix) {
+      // Instruction does not have any suffix in code.
+      return;
+    }
+    const range = new TextRangeImpl(this.range.start + this.name.length, this.suffix.length);
+    // Does instruction permit suffix?
+    if (!this.allowedSuffixes || this.allowedSuffixes.length === 0) {
+      // Instruction does not allow suffix.
+      this.errors.push(new ParseError(ParseErrorType.SuffixNotAllowed, ErrorLocation.Token, range));
+    } else if (this.allowedSuffixes.indexOf(this.suffix.toUpperCase()) < 0) {
+      // Specifier is present but not recognized.
+      this.errors.push(new ParseError(ParseErrorType.UnknownSuffix, ErrorLocation.Token, range));
+    }
+
+

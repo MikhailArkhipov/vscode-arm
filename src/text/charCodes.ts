@@ -159,6 +159,14 @@ export namespace Character {
     return (ch >= Char.A && ch <= Char.Z) || (ch >= Char.a && ch <= Char.z);
   }
 
+  export function isUppercaseAnsiLetter(ch: number): boolean {
+    return ch >= Char.A && ch <= Char.Z;
+  }
+
+  export function isLowercaseAnsiLetter(ch: number): boolean {
+    return ch >= Char.a && ch <= Char.z;
+  }
+
   export function isDecimal(ch: number): boolean {
     return ch >= Char._0 && ch <= Char._9;
   }

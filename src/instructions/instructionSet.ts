@@ -5,127 +5,68 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Settings, getSetting } from '../core/settings';
 import { getExtensionPath, outputMessage } from '../core/utility';
-import { createDeferred } from '../core/deferred';
+import { Deferred, createDeferred } from '../core/deferred';
 
 export interface InstructionSet {
-  readonly displayName: string;
-  readonly feature: string;
-  readonly docUrl: string;
   // Try to parse and locate instruction info based on
   // the instruction name as it appears in the code.
-  findInstruction(candidateName: string): InstructionJsonInfo | undefined;
+  findInstruction(candidateName: string): InstructionJson | undefined;
 }
 
-interface InstructionSetJson {
-  readonly displayName: string;
-  readonly feature: string;
-  readonly docUrl: string;
-  readonly instructions: readonly { name: string; instr: InstructionJsonInfo }[];
+// Instruction data in the set JSON file.
+interface InstructionJson {
+  readonly name: string;
+  readonly doc: string;
 }
 
-// Instruction information as it appears in the instruction set JSON file.
-export interface InstructionJsonInfo {
-  readonly desc: string;
-  readonly operands: string | undefined;
-  readonly type: string | undefined;
-  readonly suffix: string | undefined;
-  readonly specifier: string | undefined;
-  readonly docName: string | undefined;
-  readonly arch: string | undefined;
-}
-
+// Runtime instruction set built from the JSON data.
 class InstructionSetImpl implements InstructionSet {
-  public readonly displayName: string;
-  public readonly feature: string;
-  public readonly docUrl: string;
+  private _map: Map<string, InstructionJson> = new Map();
 
-  private _map: Map<string, InstructionJsonInfo> = new Map();
-
-  constructor(json: InstructionSetJson) {
-    this.displayName = json.displayName;
-    this.docUrl = json.docUrl;
-    this.feature = json.feature;
-
+  constructor(instructions: InstructionJson[]) {
+    // Transfer to map for faster lookup.
     this._map = new Map();
-    for (const k of Object.keys(json.instructions)) {
-      const v = json.instructions[k];
-      this._map.set(k.toUpperCase(), v);
-    }
+    instructions.forEach((e) => {
+      this._map.set(e.name, e);
+    });
   }
 
-  // Chicken and egg issue - in order to parse type and suffix, we need to know
-  // if instruction supports types. However, in order to get this information
-  // from the instruction set file, we need to know instruction name which
-  // we don't until we find out core name of the instruction.
-  public findInstruction(candidateName: string): InstructionJsonInfo | undefined {
-    // Try candidate as is
-    let info = this.findInstructionJsonInfo(candidateName);
-    if (!info && candidateName.length > 1) {
-      // Chop off character assuming there is a suffix.
-      info = this.findInstructionJsonInfo(candidateName.substring(0, candidateName.length - 1));
-      if (!info && candidateName.length > 2) {
-        // Perhaps it is a two-letter type.
-        info = this.findInstructionJsonInfo(candidateName.substring(0, candidateName.length - 2));
-      }
-    }
-    return info;
-  }
-
-  private findInstructionJsonInfo(name: string): InstructionJsonInfo | undefined {
-    const setNames = Array.from(instructionSets.keys());
-    const candidate = name.toUpperCase();
-    for (let i = 0; i < setNames.length; i++) {
-      const set = instructionSets.get(setNames[i]);
-      if (set) {
-        const instr = this._map.get(candidate);
-        if (instr) {
-          return instr;
-        }
-      }
-    }
-    return;
+  // Match the longest case since instructions may vary by type.
+  // Ex PKHBT, PKHTB - instruction core is PKH and DT/TB are actually types.
+  public findInstruction(candidateName: string): InstructionJson | undefined {
+    return this._map.get(candidateName);
   }
 }
 
-const instructionSets: Map<string, InstructionSetImpl> = new Map();
+let _currentInstructionSetName: string;
+let _currentInstructionSet: InstructionSetImpl;
+let _runningLoader: Deferred<void>;
+
+export function currentInstructionSetName(): string {
+  return _currentInstructionSetName;
+}
 
 // Loads instruction sets from JSON. Sets to load come from settings.
-export async function loadInstructionSets(): Promise<void> {
+export async function loadInstructionSet(): Promise<void> {
   const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
-  const setNames = getSetting<string>(Settings.instructions, 'a32;neon32').split(';');
-  for (let i = 0; i < setNames.length; i++) {
-    await loadInstructionSet(setFolder, setNames[i]);
-  }
+  const setName = getSetting<string>(Settings.instructionSet, 'A32');
+  return loadInstructionSetByName(setFolder, setName);
 }
 
-export function getInstructionSet(name: string): InstructionSet | undefined {
-  return instructionSets.get(name);
-}
-
-export async function findInstructionInfo(
-  candidateName: string
-): Promise<{ info: InstructionJsonInfo; setName: string } | undefined> {
-  await loadInstructionSets();
-  const setNames = Array.from(instructionSets.keys());
-  for (let i = 0; i < setNames.length; i++) {
-    const set = instructionSets.get(setNames[i]);
-    if (set) {
-      const found = set.findInstruction(candidateName);
-      if (found) {
-        return { info: found, setName: setNames[i] };
-      }
-    }
-  }
+export async function findInstructionInfo(candidateName: string): Promise<InstructionJson | undefined> {
+  await _runningLoader.promise;
+  await loadInstructionSet();
+  return _currentInstructionSet?.findInstruction(candidateName);
 }
 
 // Load single instruction set.
-function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
-  const deferred = createDeferred<void>();
+function loadInstructionSetByName(setFolder: string, setName: string): Promise<void> {
+  _runningLoader = createDeferred<void>();
 
   // Is the set already loaded?
-  if (instructionSets.get(setName)) {
-    deferred.resolve();
-    return deferred.promise;
+  if (_currentInstructionSetName === setName) {
+    _runningLoader.resolve();
+    return _runningLoader.promise;
   }
 
   // Load instruction set data from JSON file.
@@ -135,16 +76,17 @@ function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
       if (err) {
         outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${err.message}`);
       } else {
-        const iset = JSON.parse(jsonString) as InstructionSetJson;
+        const iset = JSON.parse(jsonString) as InstructionJson[];
         // Transfer instructions to a map for faster lookup.
         const set = new InstructionSetImpl(iset);
-        instructionSets.set(setName, set);
+        _currentInstructionSet = set;
+        _currentInstructionSetName = setName;
       }
-      deferred.resolve();
+      _runningLoader.resolve();
     });
   } catch (e) {
     outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
-    deferred.resolve();
+    _runningLoader.resolve();
   }
-  return deferred.promise;
+  return _runningLoader.promise;
 }

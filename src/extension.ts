@@ -22,13 +22,14 @@ import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
 import { setExtensionPath } from './core/utility';
-import { loadInstructionSets } from './instructions/instructionSet';
+import { loadInstructionSet } from './instructions/instructionSet';
+import { convertHtmlToIndex } from './instructions';
 
 const languageName = 'arm';
 
-export async function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
-  loadInstructionSets();
+  loadInstructionSet(); // don't wait here, let it run
 
   // Register capabilities
   registerCapabilities(context);
@@ -105,6 +106,7 @@ function registerEditorEvents(context: ExtensionContext) {
 
 function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
-    commands.registerCommand('arm.openInstructionDocumentation', openCurrentInstructionDocumenation)
+    commands.registerCommand('arm.openInstructionDocumentation', openCurrentInstructionDocumenation),
+    commands.registerCommand('arm.convertHtmlToIndex', convertHtmlToIndex),
   );
 }

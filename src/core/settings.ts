@@ -9,7 +9,7 @@ export namespace Settings {
   export const showHover = "arm.editor.hover";
   export const showColors = "arm.editor.coloring";
   // Instruction set to use
-  export const instructions = "arm.instructions";
+  export const instructionSet = "arm.instructionSet";
   // Formatting options
   export const formattingSpaceAfterComma = "arm.formatting.spaceAfterComma";
   export const formattingUpperCaseInstructions = "arm.formatting.upperCaseInstructions";

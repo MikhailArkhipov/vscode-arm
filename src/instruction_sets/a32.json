@@ -1,1126 +1,870 @@
-{
-  "displayName": "Arm A-profile A32/T32 Instruction Set",
-  "feature": "AArch32",
-  "docUrl": "https://developer.arm.com/documentation/dui0473/m/arm-and-thumb-instructions",
-  "architectures": {
-    "5": "ARMv5T*, ARMv6*, ARMv7",
-    "5E": "ARMv5TE ARMv6*, ARMv7",
-    "6": "ARMv6*, ARMv7",
-    "6M": "ARMv6-M ARMv7",
-    "x6M": "Not available in ARMv6-M",
-    "7": "ARMv7",
-    "7A": "ARMv7-A",
-    "7M": "ARMv7-M",
-    "x7M": "Not available in ARMv6-M or ARMv7-M or any ARMv7E-M implementation",
-    "7EM": "ARMv7E-M but not in the ARMv7-M or ARMv6-M architecture",
-    "7R": "ARMv7-R",
-    "7MP": "ARMv7 with Multiprocessing Extensions",
-    "J": "ARMv5TEJ, ARMv6*, and ARMv7",
-    "K": "ARMv6K ARMv7",
-    "T": "ARMv4T, ARMv5T*, ARMv6*, ARMv7",
-    "T2": "ARMv6T2 and above",
-    "XS": "XScale versions of the ARM",
-    "Z": "If Security Extensions are implemented"
+[
+  {
+    "name": "ADC",
+    "doc": "Add with Carry (immediate) adds an immediate value and the Carry flag value to a register value, and writes the result to the destination register."
   },
-  "rotations": [
-    "ROR #8",
-    "ROR #16",
-    "ROR #24"
-  ],
-  "operands": {
-    "R": "Register",
-    "O": "Any operand",
-    "C": "Rotation",
-    "N": "Number",
-    "L": "Label",
-    "*": "Any sequence of operands",
-    "<empty>": "No operands"
+  {
+    "name": "ADCS",
+    "doc": "Add with Carry (immediate) adds an immediate value and the Carry flag value to a register value, and writes the result to the destination register."
   },
-  "instructions": {
-    "ADC": {
-      "desc": "Add with Carry",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "ADD": {
-      "desc": "Add",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "ADR": {
-      "desc": "Load program or register-relative address (short range)",
-      "operands": "RL",
-      "specifier": "W",
-      "docName": "adr--pc-relative-"
-    },
-    "ADRL": {
-      "desc": "Load program or register-relative address (medium range)",
-      "arch": "x6M",
-      "operands": "RL",
-      "docName": "adrl-pseudo-instruction"
-    },
-    "AND": {
-      "desc": "Logical AND",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "ASR": {
-      "desc": "Arithmetic Shift Right",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "B": {
-      "desc": "Branch",
-      "operands": "L",
-      "specifier": "W"
-    },
-    "BFC": {
-      "desc": "Bit Field Clear",
-      "arch": "T2",
-      "operands": "RNN"
-    },
-    "BFI": {
-      "desc": "Bit Field Insert",
-      "arch": "T2",
-      "operands": "RRNN"
-    },
-    "BIC": {
-      "desc": "Bit Clear",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "BKPT": {
-      "desc": "Breakpoint",
-      "arch": "5",
-      "operands": "I"
-    },
-    "BL": {
-      "desc": "Branch with Link",
-      "operands": "L",
-      "specifier": "W"
-    },
-    "BLX": {
-      "desc": "Branch with LinK change instruction set",
-      "arch": "T",
-      "operands": "L R",
-      "specifier": "W"
-    },
-    "BX": {
-      "desc": "Branch, change instruction set",
-      "arch": "T",
-      "operands": "R"
-    },
-    "BXJ": {
-      "desc": "Branch, change to Jazelle",
-      "arch": "J, x7M",
-      "operands": "R"
-    },
-    "CBZ": {
-      "desc": "Compare and Branch if Zero",
-      "arch": "T2",
-      "operands": "L",
-      "docName": "cbz-and-cbnz"
-    },
-    "CBNZ": {
-      "desc": "Compare and Branch if Non Zero",
-      "arch": "T2",
-      "operands": "L",
-      "docName": "cbz-and-cbnz"
-    },
-    "CDP": {
-      "desc": "Coprocessor Data Processing operation",
-      "arch": "x6M",
-      "operands": "*",
-      "docName": "cdp-and-cdp2"
-    },
-    "CDP2": {
-      "desc": "Coprocessor Data Processing operation",
-      "arch": "5 x6M",
-      "operands": "*",
-      "docName": "cdp-and-cdp2"
-    },
-    "CLREX": {
-      "desc": "Clear Exclusive",
-      "arch": "K x6M",
-      "operands": ""
-    },
-    "CLZ": {
-      "desc": "Count Leading Zeros",
-      "arch": "5 x6M",
-      "operands": "RR"
-    },
-    "CMN": {
-      "desc": "Compare Negative",
-      "operands": "RO",
-      "docName": "cmp-and-cmn"
-    },
-    "CMP": {
-      "desc": "Compare",
-      "operands": "RO",
-      "docName": "cmp-and-cmn"
-    },
-    "CPS": {
-      "desc": "Change Processor State",
-      "arch": "6",
-      "operands": "*",
-      "suffix": "IE ID"
-    },
-    "CPY": {
-      "desc": "Copy (pseudo instruction)",
-      "arch": "6",
-      "operands": "RR",
-      "docName": "cpy-pseudo-instruction"
-    },
-    "DBG": {
-      "desc": "Debug",
-      "arch": "7",
-      "operands": "N"
-    },
-    "DMB": {
-      "desc": "Data Memory Barrier",
-      "arch": "6M 7",
-      "operands": "E",
-      "E": "SY ST ISH ISHST NSH NSHST OSH OSHST"
-    },
-    "DSB": {
-      "desc": "Data Synchronization Barrier",
-      "arch": "6M 7",
-      "operands": "E",
-      "E": "SY ST ISH ISHST NSH NSHST OSH OSHST"
-    },
-    "EOR": {
-      "desc": "Exclusive OR",
-      "operands": "RRO",
-      "suffix": "S"
-    },
-    "ERET": {
-      "desc": "Exception Return",
-      "arch": "7VE"
-    },
-    "HVC": {
-      "desc": "Hypervisor Call",
-      "arch": "7VE",
-      "operands": "O"
-    },
-    "ISB": {
-      "desc": "Instruction Synchronization Barrier",
-      "arch": "6M 7",
-      "operands": "E",
-      "E": "SY"
-    },
-    "IT": {
-      "desc": "If-Then",
-      "arch": "T2"
-    },
-    "LDC": {
-      "desc": "Load Coprocessor",
-      "arch": "x6M",
-      "operands": "*",
-      "suffix": "L",
-      "docName": "ldc-and-ldc2"
-    },
-    "LDC2": {
-      "desc": "Load Coprocessor",
-      "arch": "5 x6M",
-      "operands": "*",
-      "suffix": "L",
-      "docName": "ldc-and-ldc2"
-    },
-    "LDM": {
-      "desc": "Load Multiple registers",
-      "operands": "R*",
-      "suffix": "IA IB DA DB"
-    },
-    "LDR": {
-      "desc": "Load Register with byte/signed byte/halfword/signed halfword",
-      "operands": "R*",
-      "suffix": "B SB H SH",
-      "docName": "ldr--immediate-offset-"
-    },
-    "LDRD": {
-      "desc": "Load Register with two words",
-      "arch": "5E x6M",
-      "operands": "R*",
-      "docName": "ldr--immediate-offset-"
-    },
-    "LDREX": {
-      "desc": "Load Register Exclusive",
-      "arch": "6 x6M",
-      "operands": "R*",
-      "suffix": "B H D"
-    },
-    "LDRBT": {
-      "desc": "Load Register with bytE user mode",
-      "arch": "x6M",
-      "operands": "R*",
-      "docName": "ldr--unprivileged"
-    },
-    "LDRHT": {
-      "desc": "Load Register with halfword, user mode",
-      "arch": "T2",
-      "operands": "R*",
-      "docName": "ldr--unprivileged"
-    },
-    "LDRSBT": {
-      "desc": "Load Register with signed bytE user mode",
-      "arch": "T2",
-      "operands": "R*",
-      "docName": "ldr--unprivileged"
-    },
-    "LDRSHT": {
-      "desc": "Load Register with halfword, user mode",
-      "arch": "T2",
-      "operands": "R*",
-      "docName": "ldr--unprivileged"
-    },
-    "LDRT": {
-      "desc": "Load Register with word, user mode",
-      "arch": "x6M",
-      "operands": "R*",
-      "docName": "ldr--unprivileged"
-    },
-    "LSL": {
-      "desc": "Logical Shift Left",
-      "operands": "RRR RRN",
-      "suffix": "S"
-    },
-    "LSR": {
-      "desc": "Logical Shift Right",
-      "operands": "RRR RRN",
-      "suffix": "S"
-    },
-    "MAR": {
-      "desc": "Move from Registers to 40-bit Accumulator",
-      "arch": "XS",
-      "operands": "*"
-    },
-    "MCR": {
-      "desc": "Move from Register to Coprocessor",
-      "arch": "x6M",
-      "operands": "*",
-      "docName": "mcr-and-mcr2"
-    },
-    "MCR2": {
-      "desc": "Move from Register to Coprocessor",
-      "arch": "5 x6M",
-      "operands": "",
-      "docName": "mcr-and-mcr2"
-    },
-    "MCRR": {
-      "desc": "Move from Register to Coprocessor",
-      "arch": "5E x6M",
-      "operands": "*",
-      "docName": "mcrr-and-mcrr2"
-    },
-    "MCRR2": {
-      "desc": "Move from Register to Coprocessor",
-      "arch": "6 x6M",
-      "operands": "*",
-      "docName": "mcrr-and-mcrr2"
-    },
-    "MIA": {
-      "desc": "Multiply with Internal 40-bit Accumulate",
-      "arch": "XS",
-      "operands": "*",
-      "suffix": "PH BB BT TB TT",
-      "docName": "mia--miaph--and-miaxy"
-    },
-    "MLA": {
-      "desc": "Multiply Accumulate",
-      "arch": "x6M",
-      "operands": "RRRR",
-      "suffix": "S"
-    },
-    "MLS": {
-      "desc": "Multiply and Subtract",
-      "arch": "T2",
-      "operands": "RRRR"
-    },
-    "MOV": {
-      "desc": "Move",
-      "operands": "RO RN",
-      "suffix": "S"
-    },
-    "MOVT": {
-      "desc": "Move Top",
-      "arch": "T2",
-      "operands": "RN"
-    },
-    "MOV32": {
-      "desc": "Move 32-bit immediate to register (pseudo instruction)",
-      "arch": "T2",
-      "operands": "R*",
-      "docName": "mov32-pseudo-instruction"
-    },
-    "MRA": {
-      "desc": "Move from 40-bit Accumulator to Registers",
-      "arch": "XS",
-      "operands": "RR*"
-    },
-    "MRC": {
-      "desc": "Move from Coprocessor to Register",
-      "arch": "x6M",
-      "operands": "*",
-      "docName": "mrc-and-mrc2"
-    },
-    "MRC2": {
-      "desc": "Move from Coprocessor to Register",
-      "arch": "5 x6M",
-      "operands": "*",
-      "docName": "mrc-and-mrc2"
-    },
-    "MRRC": {
-      "desc": "Move from Coprocessor to Register",
-      "arch": "5E x6M",
-      "operands": "*",
-      "docName": "mrrc-and-mrrc2"
-    },
-    "MRRC2": {
-      "desc": "Move from Coprocessor to Register",
-      "arch": "6 x6M",
-      "operands": "*",
-      "docName": "mrrc-and-mrrc2"
-    },
-    "MRS": {
-      "desc": "Move from PSR to register",
-      "operands": "*",
-      "docName": "mrs--psr-to-general-purpose-register-"
-    },
-    "MSR": {
-      "desc": "Move from register to PSR",
-      "operands": "*",
-      "docName": "msr--arm-register-to-system-coprocessor-register-"
-    },
-    "MUL": {
-      "desc": "Multiply",
-      "operands": "RR RRR",
-      "suffix": "S"
-    },
-    "MVN": {
-      "desc": "Move NOT",
-      "operands": "RO",
-      "suffix": "S"
-    },
-    "NEG": {
-      "desc": "Negate (pseudo instruction)",
-      "operands": "RR",
-      "docName": "neg-pseudo-instruction"
-    },
-    "NOP": {
-      "desc": "No Operation",
-      "operands": ""
-    },
-    "ORN": {
-      "desc": "Logical OR NOT (Thumb only)",
-      "arch": "T2",
-      "operands": "RR RRO",
-      "suffix": "S",
-      "docName": "orn--thumb-only-"
-    },
-    "ORR": {
-      "desc": "Logical OR",
-      "operands": "RR RRO",
-      "suffix": "S"
-    },
-    "PKH": {
-      "desc": "Halfword Packing instructions that combine a halfword from one register with a halfword from another register. One of the operands can be shifted before extraction of the halfword",
-      "arch": "6 7EM",
-      "operands": "RR* RRR*",
-      "type": "BT TB",
-      "docName": "pkhbt-and-pkhtb"
-    },
-    "PLD": {
-      "desc": "Preload Data",
-      "arch": "5E x6M",
-      "operands": "*",
-      "docName": "pld--pldw--and-pli"
-    },
-    "PLDW": {
-      "desc": "Preload Data with intent to Write",
-      "arch": "7MP",
-      "operands": "*",
-      "docName": "pld--pldw--and-pli"
-    },
-    "PLI": {
-      "desc": "Preload Instruction",
-      "arch": "7",
-      "operands": "*",
-      "docName": "pld--pldw--and-pli"
-    },
-    "POP": {
-      "desc": "POP registers from stack",
-      "operands": "*"
-    },
-    "PUSH": {
-      "desc": "PUSH registers to stack",
-      "operands": "*"
-    },
-    "QADD": {
-      "desc": "Signed saturating Add",
-      "arch": "5E 7EM",
-      "operands": "RR RRR"
-    },
-    "QADD8": {
-      "desc": "Signed saturating parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "QADD16": {
-      "desc": "Signed saturating parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "QASX": {
-      "desc": "Signed saturating parallel add and subtract halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "QDADD": {
-      "desc": "Signed saturating Double and Add",
-      "arch": "5E 7EM",
-      "operands": "RR RRR"
-    },
-    "QDSUB": {
-      "desc": "Signed saturating Double and Subtract",
-      "arch": "5E 7EM",
-      "operands": "RR RRR"
-    },
-    "QSAX": {
-      "desc": "Signed saturating parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "QSUB": {
-      "desc": "Signed saturating Subtract",
-      "arch": "5E 7EM",
-      "operands": "RR RRR",
-      "docName": ""
-    },
-    "QSUB8": {
-      "desc": "Signed saturating parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "QSUB16": {
-      "desc": "Signed saturating parallel halfword-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "RBIT": {
-      "desc": "Reverse Bits",
-      "arch": "T2",
-      "operands": "RR"
-    },
-    "REV": {
-      "desc": "Reverse byte order in a word",
-      "arch": "6",
-      "operands": "RR"
-    },
-    "REV16": {
-      "desc": "Reverse byte order in two halfwords",
-      "arch": "6",
-      "operands": "RR"
-    },
-    "REVSH": {
-      "desc": "Reverse byte order in a halfword and sign extend",
-      "arch": "6",
-      "operands": "RR"
-    },
-    "RFE": {
-      "desc": "Return From Exception",
-      "arch": "T2 x7M",
-      "operands": "R",
-      "type": "IA IB DA DB"
-    },
-    "ROR": {
-      "desc": "Rotate Right Register",
-      "operands": "RRR RRN",
-      "suffix": "S"
-    },
-    "RRX": {
-      "desc": "Rotate Right with Extend",
-      "arch": "x6M",
-      "operands": "RR",
-      "suffix": "S"
-    },
-    "RSB": {
-      "desc": "Reverse Subtract without carry",
-      "operands": "RO RRO",
-      "suffix": "S"
-    },
-    "RSC": {
-      "desc": "Reverse Subtract with Carry",
-      "arch": "x7M",
-      "operands": "RO RRO",
-      "suffix": "S"
-    },
-    "SADD8": {
-      "desc": "Signed parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SADD16": {
-      "desc": "Signed parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SASX": {
-      "desc": "Signed parallel add and subtract halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SBC": {
-      "desc": "Subtract with Carry",
-      "arch": "",
-      "operands": "RO RRO",
-      "suffix": "S"
-    },
-    "SBFX": {
-      "desc": "Signed Bit Field eXtract",
-      "arch": "T2",
-      "operands": "RRNN"
-    },
-    "SDIV": {
-      "desc": "Signed divide",
-      "arch": "7A, 7M 7R",
-      "operands": "RR RRR"
-    },
-    "SEL": {
-      "desc": "Select bytes according to APSR GE flags",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SETEND": {
-      "desc": "Set Endianness for memory accesses",
-      "arch": "6 x7M",
-      "operands": "E",
-      "E": "BE LE"
-    },
-    "SEV": {
-      "desc": "Set Event",
-      "arch": "K 6M",
-      "operands": ""
-    },
-    "SHADD8": {
-      "desc": "Signed halving parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SHADD16": {
-      "desc": "Signed halving parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SHASX": {
-      "desc": "Signed halving parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SHSAX": {
-      "desc": "Signed halving parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SHSUB8": {
-      "desc": "Signed halving parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SHSUB16": {
-      "desc": "Signed halving parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SMC": {
-      "desc": "Secure Monitor Call",
-      "arch": "Z",
-      "operands": "N"
-    },
-    "SMLAD": {
-      "desc": "Dual 16-bit Signed Multiply with Addition of products and 32-bit accumulation",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "X"
-    },
-    "SMLA": {
-      "desc": "Signed Multiply with Accumulate (32 <= 16 x 16 + 32)",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "type": "BB BT TB TT",
-      "docName": "smlaxy"
-    },
-    "SMLALD": {
-      "desc": "Dual 16-bit Signed Multiply with Addition of products and 64-bit Accumulation",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "X"
-    },
-    "SMLAL": {
-      "desc": "Signed Long Multiply, with optional AccumulatE with 32-bit operands, and 64-bit result and accumulator.",
-      "operands": "RRRR",
-      "suffix": "S",
-      "docName": "smlal"
-    },
-    "SMLALBB": {
-      "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0])",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "docName": "smlalxy"
-    },
-    "SMLALBT": {
-      "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0]), T means use the top half (bits [31:16]) ",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "docName": "smlalxy"
-    },
-    "SMLALTB": {
-      "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). B means use the bottom half (bits [15:0]), T means use the top half (bits [31:16])  ",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "docName": "smlalxy"
-    },
-    "SMLALTT": {
-      "desc": "Signed Multiply Accumulate (64 <= 64 + 16 x 16). T means use the top half (bits [31:16]) ",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "docName": "smlalxy"
-    },
-    "SMLAW": {
-      "desc": "Signed Multiply-Accumulate WidE with one 32-bit operand and one 16-bit operand, and a 32-bit accumulate valuE providing the top 32 bits of the result (T = top half, B = bottom half)",
-      "arch": "5E 7EM",
-      "operands": "RRRR",
-      "type": "B T",
-      "docName": "smlawy"
-    },
-    "SMLSD": {
-      "desc": "Dual Signed Multiply Subtract Accumulate",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "X"
-    },
-    "SMLSLD": {
-      "desc": "Dual Signed Multiply Subtract Accumulate Long",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "X"
-    },
-    "SMMLA": {
-      "desc": "Signed top word Multiply with Accumulate (32 <= TopWord(32 x 32 + 32)), R = rounded",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "R"
-    },
-    "SMMLS": {
-      "desc": "Signed top word Multiply with Subtract (32 <= TopWord(32 - 32 x 32)), R = rounded",
-      "arch": "6 7EM",
-      "operands": "RRRR",
-      "suffix": "R"
-    },
-    "SMMUL": {
-      "desc": "Signed top word Multiply (32 <= TopWord(32 x 32)), R = rounded",
-      "arch": "6 7EM",
-      "operands": "RR RRR",
-      "suffix": "R"
-    },
-    "SMUAD": {
-      "desc": "Dual 16-bit Signed Multiply with Addition of products, and optional exchange of operand halves",
-      "arch": "6 7EM",
-      "operands": "RR RRR",
-      "suffix": "X"
-    },
-    "SMUL": {
-      "desc": "Signed Multiply (32 <= 32 x 16 top, top)",
-      "arch": "5E 7EM",
-      "type": "BB BT TB TT",
-      "operands": "RR RRR",
-      "docName": "smulxy"
-    },
-    "SMULL": {
-      "desc": "Signed Multiply (64 <= 32 x 32)",
-      "arch": "x6M",
-      "operands": "RRRR",
-      "suffix": "S"
-    },
-    "SMULW": {
-      "desc": "Signed Multiply (32 <= 32 x 16 top)",
-      "arch": "5E 7EM",
-      "operands": "RR RRR",
-      "type": "B T",
-      "docName": "smulwy"
-    },
-    "SMUSD": {
-      "desc": "Dual 16-bit Signed Multiply with Subtraction of products, and optional exchange of operand halves",
-      "arch": "6 7EM",
-      "operands": "RR RRR",
-      "suffix": "X"
-    },
-   "SRS": {
-      "desc": "Store Return State",
-      "arch": "T2 x7M",
-      "operands": "*",
-      "suffix":"IA IB DA DB"
-    },
-    "SSAT": {
-      "desc": "Signed Saturate",
-      "arch": "6 x6M",
-      "operands": "RNR RNRS"
-    },
-    "SSAT16": {
-      "desc": "Signed SaturatE parallel halfwords",
-      "arch": "6 7EM",
-      "operands": "RNR"
-    },
-    "SSAX": {
-      "desc": "Signed parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SSUB8": {
-      "desc": "Signed parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "SSUB16": {
-      "desc": "Signed parallel halfword-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "STC": {
-      "desc": "Store Coprocessor",
-      "arch": "x6M",
-      "operands": "*",
-      "suffix": "L",
-      "docName": "stc-and-stc2"
-    },
-    "STC2": {
-      "desc": "Store Coprocessor",
-      "arch": "5 x6M",
-      "operands": "*",
-      "suffix": "L",
-      "docName": "stc-and-stc2"
-    },
-    "STM": {
-      "desc": "Store Multiple registers",
-      "operands": "R*",
-      "suffix": "IA IB DA DB"
-    },
-    "STR": {
-      "desc": "Store Register with word",
-      "operands": "R*",
-      "docName": "str--immediate-offset-"
-    },
-    "STRB": {
-      "desc": "Store Register with byte",
-      "operands": "R*",
-      "docName": "str--immediate-offset-"
-    },
-    "STRBT": {
-      "desc": "Store Register with bytE user mode",
-      "arch": "x6M",
-      "operands": "R*",
-      "docName": "str--immediate-offset-"
-    },
-    "STRD": {
-      "desc": "Store Registers with two words",
-      "arch": "5E x6M",
-      "operands": "RR*",
-      "docName": "str--immediate-offset-"
-    },
-    "STREX": {
-      "desc": "Store Register Exclusive",
-      "arch": "6 x6M",
-      "operands": "RR RRR RRRR RRRN"
-    },
-    "STREXB": {
-      "desc": "Store Register Exclusive Byte",
-      "arch": "K x6M",
-      "operands": "RR RRR"
-    },
-    "STREXH": {
-      "desc": "Store Register Exclusive Halfword",
-      "arch": "K x6M",
-      "operands": "RR RRR"
-    },
-    "STREXD": {
-      "desc": "Store Register Exclusive Doubleword",
-      "arch": "K x7M",
-      "operands": "RRR RRRR"
-    },
-    "STRH": {
-      "desc": "Store Register with halfword",
-      "operands": "",
-      "docName": "str--immediate-offset-"
-    },
-    "strht": {
-      "desc": "Store Register with halfword, user mode",
-      "arch": "T2",
-      "operands": "",
-      "docName": "str--immediate-offset-"
-    },
-    "strt": {
-      "desc": "Store Register with halfword, user mode",
-      "arch": "x6M",
-      "operands": "",
-      "docName": "str--immediate-offset-"
-    },
-    "SUB": {
-      "desc": "Subtract",
-      "operands": "RO RRO RN RRN",
-      "suffix": "S"
-    },
-    "SVC": {
-      "desc": "SuperVisor Call",
-      "operands": "N"
-    },
-    "SWP": {
-      "desc": "Swap registers and memory",
-      "operands": "RR RRR"
-    },
-    "SWPB": {
-      "desc": "Swap registers and memory",
-      "arch": "x7M",
-      "operands": "RR RRR"
-    },
-    "SXTAB": {
-      "desc": "Sign extend BytE with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "SXTAB16": {
-      "desc": "Sign extend two Bytes, with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "SXTAH": {
-      "desc": "Sign extend Halfword, with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "SXTB": {
-      "desc": "Sign extend Byte",
-      "arch": "6",
-      "operands": "RR RC RRC"
-    },
-    "SXTB16": {
-      "desc": "Sign extend two Bytes",
-      "arch": "6 7EM",
-      "operands": "RR RC RRC"
-    },
-    "SXTH": {
-      "desc": "Sign extend Halfword",
-      "arch": "6",
-      "operands": "RR RC RRC"
-    },
-    "SYS": {
-      "desc": "Execute system coprocessor instruction",
-      "arch": "7A, 7R",
-      "operands": "*"
-    },
-    "TBB": {
-      "desc": "Table Branch Byte",
-      "arch": "T2",
-      "operands": "*",
-      "docName": "tbb-and-tbh"
-    },
-    "TBH": {
-      "desc": "Table Branch Halfword",
-      "arch": "T2",
-      "operands": "*",
-      "docName": "tbb-and-tbh"
-    },
-    "TEQ": {
-      "desc": "Test Equivalence",
-      "arch": "x6M",
-      "operands": "RO"
-    },
-    "TST": {
-      "desc": "Test",
-      "operands": "RO"
-    },
-    "UADD8": {
-      "desc": "Unsigned parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UADD16": {
-      "desc": "Unsigned parallel hslfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UASX": {
-      "desc": "Unsigned parallel add and subtract halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UBFX": {
-      "desc": "Unsigned Bit Field eXtract",
-      "arch": "T2",
-      "operands": "RRNN"
-    },
-    "UDIV": {
-      "desc": "Unsigned divide",
-      "arch": "7A, 7M 7R",
-      "operands": "RR RRR"
-    },
-    "UHADD8": {
-      "desc": "Unsigned halving parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UHADD16": {
-      "desc": "Unsigned halving parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UHASX": {
-      "desc": "Unsigned halving parallel add and subtract halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UHSAX": {
-      "desc": "Unsigned halving parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UHSUB8": {
-      "desc": "Unsigned halving parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UHSUB16": {
-      "desc": "Unsigned halving parallel halfword-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UMAAL": {
-      "desc": "Unsigned Multiply Accumulate Accumulate Long (64 <= 32 + 32 + 32 x 32)",
-      "arch": "6 7EM",
-      "operands": "RRRR"
-    },
-    "UMLAL": {
-      "desc": "Unsigned Multiply Accumulate (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
-      "arch": "x6M",
-      "operands": "RRRR",
-      "suffix": "S"
-    },
-    "UMULL": {
-      "desc": "Unsigned Multiply (64 <= 32 x 32 + 64), (64 <= 32 x 32)",
-      "arch": "x6M",
-      "operands": "RRRR",
-      "suffix": "S"
-    },
-    "UND": {
-      "desc": "Generate an architecturally undefined instruction.",
-      "specifier": "W",
-      "docName": "und-pseudo-instruction"
-    },
-    "UQUADD8": {
-      "desc": "Unsigned saturating parallel byte-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UQUADD16": {
-      "desc": "Unsigned saturating parallel halfword-wise addition",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UQASX": {
-      "desc": "Unsigned saturating parallel add and subtract halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UQSAX": {
-      "desc": "Unsigned saturating parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UQSUB8": {
-      "desc": "Unsigned saturating parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UQSUB16": {
-      "desc": "Unsigned saturating parallel halfword-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "USAD8": {
-      "desc": "Unsigned Sum of Absolute Differences",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "USADA8": {
-      "desc": "Accumulate Unsigned Sum of Absolute Differences",
-      "arch": "6 7EM",
-      "operands": "RRRR"
-    },
-    "USAT": {
-      "desc": "Unsigned Saturate",
-      "arch": "6 x6M"
-    },
-    "USAT16": {
-      "desc": "Unsigned SaturatE parallel halfwords",
-      "arch": "6 7EM"
-    },
-    "USAX": {
-      "desc": "Unsigned parallel subtract and add halfwords with exchange",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "USUB8": {
-      "desc": "Unsigned parallel byte-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "USUB16": {
-      "desc": "Unsigned parallel halfword-wise subtraction",
-      "arch": "6 7EM",
-      "operands": "RR RRR"
-    },
-    "UXTAB": {
-      "desc": "Zero extend Byte with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "UXTAB16": {
-      "desc": "Zero extend two bytes with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "UXTAH": {
-      "desc": "Zero extend Halfword with Addition",
-      "arch": "6 7EM",
-      "operands": "RR RRC RRR RRRC"
-    },
-    "UXTB": {
-      "desc": "Zero extend Byte",
-      "arch": "6",
-      "operands": "RR RC RRC"
-    },
-    "UXTB16": {
-      "desc": "Zero extend two bytes",
-      "arch": "6 7EM",
-      "operands": "RR RC RRC"
-    },
-    "UXTH": {
-      "desc": "Zero extend Halfword",
-      "arch": "6",
-      "operands": "RR RC RRC"
-    },
-    "WFE": {
-      "desc": "Wait For Event",
-      "arch": "T2 6M",
-      "operands": ""
-    },
-    "WFI": {
-      "desc": "Wait For Interrupt",
-      "arch": "T2 6M",
-      "operands": ""
-    },
-    "YIELD": {
-      "desc": "Yield",
-      "arch": "T2 6M",
-      "operands": ""
-    }
+  {
+    "name": "ADD",
+    "doc": "Add to PC adds an immediate value to the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias.\n\nThis is a pseudo-instruction of\n        ADR."
+  },
+  {
+    "name": "ADDS",
+    "doc": "Add (immediate) adds an immediate value to a register value, and writes the result to the destination register."
+  },
+  {
+    "name": "SP",
+    "doc": "Add to SP (immediate) adds an immediate value to the SP value, and writes the result to the destination register."
+  },
+  {
+    "name": "AND",
+    "doc": "Bitwise AND (immediate) performs a bitwise AND of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "ANDS",
+    "doc": "Bitwise AND (immediate) performs a bitwise AND of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "ASRS",
+    "doc": "Arithmetic Shift Right, setting flags (immediate) shifts a register value right by an immediate number of bits, shifting in copies of its sign bit, and writes the result to the destination register."
+  },
+  {
+    "name": "ASR",
+    "doc": "Arithmetic Shift Right (immediate) shifts a register value right by an immediate number of bits, shifting in copies of its sign bit, and writes the result to the destination register."
+  },
+  {
+    "name": "BIC",
+    "doc": "Bitwise Bit Clear (immediate) performs a bitwise AND of a register value and the complement of an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "BICS",
+    "doc": "Bitwise Bit Clear (immediate) performs a bitwise AND of a register value and the complement of an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "BLX",
+    "doc": "Branch with Link and Exchange (register) calls a subroutine at an address specified in the register, and if necessary changes to the instruction set indicated by bit[0] of the register value. If the value in bit[0] is 0, the instruction set after the branch will be A32. If the value in bit[0] is 1, the instruction set after the branch will be T32."
+  },
+  {
+    "name": "BL",
+    "doc": "Branch with Link calls a subroutine at a PC-relative address, and setting LR to the return address."
+  },
+  {
+    "name": "CBNZ",
+    "doc": "Compare and Branch on Nonzero and Compare and Branch on Zero compare the value in a register with zero, and conditionally branch forward a constant value. They do not affect the condition flags."
+  },
+  {
+    "name": "CMN",
+    "doc": "Compare Negative (immediate) adds a register value and an immediate value. It updates the condition flags based on the result, and discards the result."
+  },
+  {
+    "name": "CMP",
+    "doc": "Compare (immediate) subtracts an immediate value from a register value. It updates the condition flags based on the result, and discards the result."
+  },
+  {
+    "name": "CPS",
+    "doc": "Change PE State changes one or more of the PSTATE.{A, I, F} interrupt mask bits and, optionally, the PSTATE.M mode field, without changing any other PSTATE bits."
+  },
+  {
+    "name": "CPSID",
+    "doc": "Change PE State changes one or more of the PSTATE.{A, I, F} interrupt mask bits and, optionally, the PSTATE.M mode field, without changing any other PSTATE bits."
+  },
+  {
+    "name": "CRC",
+    "doc": "CRC32 performs a cyclic redundancy check (CRC) calculation on a value held in a general-purpose register. It takes an input CRC value in the first source operand, performs a CRC on the input value in the second source operand, and returns the output CRC value. The second source operand can be 8, 16, or 32 bits. To align with common usage, the bit order of the values is reversed as part of the operation, and the polynomial 0x04C11DB7 is used for the CRC calculation."
+  },
+  {
+    "name": "DCPS",
+    "doc": "Debug Change PE State to EL1 allows the debugger to move the PE into EL1 from EL0 or to a specific mode at the current Exception level."
+  },
+  {
+    "name": "EOR",
+    "doc": "Bitwise Exclusive-OR (immediate) performs a bitwise exclusive-OR of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "EORS",
+    "doc": "Bitwise Exclusive-OR (immediate) performs a bitwise exclusive-OR of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "FLDM",
+    "doc": "FLDMDBX is the Decrement Before variant of this instruction, and FLDMIAX is the Increment After variant. FLDM*X loads multiple SIMD&amp;FP registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "X",
+    "doc": "FLDMDBX is the Decrement Before variant of this instruction, and FLDMIAX is the Increment After variant. FLDM*X loads multiple SIMD&amp;FP registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "FLDMDBX",
+    "doc": "FLDMDBX is the Decrement Before variant of this instruction, and FLDMIAX is the Increment After variant. FLDM*X loads multiple SIMD&amp;FP registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "FLDMIAX",
+    "doc": "FLDMDBX is the Decrement Before variant of this instruction, and FLDMIAX is the Increment After variant. FLDM*X loads multiple SIMD&amp;FP registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "FSTMDBX",
+    "doc": "FSTMX stores multiple SIMD&amp;FP registers from the Advanced SIMD and floating-point register file to consecutive locations in using an address from a general-purpose register."
+  },
+  {
+    "name": "LDC",
+    "doc": "Load data to System register (immediate) calculates an address from a base register value and an immediate offset, loads a word from memory, and writes it to the DBGDTRTXint System register. It can use offset, post-indexed, pre-indexed, or unindexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDM",
+    "doc": "Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMIA",
+    "doc": "Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMDA",
+    "doc": "Load Multiple Decrement After (Full Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMDB",
+    "doc": "Load Multiple Decrement Before (Empty Ascending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the lowest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDMIB",
+    "doc": "Load Multiple Increment Before (Empty Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "LDRB",
+    "doc": "Load Register Byte (immediate) calculates an address from a base register value and an immediate offset, loads a byte from memory, zero-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRD",
+    "doc": "Load Register Dual (immediate) calculates an address from a base register value and an immediate offset, loads two words from memory, and writes them to two registers. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRH",
+    "doc": "Load Register Halfword (immediate) calculates an address from a base register value and an immediate offset, loads a halfword from memory, zero-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRSB",
+    "doc": "Load Register Signed Byte (immediate) calculates an address from a base register value and an immediate offset, loads a byte from memory, sign-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDRSH",
+    "doc": "Load Register Signed Halfword (immediate) calculates an address from a base register value and an immediate offset, loads a halfword from memory, sign-extends it to form a 32-bit word, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing.  For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LDR",
+    "doc": "Load Register (immediate) calculates an address from a base register value and an immediate offset, loads a word from memory, and writes it to a register. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "LSLS",
+    "doc": "Logical Shift Left, setting flags (immediate) shifts a register value left by an immediate number of bits, shifting in zeros, and writes the result to the destination register."
+  },
+  {
+    "name": "LSL",
+    "doc": "Logical Shift Left (immediate) shifts a register value left by an immediate number of bits, shifting in zeros, and writes the result to the destination register."
+  },
+  {
+    "name": "LSRS",
+    "doc": "Logical Shift Right, setting flags (immediate) shifts a register value right by an immediate number of bits, shifting in zeros, and writes the result to the destination register."
+  },
+  {
+    "name": "LSR",
+    "doc": "Logical Shift Right (immediate) shifts a register value right by an immediate number of bits, shifting in zeros, and writes the result to the destination register."
+  },
+  {
+    "name": "MLA",
+    "doc": "Multiply Accumulate multiplies two register values, and adds a third register value. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
+    "name": "MOV",
+    "doc": "Move (immediate) writes an immediate value to the destination register."
+  },
+  {
+    "name": "MOVS",
+    "doc": "Move (immediate) writes an immediate value to the destination register."
+  },
+  {
+    "name": "MRS",
+    "doc": "Move to Register from Banked or Special register moves the value from the Banked general-purpose register or Saved Program Status Registers (SPSRs) of the specified mode, or the value of ELR_hyp, to a general-purpose register."
+  },
+  {
+    "name": "MSR",
+    "doc": "Move to Banked or Special register from general-purpose register moves the value of a general-purpose register to the Banked general-purpose register or Saved Program Status Registers (SPSRs) of the specified mode, or to ELR_hyp."
+  },
+  {
+    "name": "MUL",
+    "doc": "Multiply multiplies two register values. The least significant 32 bits of the result are written to the destination register. These 32 bits do not depend on whether the source register values are considered to be signed values or unsigned values."
+  },
+  {
+    "name": "MVN",
+    "doc": "Bitwise NOT (immediate) writes the bitwise inverse of an immediate value to the destination register."
+  },
+  {
+    "name": "MVNS",
+    "doc": "Bitwise NOT (immediate) writes the bitwise inverse of an immediate value to the destination register."
+  },
+  {
+    "name": "ORN",
+    "doc": "Bitwise OR NOT (immediate) performs a bitwise (inclusive) OR of a register value and the complement of an immediate value, and writes the result to the destination register. It can optionally update the condition flags based on the result."
+  },
+  {
+    "name": "ORNS",
+    "doc": "Bitwise OR NOT (immediate) performs a bitwise (inclusive) OR of a register value and the complement of an immediate value, and writes the result to the destination register. It can optionally update the condition flags based on the result."
+  },
+  {
+    "name": "ORR",
+    "doc": "Bitwise OR (immediate) performs a bitwise (inclusive) OR of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "ORRS",
+    "doc": "Bitwise OR (immediate) performs a bitwise (inclusive) OR of a register value and an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "PKHBT",
+    "doc": "Pack Halfword combines one halfword of its first operand with the other halfword of its shifted second operand."
+  },
+  {
+    "name": "PLD",
+    "doc": "Preload Data (immediate) signals the memory system that data memory accesses from a specified address are likely in the near future. The memory system can respond by taking actions that are expected to speed up the memory accesses when they do occur, such as preloading the cache line containing the specified address into the data cache."
+  },
+  {
+    "name": "PLDW",
+    "doc": "Preload Data (immediate) signals the memory system that data memory accesses from a specified address are likely in the near future. The memory system can respond by taking actions that are expected to speed up the memory accesses when they do occur, such as preloading the cache line containing the specified address into the data cache."
+  },
+  {
+    "name": "PLI",
+    "doc": "Preload Instruction signals the memory system that instruction memory accesses from a specified address are likely in the near future. The memory system can respond by taking actions that are expected to speed up the memory accesses when they do occur, such as pre-loading the cache line containing the specified address into the instruction cache."
+  },
+  {
+    "name": "POP",
+    "doc": "Pop Multiple Registers from Stack loads multiple general-purpose registers from the stack, loading from consecutive memory locations starting at the address in SP, and updates SP to point just above the loaded data.\n\nThis is an alias of\n        LDM, LDMIA, LDMFD."
+  },
+  {
+    "name": "PUSH",
+    "doc": "Push multiple registers to Stack stores multiple general-purpose registers to the stack, storing to consecutive memory locations ending just below the address in SP, and updates SP to point to the start of the stored data.\n\nThis is an alias of\n        STMDB, STMFD."
+  },
+  {
+    "name": "QADD",
+    "doc": "Saturating Add 16 performs two 16-bit integer additions, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "QSUB",
+    "doc": "Saturating Subtract 16 performs two 16-bit integer subtractions, saturates the results to the 16-bit signed integer range -215 &lt;= x &lt;= 215 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "REV",
+    "doc": "Byte-Reverse Packed Halfword reverses the byte order in each16-bit halfword of a 32-bit register."
+  },
+  {
+    "name": "RFE",
+    "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
+  },
+  {
+    "name": "RFEDA",
+    "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
+  },
+  {
+    "name": "RFEDB",
+    "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
+  },
+  {
+    "name": "RFEIA",
+    "doc": "Return From Exception loads two consecutive memory locations using an address in a base register:"
+  },
+  {
+    "name": "RORS",
+    "doc": "Rotate Right, setting flags (immediate) provides the value of the contents of a register rotated by a constant value. The bits that are rotated off the right end are inserted into the vacated bit positions on the left."
+  },
+  {
+    "name": "ROR",
+    "doc": "Rotate Right (immediate) provides the value of the contents of a register rotated by a constant value. The bits that are rotated off the right end are inserted into the vacated bit positions on the left."
+  },
+  {
+    "name": "RSB",
+    "doc": "Reverse Subtract (immediate) subtracts a register value from an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "RSBS",
+    "doc": "Reverse Subtract (immediate) subtracts a register value from an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "RSC",
+    "doc": "Reverse Subtract with Carry (immediate) subtracts a register value and the value of NOT (Carry flag) from an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "RSCS",
+    "doc": "Reverse Subtract with Carry (immediate) subtracts a register value and the value of NOT (Carry flag) from an immediate value, and writes the result to the destination register."
+  },
+  {
+    "name": "SADD",
+    "doc": "Signed Add 16 performs two 16-bit signed integer additions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the additions."
+  },
+  {
+    "name": "SBC",
+    "doc": "Subtract with Carry (immediate) subtracts an immediate value and the value of NOT (Carry flag) from a register value, and writes the result to the destination register."
+  },
+  {
+    "name": "SBCS",
+    "doc": "Subtract with Carry (immediate) subtracts an immediate value and the value of NOT (Carry flag) from a register value, and writes the result to the destination register."
+  },
+  {
+    "name": "SHA",
+    "doc": "SHA1 hash update (choose)."
+  },
+  {
+    "name": "SU",
+    "doc": "SHA1 schedule update 0."
+  },
+  {
+    "name": "H",
+    "doc": "SHA256 hash update part 2."
+  },
+  {
+    "name": "SHADD",
+    "doc": "Signed Halving Add 16 performs two signed 16-bit integer additions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "SHSUB",
+    "doc": "Signed Halving Subtract 16 performs two signed 16-bit integer subtractions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "SMLABB",
+    "doc": "Signed Multiply Accumulate (halfwords) performs a signed multiply accumulate operation. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored.  The 32-bit product is added to a 32-bit accumulate value and the result is written to the destination register."
+  },
+  {
+    "name": "SMLABT",
+    "doc": "Signed Multiply Accumulate (halfwords) performs a signed multiply accumulate operation. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored.  The 32-bit product is added to a 32-bit accumulate value and the result is written to the destination register."
+  },
+  {
+    "name": "SMLATB",
+    "doc": "Signed Multiply Accumulate (halfwords) performs a signed multiply accumulate operation. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored.  The 32-bit product is added to a 32-bit accumulate value and the result is written to the destination register."
+  },
+  {
+    "name": "SMLAD",
+    "doc": "Signed Multiply Accumulate Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 32-bit accumulate operand."
+  },
+  {
+    "name": "SMLAL",
+    "doc": "Signed Multiply Accumulate Long multiplies two signed 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
+  },
+  {
+    "name": "SMLALBB",
+    "doc": "Signed Multiply Accumulate Long (halfwords) multiplies two signed 16-bit values to produce a 32-bit value, and accumulates this with a 64-bit value. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is sign-extended and accumulated with a 64-bit accumulate value."
+  },
+  {
+    "name": "SMLALBT",
+    "doc": "Signed Multiply Accumulate Long (halfwords) multiplies two signed 16-bit values to produce a 32-bit value, and accumulates this with a 64-bit value. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is sign-extended and accumulated with a 64-bit accumulate value."
+  },
+  {
+    "name": "SMLALTB",
+    "doc": "Signed Multiply Accumulate Long (halfwords) multiplies two signed 16-bit values to produce a 32-bit value, and accumulates this with a 64-bit value. The multiply acts on two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is sign-extended and accumulated with a 64-bit accumulate value."
+  },
+  {
+    "name": "SMLALD",
+    "doc": "Signed Multiply Accumulate Long Dual performs two signed 16 x 16-bit multiplications. It adds the products to a 64-bit accumulate operand."
+  },
+  {
+    "name": "SMLAWB",
+    "doc": "Signed Multiply Accumulate (word by halfword) performs a signed multiply accumulate operation. The multiply acts on a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are added to a 32-bit accumulate value and the result is written to the destination register. The bottom 16 bits of the 48-bit product are ignored."
+  },
+  {
+    "name": "SMLSD",
+    "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 32-bit accumulate operand."
+  },
+  {
+    "name": "SMLSLD",
+    "doc": "Signed Multiply Subtract Long Dual performs two signed 16 x 16-bit multiplications. It adds the difference of the products to a 64-bit accumulate operand."
+  },
+  {
+    "name": "SMMLA",
+    "doc": "Signed Most Significant Word Multiply Accumulate multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and adds an accumulate value."
+  },
+  {
+    "name": "SMMLS",
+    "doc": "Signed Most Significant Word Multiply Subtract multiplies two signed 32-bit values, subtracts the result from a 32-bit accumulate value that is shifted left by 32 bits, and extracts the most significant 32 bits of the result of that subtraction."
+  },
+  {
+    "name": "SMMUL",
+    "doc": "Signed Most Significant Word Multiply multiplies two signed 32-bit values, extracts the most significant 32 bits of the result, and writes those bits to the destination register."
+  },
+  {
+    "name": "SMUAD",
+    "doc": "Signed Dual Multiply Add performs two signed 16 x 16-bit multiplications. It adds the products together, and writes the result to the destination register."
+  },
+  {
+    "name": "SMULBB",
+    "doc": "Signed Multiply (halfwords) multiplies two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is written to the destination register. No overflow is possible during this instruction."
+  },
+  {
+    "name": "SMULBT",
+    "doc": "Signed Multiply (halfwords) multiplies two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is written to the destination register. No overflow is possible during this instruction."
+  },
+  {
+    "name": "SMULTB",
+    "doc": "Signed Multiply (halfwords) multiplies two signed 16-bit quantities, taken from either the bottom or the top half of their respective source registers. The other halves of these source registers are ignored. The 32-bit product is written to the destination register. No overflow is possible during this instruction."
+  },
+  {
+    "name": "SMULL",
+    "doc": "Signed Multiply Long multiplies two 32-bit signed values to produce a 64-bit result."
+  },
+  {
+    "name": "SMULWB",
+    "doc": "Signed Multiply (word by halfword) multiplies a signed 32-bit quantity and a signed 16-bit quantity. The signed 16-bit quantity is taken from either the bottom or the top half of its source register. The other half of the second source register is ignored. The top 32 bits of the 48-bit product are written to the destination register. The bottom 16 bits of the 48-bit product are ignored. No overflow is possible during this instruction."
+  },
+  {
+    "name": "SMUSD",
+    "doc": "Signed Multiply Subtract Dual performs two signed 16 x 16-bit multiplications. It subtracts one of the products from the other, and writes the result to the destination register."
+  },
+  {
+    "name": "SRS",
+    "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "SRSDA",
+    "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "SRSDB",
+    "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "SRSIA",
+    "doc": "Store Return State stores the LR_&lt;current_mode&gt; and SPSR_&lt;current_mode&gt; to the stack of a specified mode. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "SSAT",
+    "doc": "Signed Saturate 16 saturates two signed 16-bit values to a selected signed range."
+  },
+  {
+    "name": "SSUB",
+    "doc": "Signed Subtract 16 performs two 16-bit signed integer subtractions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the subtractions."
+  },
+  {
+    "name": "STM",
+    "doc": "Store Multiple (Increment After, Empty Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMIA",
+    "doc": "Store Multiple (Increment After, Empty Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMDA",
+    "doc": "Store Multiple Decrement After (Empty Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end at this address, and the address just below the lowest of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMDB",
+    "doc": "Store Multiple Decrement Before (Full Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the first of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STMIB",
+    "doc": "Store Multiple Increment Before (Full Ascending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations start just above this address, and the address of the last of those locations can optionally be written back to the base register."
+  },
+  {
+    "name": "STRB",
+    "doc": "Store Register Byte (immediate) calculates an address from a base register value and an immediate offset, and stores a byte from a register to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "STRD",
+    "doc": "Store Register Dual (immediate) calculates an address from a base register value and an immediate offset, and stores two words from two registers to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "STRH",
+    "doc": "Store Register Halfword (immediate) calculates an address from a base register value and an immediate offset, and stores a halfword from a register to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "STR",
+    "doc": "Store Register (immediate) calculates an address from a base register value and an immediate offset, and stores a word from a register to memory. It can use offset, post-indexed, or pre-indexed addressing. For information about memory accesses see Memory accesses."
+  },
+  {
+    "name": "SUB",
+    "doc": "Subtract from PC subtracts an immediate value from the Align(PC, 4) value to form a PC-relative address, and writes the result to the destination register.  Arm recommends that, where possible, software avoids using this alias.\n\nThis is an alias of\n        ADR."
+  },
+  {
+    "name": "SUBS",
+    "doc": "Subtract (immediate) subtracts an immediate value from a register value, and writes the result to the destination register."
+  },
+  {
+    "name": "SXTAB",
+    "doc": "Signed Extend and Add Byte 16 extracts two 8-bit values from a register, sign-extends them to 16 bits each, adds the results to two 16-bit values from another register, and writes the final results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+  },
+  {
+    "name": "SXTB",
+    "doc": "Signed Extend Byte 16 extracts two 8-bit values from a register, sign-extends them to 16 bits each, and writes the results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+  },
+  {
+    "name": "TBB",
+    "doc": "Table Branch Byte or Halfword causes a PC-relative forward branch using a table of single byte or halfword offsets. A base register provides a pointer to the table, and a second register supplies an index into the table. The branch length is twice the value returned from the table."
+  },
+  {
+    "name": "TEQ",
+    "doc": "Test Equivalence (immediate) performs a bitwise exclusive OR operation on a register value and an immediate value. It updates the condition flags based on the result, and discards the result."
+  },
+  {
+    "name": "TSB",
+    "doc": "Trace Synchronization Barrier. This instruction is a barrier that synchronizes the trace operations of instructions, see Trace Synchronization Buffer (TSB CSYNC)."
+  },
+  {
+    "name": "TST",
+    "doc": "Test (immediate) performs a bitwise AND operation on a register value and an immediate value. It updates the condition flags based on the result, and discards the result."
+  },
+  {
+    "name": "UADD",
+    "doc": "Unsigned Add 16 performs two 16-bit unsigned integer additions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the additions."
+  },
+  {
+    "name": "UHADD",
+    "doc": "Unsigned Halving Add 16 performs two unsigned 16-bit integer additions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "UHSUB",
+    "doc": "Unsigned Halving Subtract 16 performs two unsigned 16-bit integer subtractions, halves the results, and writes the results to the destination register."
+  },
+  {
+    "name": "UMLAL",
+    "doc": "Unsigned Multiply Accumulate Long multiplies two unsigned 32-bit values to produce a 64-bit value, and accumulates this with a 64-bit value."
+  },
+  {
+    "name": "UMULL",
+    "doc": "Unsigned Multiply Long multiplies two 32-bit unsigned values to produce a 64-bit result."
+  },
+  {
+    "name": "UQADD",
+    "doc": "Unsigned Saturating Add 16 performs two unsigned 16-bit integer additions, saturates the results to the 16-bit unsigned integer range 0 &lt;= x &lt;= 216 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "UQSUB",
+    "doc": "Unsigned Saturating Subtract 16 performs two unsigned 16-bit integer subtractions, saturates the results to the 16-bit unsigned integer range 0 &lt;= x &lt;= 216 - 1, and writes the results to the destination register."
+  },
+  {
+    "name": "USAD",
+    "doc": "Unsigned Sum of Absolute Differences performs four unsigned 8-bit subtractions, and adds the absolute values of the differences together."
+  },
+  {
+    "name": "USADA",
+    "doc": "Unsigned Sum of Absolute Differences and Accumulate performs four unsigned 8-bit subtractions, and adds the absolute values of the differences to a 32-bit accumulate operand."
+  },
+  {
+    "name": "USAT",
+    "doc": "Unsigned Saturate 16 saturates two signed 16-bit values to a selected unsigned range."
+  },
+  {
+    "name": "USUB",
+    "doc": "Unsigned Subtract 16 performs two 16-bit unsigned integer subtractions, and writes the results to the destination register. It sets PSTATE.GE according to the results of the subtractions."
+  },
+  {
+    "name": "UXTAB",
+    "doc": "Unsigned Extend and Add Byte 16 extracts two 8-bit values from a register, zero-extends them to 16 bits each, adds the results to two 16-bit values from another register, and writes the final results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+  },
+  {
+    "name": "UXTB",
+    "doc": "Unsigned Extend Byte 16 extracts two 8-bit values from a register, zero-extends them to 16 bits each, and writes the results to the destination register. The instruction can specify a rotation by 0, 8, 16, or 24 bits before extracting the 8-bit values."
+  },
+  {
+    "name": "VABDL",
+    "doc": "Vector Absolute Difference Long (integer) subtracts the elements of one vector from the corresponding elements of another vector, and places the absolute values of the results in the elements of the destination vector."
+  },
+  {
+    "name": "VABD",
+    "doc": "Vector Absolute Difference (floating-point) subtracts the elements of one vector from the corresponding elements of another vector, and places the absolute values of the results in the elements of the destination vector."
+  },
+  {
+    "name": "VADD",
+    "doc": "Vector Add (floating-point) adds corresponding elements in two vectors, and places the results in the destination vector."
+  },
+  {
+    "name": "VAND",
+    "doc": "Vector Bitwise AND (register) performs a bitwise AND operation between two registers, and places the result in the destination register."
+  },
+  {
+    "name": "VBIC",
+    "doc": "Vector Bitwise Bit Clear (immediate) performs a bitwise AND between a register value and the complement of an immediate value, and returns the result into the destination vector."
+  },
+  {
+    "name": "VCEQ",
+    "doc": "Vector Compare Equal to Zero takes each element in a vector, and compares it with zero.  If it is equal to zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VCGE",
+    "doc": "Vector Compare Greater Than or Equal to Zero takes each element in a vector, and compares it with zero. If it is greater than or equal to zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VCGT",
+    "doc": "Vector Compare Greater Than Zero takes each element in a vector, and compares it with zero.  If it is greater than zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VCLE",
+    "doc": "Vector Compare Less Than or Equal to Zero takes each element in a vector, and compares it with zero. If it is less than or equal to zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VCLT",
+    "doc": "Vector Compare Less Than Zero takes each element in a vector, and compares it with zero.  If it is less than zero, the corresponding element in the destination vector is set to all ones. Otherwise, it is set to all zeros."
+  },
+  {
+    "name": "VCMLA",
+    "doc": "Vector Complex Multiply Accumulate (by element)."
+  },
+  {
+    "name": "VCVTA",
+    "doc": "Vector Convert floating-point to integer with Round to Nearest with Ties to Away converts each element in a vector from floating-point to integer using the Round to Nearest with Ties to Away rounding mode, and places the results in a second vector."
+  },
+  {
+    "name": "VCVTB",
+    "doc": "Converts the single-precision value in a single-precision register to BFloat16 format and writes the result into the bottom half of a single precision register, preserving the top 16 bits of the destination register."
+  },
+  {
+    "name": "VCVTM",
+    "doc": "Vector Convert floating-point to integer with Round towards -Infinity converts each element in a vector from floating-point to integer using the Round towards -Infinity rounding mode, and places the results in a second vector."
+  },
+  {
+    "name": "VCVTN",
+    "doc": "Vector Convert floating-point to integer with Round to Nearest converts each element in a vector from floating-point to integer using the Round to Nearest rounding mode, and places the results in a second vector."
+  },
+  {
+    "name": "VCVTP",
+    "doc": "Vector Convert floating-point to integer with Round towards +Infinity converts each element in a vector from floating-point to integer using the Round towards +Infinity rounding mode, and places the results in a second vector."
+  },
+  {
+    "name": "VCVTT",
+    "doc": "Converts the single-precision value in a single-precision register to BFloat16 format and writes the result in the top half of a single-precision register, preserving the bottom 16 bits of the register."
+  },
+  {
+    "name": "VCVT",
+    "doc": "Vector Convert from single-precision to BFloat16 converts each 32-bit element in a vector from single-precision floating-point to BFloat16 format, and writes the result into a second vector. The result vector elements are half the width of the source vector elements."
+  },
+  {
+    "name": "VDOT",
+    "doc": "BFloat16 floating-point (BF16) dot product (vector). This instruction delimits the source vectors into pairs of 16-bit BF16 elements. Within each pair, the elements in the first source vector are multiplied by the corresponding elements in the second source vector. The resulting single-precision products are then summed and added destructively to the single-precision element in the destination vector which aligns with the pair of BF16 values in the first source vector. The instruction does not update the FPSCR exception status."
+  },
+  {
+    "name": "VDUP",
+    "doc": "Duplicate general-purpose register to vector duplicates an element from a general-purpose register into every element of the destination vector."
+  },
+  {
+    "name": "VEXT",
+    "doc": "Vector Extract extracts elements from the bottom end of the second operand vector and the top end of the first, concatenates them and places the result in the destination vector."
+  },
+  {
+    "name": "VFMAL",
+    "doc": "Vector Floating-point Multiply-Add Long to accumulator (vector). This instruction multiplies corresponding values in the vectors in the two source SIMD&amp;FP registers, and accumulates the product to the corresponding vector element of the destination SIMD&amp;FP register. The instruction does not round the result of the multiply before the accumulation."
+  },
+  {
+    "name": "VFMAB",
+    "doc": "The Bfloat16 floating-point widening multiply-add long instruction widens the even-numbered (bottom) or odd-numbered (top) 16-bit elements in the first and second source vectors from Bfloat16 to single-precision format. The instruction then multiplies and adds these values to the overlapping single-precision elements of the destination vector."
+  },
+  {
+    "name": "VFMAT",
+    "doc": "The Bfloat16 floating-point widening multiply-add long instruction widens the even-numbered (bottom) or odd-numbered (top) 16-bit elements in the first and second source vectors from Bfloat16 to single-precision format. The instruction then multiplies and adds these values to the overlapping single-precision elements of the destination vector."
+  },
+  {
+    "name": "VFMSL",
+    "doc": "Vector Floating-point Multiply-Subtract Long from accumulator (vector). This instruction negates the values in the vector of one SIMD&amp;FP register, multiplies these with the corresponding values in another vector, and accumulates the product to the corresponding vector element of the destination SIMD&amp;FP register. The instruction does not round the result of the multiply before the accumulation."
+  },
+  {
+    "name": "VLD",
+    "doc": "Load single 1-element structure to one lane of one register loads one element from memory into one element of a register. Elements of the register that are not loaded are unchanged. For details of the addressing mode, see Advanced SIMD addressing mode."
+  },
+  {
+    "name": "VLDM",
+    "doc": "Load Multiple SIMD&amp;FP registers loads multiple registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "VLDMDB",
+    "doc": "Load Multiple SIMD&amp;FP registers loads multiple registers from consecutive locations in the Advanced SIMD and floating-point register file using an address from a general-purpose register."
+  },
+  {
+    "name": "VLDR",
+    "doc": "Load SIMD&amp;FP register (immediate) loads a single register from the Advanced SIMD and floating-point register file, using an address from a general-purpose register, with an optional offset."
+  },
+  {
+    "name": "VMAX",
+    "doc": "Vector Maximum compares corresponding elements in two vectors, and copies the larger of each pair into the corresponding element in the destination vector."
+  },
+  {
+    "name": "VMIN",
+    "doc": "Vector Minimum compares corresponding elements in two vectors, and copies the smaller of each pair into the corresponding element in the destination vector."
+  },
+  {
+    "name": "VMLAL",
+    "doc": "Vector Multiply Accumulate Long multiplies corresponding elements in two vectors, and add the products to the corresponding element of the destination vector. The destination vector element is twice as long as the elements that are multiplied."
+  },
+  {
+    "name": "VMLA",
+    "doc": "Vector Multiply Accumulate multiplies corresponding elements in two vectors, and accumulates the results into the elements of the destination vector."
+  },
+  {
+    "name": "VMLSL",
+    "doc": "Vector Multiply Subtract Long multiplies corresponding elements in two vectors, and subtract the products from the corresponding elements of the destination vector. The destination vector element is twice as long as the elements that are multiplied."
+  },
+  {
+    "name": "VMLS",
+    "doc": "Vector Multiply Subtract multiplies corresponding elements in two vectors, subtracts the products from corresponding elements of the destination vector, and places the results in the destination vector."
+  },
+  {
+    "name": "VMOV",
+    "doc": "Copy two general-purpose registers to or from a SIMD&amp;FP register copies two words from two general-purpose registers into a doubleword register in the Advanced SIMD and floating-point register file, or from a doubleword register in the Advanced SIMD and floating-point register file to two general-purpose registers."
+  },
+  {
+    "name": "VMULL",
+    "doc": "Vector Multiply Long multiplies corresponding elements in two vectors. The destination vector elements are twice as long as the elements that are multiplied."
+  },
+  {
+    "name": "VMUL",
+    "doc": "Vector Multiply multiplies corresponding elements in two vectors, and places the results in the destination vector."
+  },
+  {
+    "name": "VMVN",
+    "doc": "Vector Bitwise NOT (immediate) places the bitwise inverse of an immediate integer constant into every element of the destination register."
+  },
+  {
+    "name": "VORN",
+    "doc": "Vector bitwise OR NOT (register) performs a bitwise OR NOT operation between two registers, and places the result in the destination register.  The operand and result registers can be quadword or doubleword.  They must all be the same size."
+  },
+  {
+    "name": "VORR",
+    "doc": "Vector Bitwise OR (immediate) performs a bitwise OR between a register value and an immediate value, and returns the result into the destination vector."
+  },
+  {
+    "name": "VPADD",
+    "doc": "Vector Pairwise Add (floating-point) adds adjacent pairs of elements of two vectors, and places the results in the destination vector."
+  },
+  {
+    "name": "VPMAX",
+    "doc": "Vector Pairwise Maximum compares adjacent pairs of elements in two doubleword vectors, and copies the larger of each pair into the corresponding element in the destination doubleword vector."
+  },
+  {
+    "name": "VPMIN",
+    "doc": "Vector Pairwise Minimum compares adjacent pairs of elements in two doubleword vectors, and copies the smaller of each pair into the corresponding element in the destination doubleword vector."
+  },
+  {
+    "name": "VQMOVN",
+    "doc": "Vector Saturating Move and Narrow copies each element of the operand vector to the corresponding element of the destination vector."
+  },
+  {
+    "name": "VQRSHRN",
+    "doc": "Vector Saturating Rounding Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the rounded results in a doubleword vector."
+  },
+  {
+    "name": "VQRSHRUN",
+    "doc": "Vector Saturating Rounding Shift Right, Narrow takes each element in a\n      quadword vector of integers, right shifts them by an immediate value, and\n      places the unsigned rounded results in a doubleword vector."
+  },
+  {
+    "name": "VQSHL",
+    "doc": "Vector Saturating Shift Left (immediate) takes each element in a vector of integers, left shifts them by an immediate value, and places the results in a second vector."
+  },
+  {
+    "name": "VQSHLU",
+    "doc": "Vector Saturating Shift Left (immediate) takes each element in a vector of integers, left shifts them by an immediate value, and places the results in a second vector."
+  },
+  {
+    "name": "VQSHRN",
+    "doc": "Vector Saturating Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the truncated results in a doubleword vector."
+  },
+  {
+    "name": "VQSHRUN",
+    "doc": "Vector Saturating Shift Right, Narrow takes each element in a quadword vector of integers, right shifts them by an immediate value, and places the unsigned truncated results in a doubleword vector.\n\nThis is a pseudo-instruction of\n        VQMOVN, VQMOVUN."
+  },
+  {
+    "name": "VREV",
+    "doc": "Vector Reverse in halfwords reverses the order of 8-bit elements in each halfword of the vector, and places the result in the corresponding destination vector."
+  },
+  {
+    "name": "VRINTA",
+    "doc": "Vector Round floating-point to integer towards Nearest with Ties to Away rounds a vector of floating-point values to integral floating-point values of the same size using the Round to Nearest with Ties to Away rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRINTM",
+    "doc": "Vector Round floating-point to integer towards -Infinity rounds a vector of floating-point values to integral floating-point values of the same size, using the Round towards -Infinity rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRINTN",
+    "doc": "Vector Round floating-point to integer to Nearest rounds a vector of floating-point values to integral floating-point values of the same size using the Round to Nearest rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRINTP",
+    "doc": "Vector Round floating-point to integer towards +Infinity rounds a vector of floating-point values to integral floating-point values of the same size using the Round towards +Infinity rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRINTX",
+    "doc": "Vector round floating-point to integer inexact rounds a vector of floating-point values to integral floating-point values of the same size, using the Round to Nearest rounding mode, and raises the Inexact exception when the result value is not numerically equal to the input value. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRINTZ",
+    "doc": "Vector round floating-point to integer towards Zero rounds a vector of floating-point values to integral floating-point values of the same size, using the Round towards Zero rounding mode. A zero input gives a zero result with the same sign, an infinite input gives an infinite result with the same sign, and a NaN is propagated as for normal arithmetic."
+  },
+  {
+    "name": "VRSHRN",
+    "doc": "Vector Rounding Shift Right and Narrow takes each element in a vector, right shifts them by an immediate value, and places the rounded results in the destination vector.\n\nThis is a pseudo-instruction of\n        VMOVN."
+  },
+  {
+    "name": "VRSHR",
+    "doc": "Vector Rounding Shift Right copies the contents of one SIMD register to another.\n\nThis is a pseudo-instruction of\n        VORR (register)."
+  },
+  {
+    "name": "VSDOT",
+    "doc": "Dot Product vector form with signed integers. This instruction performs the dot product of the four 8-bit elements in each 32-bit element of the first source register with the four 8-bit elements of the corresponding 32-bit element in the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
+  },
+  {
+    "name": "VSELEQ",
+    "doc": "Floating-point conditional select allows the destination register to take the value in either one or the other source register according to the condition codes in the APSR."
+  },
+  {
+    "name": "VSELGE",
+    "doc": "Floating-point conditional select allows the destination register to take the value in either one or the other source register according to the condition codes in the APSR."
+  },
+  {
+    "name": "VSELGT",
+    "doc": "Floating-point conditional select allows the destination register to take the value in either one or the other source register according to the condition codes in the APSR."
+  },
+  {
+    "name": "VSHL",
+    "doc": "Vector Shift Left (immediate) takes each element in a vector of integers, left shifts them by an immediate value, and places the results in the destination vector."
+  },
+  {
+    "name": "VSHRN",
+    "doc": "Vector Shift Right Narrow takes each element in a vector, right shifts them by an immediate value, and places the truncated results in the destination vector.\n\nThis is a pseudo-instruction of\n        VMOVN."
+  },
+  {
+    "name": "VSHR",
+    "doc": "Vector Shift Right copies the contents of one SIMD register to another.\n\nThis is a pseudo-instruction of\n        VORR (register)."
+  },
+  {
+    "name": "VST",
+    "doc": "Store single element from one lane of one register stores one element to memory from one element of a register. For details of the addressing mode, see Advanced SIMD addressing mode."
+  },
+  {
+    "name": "VSTM",
+    "doc": "Store multiple SIMD&amp;FP registers stores multiple registers from the Advanced SIMD and floating-point register file to consecutive memory locations using an address from a general-purpose register."
+  },
+  {
+    "name": "VSTMDB",
+    "doc": "Store multiple SIMD&amp;FP registers stores multiple registers from the Advanced SIMD and floating-point register file to consecutive memory locations using an address from a general-purpose register."
+  },
+  {
+    "name": "VSUB",
+    "doc": "Vector Subtract (floating-point) subtracts the elements of one vector from the corresponding elements of another vector, and places the results in the destination vector."
+  },
+  {
+    "name": "VSUDOT",
+    "doc": "Dot Product index form with signed and unsigned integers. This instruction performs the dot product of the four signed 8-bit integer values in each 32-bit element of the first source register with the four unsigned 8-bit integer values in an indexed 32-bit element of the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
+  },
+  {
+    "name": "VTBL",
+    "doc": "Vector Table Lookup uses byte indexes in a control vector to look up byte values in a table and generate a new vector. Indexes out of range return 0."
+  },
+  {
+    "name": "VUDOT",
+    "doc": "Dot Product vector form with unsigned integers. This instruction performs the dot product of the four 8-bit elements in each 32-bit element of the first source register with the four 8-bit elements of the corresponding 32-bit element in the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
+  },
+  {
+    "name": "VUSDOT",
+    "doc": "Dot Product vector form with mixed-sign integers. This instruction performs the dot product of the four unsigned 8-bit integer values in each 32-bit element of the first source register with the four signed 8-bit integer values in the corresponding 32-bit element of the second source register, accumulating the result into the corresponding 32-bit element of the destination register."
+  },
+  {
+    "name": "VUZP",
+    "doc": "Vector Unzip de-interleaves the elements of two vectors.\n\nThis is a pseudo-instruction of\n        VTRN."
+  },
+  {
+    "name": "VZIP",
+    "doc": "Vector Zip interleaves the elements of two vectors.\n\nThis is a pseudo-instruction of\n        VTRN."
   }
-}
+]

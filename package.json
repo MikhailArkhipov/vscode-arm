@@ -41,6 +41,16 @@
           "dark": "images/ArmIcon.png"
         }
       }
+      ,
+      {
+        "command": "arm.convertHtmlToIndex",
+        "title": "Convert ARM HTML instruction documentation to index file",
+        "category": "ARM",
+        "icon": {
+          "light": "images/ArmIcon.png",
+          "dark": "images/ArmIcon.png"
+        }
+      }
     ],
     "keybindings": [
       {
@@ -124,10 +134,11 @@
             "default": true,
             "description": "Editor checks for syntax errors, invalid labels and directives, unknown instructions, etc."
           },
-          "arm.instructions": {
+          "arm.instructionSet": {
             "type": "string",
-            "default": "a32;neon32",
-            "description": "ARM instruction sets to use, separated by semicolon. Names match files in the instructions subfolder: a32, neon32, a64, cssc, mte, pauth, etc. "
+            "default": "A64",
+            "enum": ["A32", "A64"],
+            "description": "ARM instruction sets to use."
           }
         }
       }
@@ -185,6 +196,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "node-html-parser": "^6.1.10",
     "turndown": "^7.1.2",
     "typed-rest-client": "^1.8.11",
     "vscode-languageclient": "^8.1.0"
