@@ -140,7 +140,7 @@ export class TextRangeCollection<T extends TextRange> {
     }
 
     while (min <= max) {
-      const mid = min + (max - min) / 2;
+      const mid = Math.floor(min + (max - min) / 2);
       const item = this._items[mid];
 
       if (TextRange.contains(item.start, item.length, position)) {

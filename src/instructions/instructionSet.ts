@@ -12,6 +12,7 @@ export interface InstructionSet {
   // Try to parse and locate instruction info based on
   // the instruction name as it appears in the code.
   findInstruction(candidateName: string): InstructionJson | undefined;
+  instructions: readonly InstructionJson[];
 }
 
 // Instruction data in the set JSON file.
@@ -37,6 +38,10 @@ class InstructionSetImpl implements InstructionSet {
   public findInstruction(candidateName: string): InstructionJson | undefined {
     return this._map.get(candidateName);
   }
+
+  public get instructions(): readonly InstructionJson[] {
+    return Array.from(this._map.values());
+  }
 }
 
 let _currentInstructionSetName: string;
@@ -45,6 +50,12 @@ let _runningLoader: Deferred<void>;
 
 export function currentInstructionSetName(): string {
   return _currentInstructionSetName;
+}
+
+export async function getAvailableInstructions(ct: CancellationToken): Promise<readonly InstructionJson[]> {
+  await _runningLoader.promise;
+  await loadInstructionSet(ct);
+  return _currentInstructionSet ? _currentInstructionSet.instructions : [];
 }
 
 // Loads instruction sets from JSON. Sets to load come from settings.

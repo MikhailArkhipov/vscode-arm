@@ -1,18 +1,23 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import * as asmDirectives from '../instruction_sets/directives-gas.json';
 import { CancellationToken } from 'vscode-languageclient';
-import * as asmDirectives from '../instructions/directives-gas.json';
-import * as asmInstuctions from '../instructions/arch32.json';
 
 import { TextDocument, Position, CompletionContext, CompletionItem, CompletionItemKind } from 'vscode';
-import { getDirectiveDocumentation, getInstructionDocumentation } from './documentation';
+import { getDirectiveDocumentation } from './documentation';
 import { RDT } from './rdt';
 import { TokenType } from '../tokens/tokens';
-import { Settings, getSetting } from './settings';
 import { EditorDocument } from './document';
+import { Settings, getSetting } from '../core/settings';
+import { getAvailableInstructions } from '../instructions/instructionSet';
 
-export function provideCompletions(td: TextDocument, position: Position, context: CompletionContext): CompletionItem[] {
+export async function provideCompletions(
+  td: TextDocument,
+  position: Position,
+  context: CompletionContext,
+  ct: CancellationToken
+): Promise<CompletionItem[]> {
   const ed = RDT.getEditorDocument(td);
   if (!ed) {
     return [];
@@ -26,16 +31,16 @@ export function provideCompletions(td: TextDocument, position: Position, context
 
   let comps = handleDirectivesCompletion(ed, offset, tokenIndex, context);
   if (comps.length === 0) {
-    comps = handleInstructionsCompletion(ed, offset, tokenIndex, context);
+    comps = await handleInstructionsCompletion(ed, offset, tokenIndex, ct);
   }
 
   return comps;
 }
 
-export async function resolveCompletionItem(item: CompletionItem, token: CancellationToken): Promise<CompletionItem> {
+export async function resolveCompletionItem(item: CompletionItem, ct: CancellationToken): Promise<CompletionItem> {
   if (item.kind === CompletionItemKind.Keyword) {
     // Directive
-    item.documentation = await getDirectiveDocumentation(`.${item.label as string}`);
+    item.documentation = await getDirectiveDocumentation(`.${item.label as string}`, ct);
   }
   return item;
 }
@@ -82,12 +87,12 @@ function handleDirectivesCompletion(
   return comps;
 }
 
-function handleInstructionsCompletion(
+async function handleInstructionsCompletion(
   ed: EditorDocument,
   offset: number,
   tokenIndex: number,
-  context: CompletionContext
-): CompletionItem[] {
+  ct: CancellationToken
+): Promise<CompletionItem[]> {
   const comps: CompletionItem[] = [];
   let ic = true;
 
@@ -110,43 +115,17 @@ function handleInstructionsCompletion(
     return comps;
   }
 
+  const instructions = await getAvailableInstructions(ct);
+  if (ct.isCancellationRequested) {
+    return [];
+  }
+
   const uc = getSetting<boolean>(Settings.formattingUpperCaseInstructions, true);
-
-  const instrBaseNames = Object.keys(asmInstuctions.instructions);
-  instrBaseNames.forEach((baseName) => {
-    const data = asmInstuctions[baseName];
-    const baseDoc = getInstructionDocumentation(baseName);
-
-    const type = data['type'] as string;
-    if (type) {
-      const items = type.split(' ');
-      items.forEach((i) => {
-        const name = uc ? (baseName + i).toUpperCase() : (baseName + i).toLowerCase();
-        const ci = new CompletionItem(name, CompletionItemKind.Method);
-        ci.documentation = baseDoc;
-        comps.push(ci);
-      });
-    } else {
-      const ci = new CompletionItem(uc ? baseName.toUpperCase() : baseName.toLowerCase(), CompletionItemKind.Method);
-      ci.documentation = baseDoc;
-      comps.push(ci);
-    }
+  instructions.forEach((i) => {
+    const ci = new CompletionItem(uc ? i.name.toUpperCase() : i.name.toLowerCase(), CompletionItemKind.Method);
+    ci.documentation = i.doc;
+    comps.push(ci);
   });
 
-  if (getSetting<boolean>(Settings.completionShowNeonInstructions, false)) {
-    const instrNames = Object.keys(asmInstuctions['instructions-neon']);
-    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
-  }
-
-  if (getSetting<boolean>(Settings.completionShowVfpInstructions, false)) {
-    const instrNames = Object.keys(asmInstuctions['instructions-vfp']);
-    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
-  }
-
-  if (getSetting<boolean>(Settings.completionShowNeonInstructions, false)) {
-    const instrNames = Object.keys(asmInstuctions['instructions-mmx']);
-    comps.push(...instrNames.map((e) => new CompletionItem(uc ? e.toUpperCase() : e.toLowerCase(), CompletionItemKind.Keyword)));
-  }
-  
-   return comps;
+  return comps;
 }

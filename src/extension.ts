@@ -7,11 +7,12 @@ import {
   TextDocument,
   FormattingOptions,
   TextEdit,
-  //CompletionItem,
+  CompletionItem,
   CancellationToken,
   workspace,
   commands,
   CancellationTokenSource,
+  ProviderResult,
 } from 'vscode';
 import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';
@@ -22,6 +23,7 @@ import { setExtensionPath } from './core/utility';
 import { loadInstructionSet } from './instructions/instructionSet';
 import { convertHtmlToIndex } from './instructions';
 import { IdleTime } from './core/idletime';
+import { provideCompletions, resolveCompletionItem } from './editor/completions';
 
 const languageName = 'arm';
 
@@ -47,18 +49,18 @@ function registerCapabilities(context: ExtensionContext): void {
       },
     }),
     // Competions
-    // languages.registerCompletionItemProvider(
-    //   languageName,
-    //   {
-    //     provideCompletionItems(document, position, token, context): ProviderResult<CompletionItem[]> {
-    //       return provideCompletions(document, position, context);
-    //     },
-    //     resolveCompletionItem(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem> {
-    //       return resolveCompletionItem(item, token);
-    //     },
-    //   },
-    //   '.'
-    // ),
+    languages.registerCompletionItemProvider(
+      languageName,
+      {
+        provideCompletionItems(document, position, token, context): ProviderResult<CompletionItem[]> {
+          return provideCompletions(document, position, context, token);
+        },
+        resolveCompletionItem(item: CompletionItem, token: CancellationToken): ProviderResult<CompletionItem> {
+          return resolveCompletionItem(item, token);
+        },
+      },
+      '.'
+    ),
     // Hover tooltip
     languages.registerHoverProvider(languageName, {
       provideHover(document, position, token) {
