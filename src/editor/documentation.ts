@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { HttpClient } from 'typed-rest-client/HttpClient';
-import { MarkdownString } from 'vscode';
+import { CancellationToken, MarkdownString } from 'vscode';
 import { TextRange } from '../text/textRange';
 import { parseInstruction } from '../instructions/instruction';
 
@@ -11,7 +11,7 @@ const TurndownService = require('turndown');
 let turndownService: any;
 
 // Fetches GAS/GCC directive docs from online source.
-export async function getDirectiveDocumentation(directiveName: string): Promise<MarkdownString | undefined> {
+export async function getDirectiveDocumentation(directiveName: string, ct: CancellationToken): Promise<MarkdownString | undefined> {
   // TODO: caching
   const baseUrl = 'https://sourceware.org/binutils/docs/as';
   directiveName = directiveName.replace('_', '_005');
@@ -21,7 +21,8 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
   try {
     const client = new HttpClient('vscode-arm');
     const response = await client.get(docUrl);
-    if (response.message.statusCode !== 200) {
+    
+    if (ct.isCancellationRequested || response.message.statusCode !== 200) {
       return;
     }
 
@@ -33,9 +34,9 @@ export async function getDirectiveDocumentation(directiveName: string): Promise<
   } catch {}
 }
 
-export async function getInstructionDocumentation(instructionName: string): Promise<MarkdownString | undefined> {
-  const pi = await parseInstruction(instructionName, TextRange.fromBounds(0, 0));
-  if (pi.name && pi.name.length > 0) {
+export async function getInstructionDocumentation(instructionName: string, ct: CancellationToken): Promise<MarkdownString | undefined> {
+  const pi = await parseInstruction(instructionName, TextRange.fromBounds(0, 0), ct);
+  if (pi.name && pi.name.length > 0 && pi.description && pi.description.length > 0) {
     return new MarkdownString(`${pi.name}\n\n${pi.description}`);
   }
 }

@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextDocument, Position, Hover, Range, MarkdownString } from "vscode";
+import { TextDocument, Position, Hover, Range, MarkdownString, CancellationToken } from "vscode";
 import { TokenType } from "../tokens/tokens";
 import {
   getDirectiveDocumentation,
@@ -12,7 +12,8 @@ import { Settings, getSetting } from "../core/settings";
 
 export async function provideHover(
   td: TextDocument,
-  position: Position
+  position: Position,
+  ct: CancellationToken
 ): Promise<Hover | undefined> {
   const ed = RDT.getEditorDocument(td);
   if (!ed || !getSetting<boolean>(Settings.showHover, true)) {
@@ -32,11 +33,11 @@ export async function provideHover(
   let doc: MarkdownString | undefined;
   switch (token.tokenType) {
     case TokenType.Directive:
-      doc = await getDirectiveDocumentation(tokenText);
+      doc = await getDirectiveDocumentation(tokenText, ct);
       break;
 
     case TokenType.Instruction:
-      doc = await getInstructionDocumentation(tokenText);
+      doc = await getInstructionDocumentation(tokenText, ct);
       break;
   }
 

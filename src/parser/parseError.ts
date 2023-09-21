@@ -97,3 +97,12 @@ export class InstructionError extends ParseError {
     super(errorType, ErrorLocation.Token, range);
   }
 }
+
+export function getMessage(errorType: ParseErrorType): string {
+  switch(errorType) {
+    case ParseErrorType.UnknownInstruction:
+      return 'Unknown instruction';
+  }
+  return '???';
+}
+

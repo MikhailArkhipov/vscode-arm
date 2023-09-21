@@ -9,27 +9,26 @@ import {
   TextEdit,
   //CompletionItem,
   CancellationToken,
-  //ProviderResult,
-  TextEditor,
-  window,
   workspace,
   commands,
+  CancellationTokenSource,
 } from 'vscode';
 import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';
-import { updateDiagnostics } from './editor/diagnostics';
 import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
 import { setExtensionPath } from './core/utility';
 import { loadInstructionSet } from './instructions/instructionSet';
 import { convertHtmlToIndex } from './instructions';
+import { IdleTime } from './core/idletime';
 
 const languageName = 'arm';
 
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
-  loadInstructionSet(); // don't wait here, let it run
+  // don't wait here, let it run async
+  loadInstructionSet(new CancellationTokenSource().token); 
 
   // Register capabilities
   registerCapabilities(context);
@@ -63,7 +62,7 @@ function registerCapabilities(context: ExtensionContext): void {
     // Hover tooltip
     languages.registerHoverProvider(languageName, {
       provideHover(document, position, token) {
-        return provideHover(document, position);
+        return provideHover(document, position, token);
       },
     }),
     // Colorizer
@@ -71,6 +70,7 @@ function registerCapabilities(context: ExtensionContext): void {
       { language: languageName, scheme: 'file' },
       {
         provideDocumentSemanticTokens(document: TextDocument, ct: CancellationToken) {
+          IdleTime.notifyEditorTextChanged();
           return provideSemanticTokens(document, ct);
         },
       },
@@ -81,14 +81,6 @@ function registerCapabilities(context: ExtensionContext): void {
 
 function registerEditorEvents(context: ExtensionContext) {
   context.subscriptions.push(
-    window.onDidChangeActiveTextEditor((e: TextEditor | undefined) => {
-      if (!e) {
-        return;
-      }
-      if (e !== undefined) {
-        updateDiagnostics(e);
-      }
-    }),
     workspace.onDidOpenTextDocument((e: TextDocument) => {
       RDT.addTextDocument(e);
     }),

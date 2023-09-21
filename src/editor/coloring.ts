@@ -3,7 +3,6 @@
 
 import {
   TextDocument,
-  ProviderResult,
   SemanticTokens,
   SemanticTokensBuilder,
   Range,
@@ -18,11 +17,12 @@ const tokenTypes = ['instruction', 'directive', 'register', 'label', 'comment', 
 const tokenModifiers = [];
 export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 
-export function provideSemanticTokens(td: TextDocument, ct: CancellationToken): ProviderResult<SemanticTokens> {
+export async function provideSemanticTokens(td: TextDocument, ct: CancellationToken): Promise<SemanticTokens | undefined> {
   const ed = RDT.getEditorDocument(td);
   if (!ed || !getSetting<boolean>(Settings.showColors, true)) {
     return;
   }
+
   // on line 1, characters 1-5 are a class declaration
   const tokensBuilder = new SemanticTokensBuilder(semanticTokensLegend);
   for (let i = 0; i < ed.tokens.count && !ct.isCancellationRequested; i++) {

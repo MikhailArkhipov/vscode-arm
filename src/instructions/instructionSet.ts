@@ -6,6 +6,7 @@ import * as path from 'path';
 import { Settings, getSetting } from '../core/settings';
 import { getExtensionPath, outputMessage } from '../core/utility';
 import { Deferred, createDeferred } from '../core/deferred';
+import { CancellationToken } from 'vscode';
 
 export interface InstructionSet {
   // Try to parse and locate instruction info based on
@@ -47,20 +48,23 @@ export function currentInstructionSetName(): string {
 }
 
 // Loads instruction sets from JSON. Sets to load come from settings.
-export async function loadInstructionSet(): Promise<void> {
+export async function loadInstructionSet(ct: CancellationToken): Promise<void> {
   const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
   const setName = getSetting<string>(Settings.instructionSet, 'A32');
-  return loadInstructionSetByName(setFolder, setName);
+  return loadInstructionSetByName(setFolder, setName, ct);
 }
 
-export async function findInstructionInfo(candidateName: string): Promise<InstructionJson | undefined> {
+export async function findInstructionInfo(
+  candidateName: string,
+  ct: CancellationToken
+): Promise<InstructionJson | undefined> {
   await _runningLoader.promise;
-  await loadInstructionSet();
+  await loadInstructionSet(ct);
   return _currentInstructionSet?.findInstruction(candidateName);
 }
 
 // Load single instruction set.
-function loadInstructionSetByName(setFolder: string, setName: string): Promise<void> {
+function loadInstructionSetByName(setFolder: string, setName: string, ct: CancellationToken): Promise<void> {
   _runningLoader = createDeferred<void>();
 
   // Is the set already loaded?
@@ -76,11 +80,13 @@ function loadInstructionSetByName(setFolder: string, setName: string): Promise<v
       if (err) {
         outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${err.message}`);
       } else {
-        const iset = JSON.parse(jsonString) as InstructionJson[];
-        // Transfer instructions to a map for faster lookup.
-        const set = new InstructionSetImpl(iset);
-        _currentInstructionSet = set;
-        _currentInstructionSetName = setName;
+        if (!ct.isCancellationRequested) {
+          const iset = JSON.parse(jsonString) as InstructionJson[];
+          // Transfer instructions to a map for faster lookup.
+          const set = new InstructionSetImpl(iset);
+          _currentInstructionSet = set;
+          _currentInstructionSetName = setName;
+        }
       }
       _runningLoader.resolve();
     });

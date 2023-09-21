@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { CancellationToken } from 'vscode';
 import { InstructionError, ParseError, ParseErrorType } from '../parser/parseError';
 import { TextRange } from '../text/textRange';
 import { findInstructionInfo } from './instructionSet';
@@ -14,10 +15,10 @@ export interface Instruction {
   readonly errors: readonly ParseError[];
 }
 
-export async function parseInstruction(text: string, range: TextRange): Promise<Instruction> {
+export async function parseInstruction(text: string, range: TextRange, ct: CancellationToken): Promise<Instruction> {
   text = text.toUpperCase();
   const instruction = new InstructionImpl(text, range);
-  await instruction.parse(text);
+  await instruction.parse(text, ct);
   return instruction;
 }
 
@@ -31,7 +32,7 @@ class InstructionImpl implements Instruction {
   public condition: string = ''; // NE/Z/...
   public specifier: string = ''; // Width, like .W or .N r a datatype, such as NEON .I16, etc.
   public description: string;
-  
+
   constructor(fullName: string, range: TextRange) {
     this.fullName = fullName;
     this.range = range;
@@ -49,7 +50,7 @@ class InstructionImpl implements Instruction {
   // all start with V. Therefore if candidate name begins with V, we use
   // 3 letters since there are no FP instruction with just 2 letters.
 
-  public async parse(text: string): Promise<void> {
+  public async parse(text: string, ct: CancellationToken): Promise<void> {
     // Get width specifier first (the part after period, like B.W
     // or, with FP, .I8 or .F32.F64)
     this.parseSpecifier(text);
@@ -60,8 +61,8 @@ class InstructionImpl implements Instruction {
     text = text.substring(0, text.length - this.condition.length);
 
     this.name = text;
-    const info = await findInstructionInfo(this.name);
-    if(info) {
+    const info = await findInstructionInfo(this.name, ct);
+    if (info) {
       this.description = info.doc;
     } else {
       this.errors.push(new InstructionError(ParseErrorType.UnknownInstruction, this.range));
