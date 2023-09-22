@@ -1,7 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AssemblerConfig } from '../syntaxConfig';
+import { AssemblerConfig } from '../core/syntaxConfig';
+import { Character } from '../text/charCodes';
 import { TextProvider } from '../text/text';
 import { TokenStream } from '../tokens/tokenStream';
 import { Tokenizer } from '../tokens/tokenizer';
@@ -25,6 +26,8 @@ export class FormatOptions {
   public uppercaseRegisters: boolean;
   public alignOperands: boolean;
   public ignoreComments: boolean;
+  public spaceAroundOperators: boolean;
+  public alignDirectivesToInstructions: boolean;
 }
 
 export class Formatter {
@@ -34,6 +37,7 @@ export class Formatter {
   private _instructionIndent: number;
   private _operandsIndent: number;
   private _lines: string[] = [];
+  private _lineText: string[] = [];
 
   public formatDocument(text: TextProvider, options: FormatOptions, config: AssemblerConfig): string {
     this._text = text;
@@ -41,7 +45,7 @@ export class Formatter {
     this._lines = [];
 
     const t = new Tokenizer(config);
-    const tokens = t.tokenize(text, 0, text.length, false).tokens;
+    const tokens = t.tokenize(text, 0, text.length);
     this._tokens = new TokenStream(tokens);
 
     const indents = this.getIndents();
@@ -73,25 +77,23 @@ export class Formatter {
       return '';
     }
 
-    const lineText: string[] = [];
+    this._lineText = [];
     // We trust tokenizer so we are not going to check here
     // if there is more than one label or instruction.
     for (let i = 0; i < tokens.length; i++) {
       const t = tokens[i];
       switch (t.tokenType) {
         case TokenType.Label:
-          lineText.push(this._text.getText(t.start, t.length));
+          this._lineText.push(this._text.getText(t.start, t.length));
           break;
 
         case TokenType.Instruction:
         case TokenType.Directive:
-          this.appendInstructionOrDirective(tokens, i, lineText);
+          this.appendInstructionOrDirective(tokens, i);
           break;
 
         case TokenType.Operator:
-          lineText.push(this.getWhitespace(1));
-          lineText.push(this._text.getText(t.start, t.length));
-          lineText.push(this.getWhitespace(1));
+          this.appendOperator(t);
           break;
 
         case TokenType.OpenBrace:
@@ -105,26 +107,26 @@ export class Formatter {
         case TokenType.Number:
         case TokenType.String:
         case TokenType.Sequence:
-          this.appendOperand(tokens, i, lineText);
+          this.appendOperand(tokens, i);
           break;
 
         case TokenType.LineComment:
           // Block comments are added verbatim
-          this.appendLineComment(tokens, i, lineText);
+          this.appendLineComment(tokens, i);
           break;
 
         case TokenType.Comma:
-          this.appendComma(lineText);
+          this.appendComma();
           break;
 
         default:
-          lineText.push(this.getWhitespace(1));
-          lineText.push(this._text.getText(t.start, t.length));
+          this.appendWhitespace();
+          this._lineText.push(this._text.getText(t.start, t.length));
           break;
       }
     }
 
-    const result = lineText.join('');
+    const result = this._lineText.join('');
     return result;
   }
 
@@ -137,7 +139,7 @@ export class Formatter {
     return lineTokens;
   }
 
-  private appendInstructionOrDirective(tokens: Token[], i: number, lineText: string[]): void {
+  private appendInstructionOrDirective(tokens: Token[], i: number): void {
     // label:<tab>instruction ...
     // <tab>      instruction
     // label:<tab>.directive
@@ -150,16 +152,16 @@ export class Formatter {
       case TokenType.EndOfStream:
         // Indent instruction, leave directive as is
         if (ct.tokenType === TokenType.Instruction) {
-          lineText.push(this.getWhitespace(this._instructionIndent));
+          this._lineText.push(this.getWhitespace(this._instructionIndent));
         }
         break;
 
       case TokenType.Label:
-        lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
+        this._lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
         break;
 
       default:
-        lineText.push(this.getWhitespace(1));
+        this._lineText.push(this.getWhitespace(1));
         break;
     }
     let text = this._text.getText(ct.start, ct.length);
@@ -168,10 +170,10 @@ export class Formatter {
     } else {
       text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
     }
-    lineText.push(text);
+    this._lineText.push(text);
   }
 
-  private appendOperand(tokens: Token[], i: number, lineText: string[]) {
+  private appendOperand(tokens: Token[], i: number) {
     const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
     const ct = tokens[i];
 
@@ -180,25 +182,25 @@ export class Formatter {
       case TokenType.Directive:
         // Indent instruction, leave directive as is
         if (this._options.alignOperands) {
-          lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+          this._lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
         } else {
-          lineText.push(this.getWhitespace(1));
+          this._lineText.push(this.getWhitespace(1));
         }
-        lineText.push(this._text.getText(ct.start, ct.length));
+        this._lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
       case TokenType.Comma:
-        lineText.push(this._text.getText(ct.start, ct.length));
+        this._lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
       default:
-        lineText.push(this.getWhitespace(1));
-        lineText.push(this._text.getText(ct.start, ct.length));
+        this.appendWhitespace();
+        this._lineText.push(this._text.getText(ct.start, ct.length));
         break;
     }
   }
 
-  private appendLineComment(tokens: Token[], i: number, lineText: string[]): void {
+  private appendLineComment(tokens: Token[], i: number): void {
     // Line comments when nothing else at the line get aligned
     // to either 0 or to instructions indent, whichever is closer.
     const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
@@ -209,22 +211,54 @@ export class Formatter {
       const currentIndentation = ct.start - pt.end;
       if (currentIndentation > this._instructionIndent / 2) {
         // indent to instructions
-        lineText.push(this.getWhitespace(this._instructionIndent));
+        this._lineText.push(this.getWhitespace(this._instructionIndent));
       }
     } else if (pt.tokenType === TokenType.Label) {
-      lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
+      this._lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
     } else {
-      lineText.push(this.getWhitespace(1));
+      this._lineText.push(this.getWhitespace(1));
     }
-    lineText.push(this._text.getText(ct.start, ct.length));
+    this._lineText.push(this._text.getText(ct.start, ct.length));
   }
 
-  private appendComma(lineText: string[]): void {
+  private appendComma(): void {
     if (this._options.spaceAfterComma) {
-      lineText.push(', ');
+      this._lineText.push(', ');
     } else {
-      lineText.push(' ');
+      this._lineText.push(',');
     }
+  }
+
+  private appendOperator(t: Token): void {
+    if (this._options.spaceAroundOperators) {
+      this.appendWhitespace();
+    }
+    this._lineText.push(this._text.getText(t.start, t.length));
+    if (this._options.spaceAroundOperators) {
+      this._lineText.push(' ');
+    }
+  }
+
+  private appendWhitespace(): void {
+    // Don't add whitespace if it is already there.
+    if (this._lineText.length > 0) {
+      const lastChunk = this._lineText[this._lineText.length - 1];
+      const lastChar = lastChunk.charCodeAt(lastChunk.length - 1);
+      if (Character.isWhitespace(lastChar)) {
+        return;
+      }
+    }
+    // Do not add whitespace after opening or closing braces.
+    switch (this._tokens.previousToken.tokenType) {
+      case TokenType.OpenBrace:
+      case TokenType.CloseBrace:
+      case TokenType.OpenBracket:
+      case TokenType.CloseBracket:
+      case TokenType.OpenCurly:
+      case TokenType.CloseCurly:
+        return;
+    }
+    this._lineText.push(' ');
   }
 
   private getWhitespace(amount: number): string {

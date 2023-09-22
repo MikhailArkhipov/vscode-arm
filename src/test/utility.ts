@@ -3,7 +3,7 @@
 
 import * as fs from 'fs'
 
-import { AssemblerType, SyntaxConfig } from "../syntaxConfig";
+import { AssemblerType, SyntaxConfig } from "../core/syntaxConfig";
 import { Character } from "../text/charCodes";
 import { TextStream } from "../text/textStream";
 import { Tokenizer } from "../tokens/tokenizer";
@@ -24,9 +24,9 @@ export namespace TestUtil {
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
-  export function tokenizeToArray(text: string, separateComments:boolean = false): TextRangeCollection<Token> {
+  export function tokenizeToArray(text: string): TextRangeCollection<Token> {
     const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
-    return t.tokenize(new TextStream(text), 0, text.length, separateComments).tokens;
+    return t.tokenize(new TextStream(text), 0, text.length);
   }
 
   export function tokenizeNumber(text: string, start: number = 0): number {

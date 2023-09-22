@@ -245,3 +245,17 @@ test('Not a comment', () => {
   ]);
 });
 
+test('EQU directive', () => {
+  const text = 'name .equ 1';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Sequence, TokenType.Directive, TokenType.Number]);
+});
+
+test('ASCII directive', () => {
+  const text = '.ascii "string"';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Directive, TokenType.String]);
+});
+

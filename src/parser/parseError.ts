@@ -1,52 +1,31 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange, TextRangeImpl } from "../text/textRange";
-import { Token } from "../tokens/tokens";
+import { TextRange, TextRangeImpl } from '../text/textRange';
+import { Token } from '../tokens/tokens';
 
 export enum ParseErrorType {
   None,
   UnexpectedToken,
 
-  // Item looks like label but contains characters not allowed in label names.
-  InvalidLabelName,
-  // Instruction references label that is not defined.
-  UndefinedLabel,
-
   // Assembler expects line to start with label or directive.
   InstructionOrDirectiveExpected,
-
-  // Item looks like instruction but contains characters not allowed in instruction names.
-  InvalidInstructionName,
   // Instruction is not recognized.
   UnknownInstruction,
-
-  // Suffix looks legal, but the instruction does not permit any suffixes.
-  SuffixNotAllowed, 
-   // Suffix is provided but it is not in the list of allowed suffixes.
-  UnknownSuffix,
-
-  // Width specifier is provided, but istruction does not support width modification.
-  SpecifierNotAllowed,
-  // Width specifier is provided but it is not in the list of allowed specifiers.
-  UnknownSpecifier,
-  // Instruction requires datatype but it is not provided. Ex VADDL.I16.
-  SpecifierMissing,
-
-  // Type
-  TypeNotAllowed,
-  
-  // Token looks like directive but contains invalid characters. Like $%^:
-  InvalidDirectiveName,
   // Unknown directive
   UnknownDirective,
-
+  // Instruction references label that is not defined.
+  UndefinedLabel,
+  // Register is expected at this position.
+  RegisterExpected,
+  // Instruction must have operands.
   OperandExpected,
+  StringExpected,
+  OperatorExpected,
   //DataExpected,
   //NumberExpected,
-  //StringExpected,
   //ExpressionExpected,
-  //OperatorExpected,
+  UnexpectedOperand,
   UnexpectedEndOfFile,
 }
 
@@ -75,11 +54,7 @@ export class ParseError extends TextRangeImpl {
   public readonly errorType: ParseErrorType;
   public readonly location: ErrorLocation;
 
-  constructor(
-    errorType: ParseErrorType,
-    location: ErrorLocation,
-    range: TextRange
-  ) {
+  constructor(errorType: ParseErrorType, location: ErrorLocation, range: TextRange) {
     super(range.start, range.length);
     this.errorType = errorType;
     this.location = location;
@@ -99,10 +74,23 @@ export class InstructionError extends ParseError {
 }
 
 export function getMessage(errorType: ParseErrorType): string {
-  switch(errorType) {
+  switch (errorType) {
     case ParseErrorType.UnknownInstruction:
-      return 'Unknown instruction';
+      return 'Unknown instruction.';
+    case ParseErrorType.InstructionOrDirectiveExpected:
+      return 'Instruction or directive expected.';
+    case ParseErrorType.UndefinedLabel:
+      return 'Undefined label.';
+    case ParseErrorType.UnknownDirective:
+      return 'Unknown directive';
+    case ParseErrorType.StringExpected:
+      return 'String expected';
+    case ParseErrorType.RegisterExpected:
+      return 'Register expected';
+    case ParseErrorType.OperandExpected:
+      return 'Operand expected';
+    case ParseErrorType.UnexpectedOperand:
+      return 'Operand not expected';
   }
   return '???';
 }
-

@@ -4,7 +4,7 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
-import { AssemblerConfig } from '../syntaxConfig';
+import { AssemblerConfig } from '../core/syntaxConfig';
 import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
 import { TextProvider } from '../text/text';
@@ -12,36 +12,46 @@ import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from './numberTokenizer';
 import { Token, TokenType } from './tokens';
 
+// The tokenizer is a bit more advanced than it would have to be in a standard split between
+// tokenization and semantic analysis such as the case in real languages where AST is getting
+// built. Assembly language has much smaller grammar with simple constructs. At some point
+// we may resort to building full AST, but for now it seems it is enough to add a little
+// more functionality here.
+//
+// Normally tokenizer would just produce 'identifier', 'number', 'string', 'operator', 'brace'
+// and such and let parser to decide if 'identifier' is a label, directive, instruction
+// or register. But most of these checks are rather simple, so for now we just incorporate
+// them directly into tokenization. It is rather simple to look around a bit and figure
+// out if token is a directive or an operand, such as register.
+//
+// AST will be worth building when we get to more advanced syntax validation, such as
+// matching .macro/.endm, providing code folding ranges, checking if particular label
+// is in a macro block or in a plain code, parsing expression in order to detect
+// syntax errors, mismatched braces, verifying syntax of specific directives, etc.
+//
+// But at the moment we don't know if we ever come to implementing all these...
+// Basic formatting, hover and completions may work off tokens to start with.
+// So you may see basic semantic analysis embedded into the tokenization.
+// Specifically, we will be determining if 'identifier' is a label, directive,
+// or a register right here.
+
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
   private _numberTokenizer: NumberTokenizer;
   private _cs: CharacterStream;
   private _tokens: Token[] = [];
-  private _separateComments: boolean;
-  private _comments: Token[] = [];
   private _pastLabel = false;
-  private _pastInstruction = false;
 
   constructor(config: AssemblerConfig) {
     this._config = config;
   }
 
-  public tokenize(
-    textProvider: TextProvider,
-    start: number,
-    length: number,
-    separateComments: boolean
-  ): {
-    tokens: TextRangeCollection<Token>;
-    comments: TextRangeCollection<Token>;
-  } {
+  public tokenize(textProvider: TextProvider, start: number, length: number): TextRangeCollection<Token> {
     this._cs = new CharacterStream(textProvider);
     this._cs.position = start;
 
-    this._separateComments = separateComments;
-    this._comments = [];
     this._tokens = [];
-    this._pastLabel = this._pastInstruction = false;
+    this._pastLabel = false;
     this._numberTokenizer = new NumberTokenizer(this._cs);
 
     const end = Math.min(textProvider.length, start + length);
@@ -54,10 +64,7 @@ export class Tokenizer {
         throw new Error('Tokenizer: infinite loop');
       }
     }
-    return {
-      tokens: new TextRangeCollection(this._tokens),
-      comments: new TextRangeCollection(this._comments),
-    };
+    return new TextRangeCollection(this._tokens);
   }
 
   // [label:] [instruction] [sequence[, sequence[, ...]]] [//|@] comment <eol>
@@ -124,7 +131,7 @@ export class Tokenizer {
       case Char.LineFeed:
       case Char.CarriageReturn:
         this.handleLineBreak();
-        this._pastLabel = this._pastInstruction = false;
+        this._pastLabel = false;
         return true;
 
       case Char.SingleQuote:
@@ -144,15 +151,24 @@ export class Tokenizer {
       this._pastLabel = true;
       return;
     }
-    // Not a label. Try instruction. Instructions appear first in line of after a label.
-    if (!this._pastInstruction && this.tryInstructionOrDirective()) {
-      this._pastLabel = this._pastInstruction = true;
+    if(this.tryDirective()) {
       return;
     }
-    // Handle other cases
-    this.handleOperands();
+    // Immediate?
+    if (this._cs.currentChar === Char.Hash) {
+      this.handleImmediate();
+      return;
+    }
+    // A number?
+    if (Character.isDecimal(this._cs.currentChar)) {
+      this.handleNumber(this._cs.position);
+      return;
+    }
+    // A symbol?
+    this.handleSymbolOrSequence();
   }
 
+  // Attempt to determine if sequence is a label.
   private tryLabel(): boolean {
     if (!this.isPositionFirstInLine()) {
       return false;
@@ -168,9 +184,7 @@ export class Tokenizer {
       // Regular label. Skip first char, then letters, underscores, digits,
       // dollar signs until colon, whitespace, odd characters or EOL/EOF.
       this._cs.moveToNextChar();
-      this._cs.skipSequence((ch: number): boolean => {
-        return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
-      });
+      this.skipSymbol();
     } else if (Character.isDecimal(ch)) {
       // Local label. 22:, 33$: or .L77$:
       this._cs.skipSequence((ch: number): boolean => {
@@ -206,30 +220,20 @@ export class Tokenizer {
     return false;
   }
 
-  private tryInstructionOrDirective(): boolean {
-    if (!this.isPositionAfterLabelOrAtLineStart()) {
+  private tryDirective(): boolean {
+    if (this._cs.currentChar !== Char.Period) {
       return false;
     }
-    // Instructions begin with letters. Numbers can appear before period.
-    // Instructions allow suffixes that may contain other periods. Ex .F32.F64 suffix in NEON.
-    // Here we do not perform complete syntax check or verify against list
-    // of valid instructions. Tokenizer only supplies candidates: reasonable name
-    // filtration as well as check in the caller that the instruction either appear
-    // first in line or sits right after the label.
     const start = this._cs.position;
-    const directive = this._cs.currentChar === Char.Period;
-    if (directive) {
-      this._cs.moveToNextChar();
-    }
+    this._cs.moveToNextChar();
 
-    const validFirstChar = Character.isAnsiLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore;
-    if (!validFirstChar) {
+    if (!Character.isAnsiLetter(this._cs.currentChar) && this._cs.currentChar !== Char.Underscore.valueOf()) {
       return false;
     }
 
     this._cs.moveToNextChar();
     this._cs.skipSequence((ch: number): boolean => {
-      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Period || ch === Char.Underscore;
+      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore;
     });
 
     const length = this._cs.position - start;
@@ -237,30 +241,21 @@ export class Tokenizer {
       return false;
     }
 
-    if (length > 1 && directive) {
+    // We must be at whitespace or else this is not a directive.
+    if (this._cs.isWhiteSpace() || this._cs.isEndOfStream()) {
       this.addToken(TokenType.Directive, start, length);
-    } else {
-      this.addToken(TokenType.Instruction, start, length);
+      return true;
     }
-    return true;
+
+    this._cs.position = start;
+    return false;
   }
 
-  private handleOperands(): void {
-    if (this._cs.currentChar === Char.Hash) {
-      this.handleImmediate();
-      return;
-    }
-
-    if (Character.isDecimal(this._cs.currentChar)) {
-      this.handleNumber(this._cs.position);
-      return;
-    }
-
+  private handleSymbolOrSequence(): void {
+    //https://sourceware.org/binutils/docs-2.26/as/Symbol-Intro.html#Symbol-Intro
     const start = this._cs.position;
     if (Character.isAnsiLetter(this._cs.currentChar)) {
-      this._cs.skipSequence((ch: number): boolean => {
-        return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
-      });
+      this.skipSymbol();
     }
 
     const length = this._cs.position - start;
@@ -273,11 +268,7 @@ export class Tokenizer {
       return;
     }
 
-    if (this._pastInstruction && this.isRegister(start, length)) {
-      this.addToken(TokenType.Register, start, length);
-    } else {
-      this.addToken(TokenType.Sequence, start, length);
-    }
+    this.addToken(TokenType.Symbol, start, length);
   }
 
   // Handle generic comment that spans to the end of the line.
@@ -309,7 +300,7 @@ export class Tokenizer {
 
     const length = this._cs.position - start;
     if (length > 0) {
-      this.addComment(TokenType.LineComment, start, length);
+      this.addToken(TokenType.LineComment, start, length);
     }
   }
 
@@ -327,7 +318,7 @@ export class Tokenizer {
       }
       this._cs.moveToNextChar();
     }
-    this.addComment(TokenType.BlockComment, start, this._cs.position - start);
+    this.addToken(TokenType.BlockComment, start, this._cs.position - start);
   }
 
   private handleLineBreak(): void {
@@ -335,14 +326,6 @@ export class Tokenizer {
       const start = this._cs.position;
       this._cs.skipLineBreak();
       this.addToken(TokenType.EndOfLine, start, this._cs.position - start);
-    }
-  }
-
-  private addComment(tokenType: TokenType, start: number, length: number): void {
-    if (this._separateComments) {
-      this._comments.push(new Token(tokenType, start, length));
-    } else {
-      this.addToken(tokenType, start, length);
     }
   }
 
@@ -364,6 +347,12 @@ export class Tokenizer {
       }
       this._cs.moveToNextChar();
     }
+  }
+
+  private skipSymbol(): void {
+    this._cs.skipSequence((ch: number): boolean => {
+      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
+    });
   }
 
   private handleString(): void {
@@ -492,22 +481,5 @@ export class Tokenizer {
       }
     }
     return true;
-  }
-
-  private isPositionAfterInstruction(): boolean {
-    for (let i = this._tokens.length - 1; i >= 0; i--) {
-      const t = this._tokens[i];
-      switch (t.tokenType) {
-        case TokenType.EndOfLine:
-          return false;
-        case TokenType.BlockComment:
-          continue;
-        case TokenType.Instruction:
-          return true;
-        default:
-          return false;
-      }
-    }
-    return false;
   }
 }

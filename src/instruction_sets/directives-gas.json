@@ -56,7 +56,6 @@
     "if": "",
     "include": "",
     "int": "",
-    "line": "",
     "list": "",
     "ln": "",
     "local": "",
@@ -91,7 +90,6 @@
     "zero": ""
   },
   "directives-advanced": {
-    "abort": "",
     "altmacro": "",
     "attach_to_group": "",
     "bundle_align_mode": "",

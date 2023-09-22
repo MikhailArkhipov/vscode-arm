@@ -12,17 +12,18 @@ import {
   window,
 } from 'vscode';
 import { TextStream } from '../text/textStream';
-import { AssemblerType, SyntaxConfig } from '../syntaxConfig';
+import { AssemblerType, SyntaxConfig } from '../core/syntaxConfig';
 import { Tokenizer } from '../tokens/tokenizer';
 import { Token, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { parseInstruction } from '../instructions/instruction';
 import { getMessage } from '../parser/parseError';
+import { AstRoot } from '../AST/astRoot';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _td: TextDocument;
-  //private _ast: AstRoot | undefined;
+  private _ast: AstRoot | undefined;
   private _tokens: TextRangeCollection<Token>;
   private _version: number;
 
@@ -34,20 +35,20 @@ export class EditorDocument {
     return this._td;
   }
 
-  // public get ast(): AstRoot {
-  //   if (!this._ast || this._ast.context.version !== this._td.version) {
-  //     const p = new Parser();
-  //     this._ast = p.parse(new TextStream(this._td.getText()), EditorDocument.syntaxConfig, this._td.version);
-  //   }
-  //   return this._ast;
-  // }
+  public get ast(): AstRoot {
+    if (!this._ast || this._ast.context.version < this._td.version) {
+      const config = SyntaxConfig.create(AssemblerType.GNU);
+      this._ast = AstRoot.create(this._td.getText(), config, this._tokens, this._td.version);
+    }
+    return this._ast;
+  }
 
   public get tokens(): TextRangeCollection<Token> {
     // We are not building ASTs just yet, so provide tokens explicitly.
     if (!this._tokens || this._version !== this._td.version) {
       const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
       const text = this._td.getText();
-      this._tokens = t.tokenize(new TextStream(text), 0, text.length, false).tokens;
+      this._tokens = t.tokenize(new TextStream(text), 0, text.length);
     }
     return this._tokens;
   }

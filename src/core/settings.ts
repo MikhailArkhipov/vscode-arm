@@ -14,7 +14,11 @@ export namespace Settings {
   export const formattingSpaceAfterComma = "arm.formatting.spaceAfterComma";
   export const formattingUpperCaseInstructions = "arm.formatting.upperCaseInstructions";
   export const formattingUpperCaseDirectives = "arm.formatting.upperCaseDirectives";
+  export const formattingUpperCaseRegisters = "arm.formatting.upperCaseRegisters";
   export const formattingAlignOperands = "arm.formatting.alignOperands";
+  export const formattingSpaceAroundOperators = "arm.formatting.spaceAroundOperators";
+  export const formattingAlignDirectivesToInstructions= "arm.formatting.alignDirectivesToInstructions";
+  export const formattingAlignBlockDirectivesToInstructions= "arm.formatting.alignBlockDirectivesToInstructions";
   // Completion options
   export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
   // Validation

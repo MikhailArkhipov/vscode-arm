@@ -35,7 +35,8 @@
 // Tokenizer and parser syntax configurations
 export const enum AssemblerType {
   GNU,
-  ARM,    // ARM Toolchain, syntax analysis NYI. ARM is migrating to armclang, so armasm is legacy.
+  // TODO: possibly support different syntaxes in the future.
+  // ARM, // ARM Toolchain, syntax analysis NYI. ARM is migrating to armclang, so armasm is legacy.
   // AVR, // Arduino/Atmel, somewhat different in syntax from GCC (line comment is ; line in ARM).
   // CLANG // Apple - Is Clang 'as' syntax any different from GNU?
 }
@@ -50,18 +51,9 @@ export class AssemblerConfig {
   // Line comment character, '@' (GCC) or ';' (ARM). Runs to the end of the line
   // Arduino also supports ; (AVR Studio) with file extensions .asm
   public lineCommentChar: string; 
-  // C-syntax expressions in directives and immediates, ex '.dc.b (val & 0xff), (val >> 8) & 0xff'
-  public expressions: boolean; 
   // GNU labels are 'label:' while ARM does not require colon and rather 
   // require label to start at the beginning of the line.
   public colonInLabels: boolean; 
-  // Some assemblers support multiple statements in line, separated by semicolon. NYI.
-  // public statementSeparator: boolean;
-  public immediatePrefix: string;
-  // Indicated if .syntax directive is supported (GCC).
-  public supportsUnifiedSyntax: boolean;
-  // Set by directive parser to activate GCC 'unified' syntax.
-  public unifiedSyntax: boolean;
 }
 
 export namespace SyntaxConfig {
@@ -80,23 +72,16 @@ export namespace SyntaxConfig {
         // Also, https://sourceware.org/binutils/docs-2.26/as/ARM_002dChars.html#ARM_002dChars
         // # comment must start at the beginning of the line.
         ac.hashComments = true;
-        ac.expressions = true;
-        ac.unifiedSyntax = true;
-        ac.immediatePrefix = "#$"; // GCC supports both #123 and $123.
-        // ac.statementSeparator = Char.Semicolon; NYI in tokenizer. Probably never will be.
-        ac.supportsUnifiedSyntax = true;
         ac.colonInLabels = true;
         break;
 
-      case AssemblerType.ARM:
+      // case AssemblerType.ARM:
         // Very preliminary settings. ARM format support is TBD, depending on the interest.
-        ac.assemblerName = "ARM";
-        ac.lineCommentChar = ";"; // Line comments start with @
-        ac.cLineComments = true; // Allow C++ style line comments i.e. //
-        ac.cBlockComments = true; // Allow C block comments /* */
-        ac.immediatePrefix = "#";
-        ac.unifiedSyntax = true;
-        break;
+        // ac.assemblerName = "ARM";
+        // ac.lineCommentChar = ";"; // Line comments start with @
+        // ac.cLineComments = true; // Allow C++ style line comments i.e. //
+        // ac.cBlockComments = true; // Allow C block comments /* */
+        // break;
     }
 
     return ac;

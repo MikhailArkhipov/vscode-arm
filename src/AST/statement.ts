@@ -36,10 +36,6 @@ export class Statement extends AstNodeImpl {
   }
 
   private parseLabel(context: ParseContext): boolean {
-    // ARM does not require : after the label name which makes it a guessing game.
-    // Like, is standalone FOO a label or an instruction if there are no arguments?
-    // Not handling ARM for now, assuming GCC.
-
     // GCC: https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
     // Label is a symbol followed by colon.
     const ct = context.tokens.currentToken;

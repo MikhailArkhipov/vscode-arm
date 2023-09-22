@@ -86,19 +86,39 @@
           },
           "arm.formatting.upperCaseInstructions": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "Emit instructions in uppercase during formatting and completion."
           },
           "arm.formatting.upperCaseDirectives": {
             "type": "boolean",
-            "default": true,
+            "default": false,
             "description": "Emit directives in uppercase during formatting and completion."
+          },
+          "arm.formatting.upperCaseRegisters": {
+            "type": "boolean",
+            "default": false,
+            "description": "Emit register names in uppercase during formatting."
           },
           "arm.formatting.alignOperands": {
             "type": "boolean",
             "default": true,
             "description": "Align operands on a tab margin."
           },          
+          "arm.formatting.alignDirectivesToInstructions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Align directives to the same column as instructions."
+          },          
+          "arm.formatting.alignBlockDirectivesToInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Align directives that start or end blocks of code (.macro, .if), to the same column as instructions."
+          },          
+          "arm.formatting.spaceAroundOperators": {
+            "type": "boolean",
+            "default": false,
+            "description": "Place space around operators (like in 1 + 2)."
+          },
           "arm.completion.showAdvancedDirectives": {
             "type": "boolean",
             "default": false,

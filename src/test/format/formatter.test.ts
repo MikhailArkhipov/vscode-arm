@@ -3,7 +3,7 @@
 
 import { FormatOptions, Formatter } from '../../editor/formatter';
 import { TextStream } from '../../text/textStream';
-import { AssemblerType, SyntaxConfig } from '../../syntaxConfig';
+import { AssemblerType, SyntaxConfig } from '../../core/syntaxConfig';
 
 test('Empty string', () => {
   const result = format('');
@@ -31,8 +31,49 @@ test('Align statement + // line comment to instruction', () => {
 });
 
 test('Align statement + ; line comment to instruction', () => {
-  const result = format('        SUBS R7, R0, #1     // and repeat if R0 != 1');
-  expect(result).toBe('    SUBS    R7, R0, #1 // and repeat if R0 != 1');
+  const result = format('        SUBS R7,R0,   #1     // and repeat if R0 != 1');
+  expect(result).toBe('    subs    r7, r0, #1 // and repeat if R0 != 1');
+});
+
+test('Whitespace 1', () => {
+  const result = format('        str     fp, [sp, #-4]!');
+  expect(result).toBe('    str     fp, [sp, #-4]!');
+});
+
+test('Conditional preprocessor', () => {
+  const result = format('.ifdef SYM\n.err\n.endif');
+  expect(result).toBe('.ifdef SYM\n.err\n.endif');
+});
+
+test('Directive + label', () => {
+  const result = format('input: .byte 212, 228, 188');
+  expect(result).toBe('input: .byte 212, 228, 188');
+});
+
+test('Instruction 1', () => {
+  const result = format("CMP   R1, #'a'-1");
+  expect(result).toBe("cmp   r1, #'a'-1");
+});
+
+test('Space around operators', () => {
+  const options = new FormatOptions();
+  options.ignoreComments = false;
+  options.spaceAfterComma = true;
+  options.tabSize = 2;
+  options.spaceAroundOperators = false;
+  const result = formatWithOptions('    subs R7 ,  [r0-12+148]', options);
+  expect(result).toBe("  subs   r7, [r0-12+148]");
+});
+
+test('Uppercase option', () => {
+  const options = new FormatOptions();
+  options.ignoreComments = false;
+  options.spaceAfterComma = true;
+  options.uppercaseInstructions = true;
+  options.uppercaseRegisters = true;
+  options.tabSize = 2;
+  const result = formatWithOptions('        subs R7 ,  r0,   #1     // and repeat if R0 != 1', options);
+  expect(result).toBe('  SUBS  R7, R0, #1 // and repeat if R0 != 1');
 });
 
 function formatWithOptions(original: string, options: FormatOptions): string {
