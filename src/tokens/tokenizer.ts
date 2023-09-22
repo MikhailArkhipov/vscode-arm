@@ -12,29 +12,6 @@ import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from './numberTokenizer';
 import { Token, TokenType } from './tokens';
 
-// The tokenizer is a bit more advanced than it would have to be in a standard split between
-// tokenization and semantic analysis such as the case in real languages where AST is getting
-// built. Assembly language has much smaller grammar with simple constructs. At some point
-// we may resort to building full AST, but for now it seems it is enough to add a little
-// more functionality here.
-//
-// Normally tokenizer would just produce 'identifier', 'number', 'string', 'operator', 'brace'
-// and such and let parser to decide if 'identifier' is a label, directive, instruction
-// or register. But most of these checks are rather simple, so for now we just incorporate
-// them directly into tokenization. It is rather simple to look around a bit and figure
-// out if token is a directive or an operand, such as register.
-//
-// AST will be worth building when we get to more advanced syntax validation, such as
-// matching .macro/.endm, providing code folding ranges, checking if particular label
-// is in a macro block or in a plain code, parsing expression in order to detect
-// syntax errors, mismatched braces, verifying syntax of specific directives, etc.
-//
-// But at the moment we don't know if we ever come to implementing all these...
-// Basic formatting, hover and completions may work off tokens to start with.
-// So you may see basic semantic analysis embedded into the tokenization.
-// Specifically, we will be determining if 'identifier' is a label, directive,
-// or a register right here.
-
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
   private _numberTokenizer: NumberTokenizer;
@@ -456,26 +433,6 @@ export class Tokenizer {
           return true;
         case TokenType.BlockComment:
           continue;
-        default:
-          return false;
-      }
-    }
-    return true;
-  }
-
-  // Checks if position is first in line, preceded by only
-  // block comments or a label.
-  // Example: \nFoo, \n/* */ Foo, \n/* */ Foo: /* */ Bar, etc.
-  private isPositionAfterLabelOrAtLineStart(): boolean {
-    for (let i = this._tokens.length - 1; i >= 0; i--) {
-      const t = this._tokens[i];
-      switch (t.tokenType) {
-        case TokenType.EndOfLine:
-          return true;
-        case TokenType.BlockComment:
-          continue;
-        case TokenType.Label:
-          return true;
         default:
           return false;
       }

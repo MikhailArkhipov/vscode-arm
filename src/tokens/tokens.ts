@@ -20,53 +20,49 @@ export enum TokenType {
   Comma = 4,
   String = 5,
   Number = 6,
-  OpenBracket = 8,
-  CloseBracket = 9,
-  OpenBrace = 10,
-  CloseBrace = 11,
-  OpenCurly = 12,
-  CloseCurly = 13,
-  Operator = 14,
-  Exclamation = 15,
+  OpenBracket = 7,
+  CloseBracket = 8,
+  OpenBrace = 9,
+  CloseBrace = 10,
+  OpenCurly = 11,
+  CloseCurly = 12,
+  Operator = 13,
+  Exclamation = 14,
   // Anything else, just a non-ws sequence of characters.
-  Sequence = 16,
-  LineComment = 17, // C-type // or GNU @, ARM ; or # (legacy).
-  BlockComment = 18, // /* ... */, GNU
-  // Types that are set by the parser after semantic analysis.
-  // They are not known after plain tokenization, you must build AST.
-  Instruction = 19,
-  Register = 20,
+  Sequence = 15,
+  LineComment = 16, // C-type // or GNU @, ARM ; or # (legacy).
+  BlockComment = 17, // /* ... */, GNU
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
-  EndOfLine = 21,
-  EndOfStream = 22
+  EndOfLine = 18,
+  EndOfStream = 19
+}
+
+// Subtypes that are set by the parser after semantic analysis.
+// They are not known after plain tokenization, you must build AST.
+export enum TokenSubType {
+  None = 0,
+  Instruction = 1,
+  Register = 2,
+  SymbolDeclaration = 3, // label: {\n}.data_directive (.byte, .word, .asciiz, ...)
+  SymbolReference = 4,   // Reference to a symbol or variable
 }
 
 /**
  * Describes a token. Parse token is a text range with a type that describes nature of the range.
  */
 export class Token extends TextRangeImpl {
-  private _tokenType: TokenType;
-  
+  public readonly tokenType: TokenType;
+  // Only set by the parser while building the AST. Charifies if 'symbol' is 'instruction'
+  // or 'register' - information useful to semantic colorizer as well as to the syntax checker.
+  public tokenSubType: TokenSubType;
+
   constructor(tokenType: TokenType, start: number, length: number) {
     super(start, length);
-    this._tokenType = tokenType;
+    this.tokenType = tokenType;
+    this.tokenSubType = TokenSubType.None;
   }
 
-  public get tokenType(): TokenType {
-    return this._tokenType;
-  }
-
-  // Only used by a parser. Typically changes 'symbol' to 'instruction'
-  // or 'register'. Technically it is possible to add a 'subtype'
-  // instead and keep the original, but it would make type checks longer
-  public changeTokenType(tokenType: TokenType): void {
-    // Sanity check, parser only deals with 'symbol' types.
-    if(this._tokenType !== TokenType.Symbol) {
-      throw new Error('Attempt to change token type incorrectly.');
-    }
-    this._tokenType = tokenType;
-  }
 }
 
 export namespace Token {

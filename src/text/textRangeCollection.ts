@@ -33,6 +33,10 @@ export class TextRangeCollection<T extends TextRange> {
     return this._items.length;
   }
 
+  public get items(): readonly T[] {
+    return this._items;
+  }
+
   public contains(position: number) {
     return position >= this.start && position < this.end;
   }

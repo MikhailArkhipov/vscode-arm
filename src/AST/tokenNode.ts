@@ -9,11 +9,6 @@ import { AstNode, AstNodeImpl } from "./astNode";
 export class TokenNode extends AstNodeImpl {
   private _token: Token;
 
-  constructor(token: Token) {
-    super();
-    this._token = token;
-  }
-
   public get token(): Token {
     return this._token;
   }

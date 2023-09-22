@@ -1,12 +1,13 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { ParseContext } from "../parser/parseContext";
-import { ErrorLocation, ParseError, ParseErrorType } from "../parser/parseError";
-import { TokenType } from "../tokens/tokens";
-import { AstNode, AstNodeImpl } from "./astNode";
-import { Operand } from "./operand";
-import { TokenNode } from "./tokenNode";
+import { Directive } from '../instructions/directive';
+import { ParseContext } from '../parser/parseContext';
+import { ErrorLocation, ParseError, ParseErrorType } from '../parser/parseError';
+import { TokenType } from '../tokens/tokens';
+import { AstNode, AstNodeImpl } from './astNode';
+import { Operand } from './operand';
+import { TokenNode } from './tokenNode';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -15,72 +16,38 @@ import { TokenNode } from "./tokenNode";
 // is an assembler directive. If the symbol begins with a letter the statement is
 // an assembly language instruction.
 
-export const enum StatementType {
-  Unknown,
-  Empty,
-  Directive,
-  Instruction,
-}
+export abstract class Statement extends AstNodeImpl {
+  protected readonly _label: TokenNode | undefined;
+  protected readonly _operands: TokenNode[] = [];
+  private _name: TokenNode | undefined;
 
-export class Statement extends AstNodeImpl {
-  private _type: StatementType;
-  private _label: AstNode | undefined;
-  private _name: AstNode | undefined;
+  constructor(label: TokenNode | undefined) {
+    super();
+    this._label = label;
+    if (label) {
+      label.parent = this;
+      this.appendChild(label);
+    }
+  }
+
+  public get name(): TokenNode | undefined {
+    return this._name;
+  }
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    // First consider label.
-    this.parseLabel(context);
+    if (context.tokens.currentToken.tokenType !== TokenType.Directive) {
+      throw new Error('SymbolDefinitionStatement: Expected directive token.');
+    }
     this.parseName(context);
     this.parseOperands(context);
     return super.parse(context, parent);
   }
 
-  private parseLabel(context: ParseContext): boolean {
-    // GCC: https://sourceware.org/binutils/docs-2.26/as/Symbol-Names.html#Symbol-Names
-    // Label is a symbol followed by colon.
-    const ct = context.tokens.currentToken;
-    if (ct.tokenType !== TokenType.Label) {
-      return false;
-    }
-
-    this._label = new TokenNode(ct);
-    this.appendChild(this._label);
-
-    context.tokens.moveToNextToken();
-    return true;
-  }
-
-  private parseName(context: ParseContext): boolean {
-    const ct = context.tokens.currentToken;
-
-    if (!context.tokens.isEndOfLine()) {
-      switch (ct.tokenType) {
-        case TokenType.Directive:
-          this._type = StatementType.Directive;
-          break;
-        case TokenType.Instruction:
-          this._type = StatementType.Instruction;
-          break;
-        default:
-          this._type = StatementType.Unknown;
-          context.addError(new ParseError(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, ct));
-          break;
-      }
-
-      const n = new TokenNode(ct);
-      if (this._type !== StatementType.Unknown) {
-        this._name = n;
-      }
-      this.appendChild(n);
-    } else {
-      // Per https://sourceware.org/binutils/docs/as/Statements.html
-      // statement end at the end of the line and 'label:' is
-      // 'label: <empty statement> rather than line continuation.
-      this._type = StatementType.Empty;
-    }
-
-    context.tokens.moveToNextToken();
-    return true;
+  protected parseName(context: ParseContext, parent?: AstNode | undefined): boolean {
+    this._name = new TokenNode();
+    this._name.parse(context, this);
+    this.appendChild(this._name);
+    return super.parse(context, parent);
   }
 
   private parseOperands(context: ParseContext): void {
@@ -104,35 +71,161 @@ export class Statement extends AstNodeImpl {
     }
   }
 
-  public get type(): StatementType {
-    return this._type;
-  }
   public get label(): AstNode | undefined {
     return this._label;
   }
-  public get name(): AstNode | undefined {
-    return this._name;
+}
+
+export namespace Statement {
+  export function create(context: ParseContext, parent?: AstNode | undefined): Statement | undefined {
+    let s: Statement | undefined;
+    // {label:} => empty statement
+    // {label:} .directive => directive statement
+    // {label:} symbol .directive => .equ statement
+    // {label:} symbol => instruction statement
+    // {label:} ??? => Unknown statement
+
+    // TODO: handle variable declarations (i.e. foo:\n.word 10).
+    const label = parseLabel(context);
+    if (context.tokens.isEndOfLine() || context.tokens.isEndOfStream()) {
+      context.tokens.moveToNextToken();
+      if (label) {
+        s = new EmptyStatement(label);
+        s.parse(context, parent);
+        return s;
+      }
+      return;
+    }
+
+    const ct = context.tokens.currentToken;
+    switch (ct.tokenType) {
+      case TokenType.Directive:
+        {
+          const directiveName = context.text.getText(ct.start, ct.length);
+          if (Directive.isSymbolDefinition(directiveName)) {
+            s = new SymbolDefinitionStatement(label);
+          } else {
+            if (Directive.isDataDeclaration(directiveName)) {
+              s = new DataDeclarationStatement(label);
+            } else {
+              s = new DirectiveStatement(label);
+            }
+          }
+        }
+        break;
+
+      case TokenType.Symbol:
+        {
+          // name .equ value
+          const nt = context.tokens.nextToken;
+          if (nt.tokenType === TokenType.Directive) {
+            const nextTokenText = context.text.getText(nt.start, nt.length);
+            if (Directive.isSymbolDefinition(nextTokenText)) {
+              s = new SymbolDefinitionStatement(label);
+            }
+          }
+          s = s ?? new InstructionStatement(label);
+        }
+        break;
+
+      default:
+        s = new UnknownStatement(label);
+        break;
+    }
+
+    s.parse(context, parent);
+    return s;
   }
 
-  // private isLabel(tokenText: string, start: number, length: number): boolean {
-  //   // Label must be the first element in line.
-  //   if (!this.isPreviousTokenNewLine()) {
-  //     return false;
-  //   }
-  //   // No previous token (start of the file) or it is a line break,
-  //   // so we are at the start of the line.
-  //   if (this._config.colonInLabels) {
-  //     if (tokenText.charCodeAt(tokenText.length - 1) !== Char.Colon) {
-  //       return false;
-  //     }
-  //   } else {
-  //     // ARM UAL requires labels at the beginning of the line.
-  //     if (start > 0) {
-  //       return false;
-  //     }
-  //   }
-  //   var symbol = tokenText.substring(0, length - (this._config.colonInLabels ? 1 : 0));
-  //   // Either symbol OR a number (label in a macro like 1:, 2:).
-  //   return Text.isSymbol(symbol) || Text.isDecimalNumber(symbol);
-  // }
+  function parseLabel(context: ParseContext): TokenNode | undefined {
+    // Tokenizer already performed basic name checks.
+    const ct = context.tokens.currentToken;
+    if (ct.tokenType === TokenType.Label) {
+      const label = new TokenNode();
+      label.parse(context);
+      return label;
+    }
+  }
+}
+
+export class DirectiveStatement extends Statement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+}
+
+export class SymbolDefinitionStatement extends DirectiveStatement {
+  protected _symbolName: TokenNode;
+
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+  public get symbolName(): TokenNode {
+    return this._symbolName;
+  }
+}
+
+export class EquDirectiveStatement extends SymbolDefinitionStatement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    const ct = context.tokens.currentToken;
+    const nt = context.tokens.nextToken;
+    if (ct.tokenType !== TokenType.Symbol || nt.tokenType !== TokenType.Directive) {
+      throw new Error('EquDirectiveStatement: Expected symbol token followed by directive token.');
+    }
+    // Parse 'name' in 'name .equ value(s)'
+    this._symbolName = new TokenNode();
+    this._symbolName.parse(context, this);
+    this.appendChild(this._symbolName);
+    // Proceed with regular directive parse.
+    return super.parse(context, parent);
+  }
+}
+
+export class SetDirectiveStatement extends SymbolDefinitionStatement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // .set symbol_name, expressions
+    const ct = context.tokens.currentToken;
+    const nt = context.tokens.nextToken;
+    if (ct.tokenType !== TokenType.Directive || nt.tokenType !== TokenType.Symbol) {
+      throw new Error('SetDirectiveStatement: Expected directive token followed by a symbol token.');
+    }
+    // Fetch name and operands
+    super.parse(context, parent);
+    // First operand should be the symbol
+    if (this._operands.length === 0) {
+      throw new Error('SetDirectiveStatement: Expected at least one operand.');
+    }
+    this._symbolName = this._operands[0];
+    return true;
+  }
+}
+
+export class DataDeclarationStatement extends DirectiveStatement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+}
+
+export class InstructionStatement extends Statement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+}
+
+export class EmptyStatement extends Statement {
+  constructor(label: TokenNode) {
+    super(label);
+  }
+}
+
+export class UnknownStatement extends Statement {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
 }
