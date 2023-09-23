@@ -5,7 +5,7 @@ import { Directive } from '../instructions/directive';
 import { ParseContext } from '../parser/parseContext';
 import { Token, TokenType } from '../tokens/tokens';
 import { AstNode, AstNodeImpl } from './astNode';
-import { Operand } from './operand';
+import { CommaSeparatedList } from './commaSeparatedList';
 import { TokenNode } from './tokenNode';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
@@ -33,7 +33,7 @@ export class Statement extends AstNodeImpl {
   private _subType: StatementSubType = StatementSubType.None;
   private _label: TokenNode | undefined;
   private _name: TokenNode | undefined;
-  private _operands: Operand[] = [];
+  private _operands: CommaSeparatedList;
 
   // If statement declares a variable, this is the token. It may or may not be a child
   // of this node since name of the  variable/data may be provided by a preceding label.
@@ -55,11 +55,13 @@ export class Statement extends AstNodeImpl {
   public get symbolName(): TokenNode | undefined {
     return this._symbolName;
   }
-  public get operands(): readonly AstNode[] {
+  public get operands(): CommaSeparatedList {
     return this._operands;
   }
 
-  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+  // {label:}{instruction}{operands}
+    public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // Verify statement starts at the beginning of a line.
     if (
       context.previousToken.tokenType !== TokenType.EndOfLine &&
       context.previousToken.tokenType !== TokenType.EndOfStream
@@ -72,7 +74,8 @@ export class Statement extends AstNodeImpl {
     }
 
     this.parseType(context);
-    this.parseOperands(context);
+    // Operands are a comma-separated list
+    this._operands
 
     return super.parse(context, parent);
   }
@@ -116,13 +119,6 @@ export class Statement extends AstNodeImpl {
     }
     if (this._name) {
       this.appendChild(this._name);
-    }
-  }
-
-  private parseOperands(context: ParseContext): void {
-    Operand.parseOperands(context);
-    if (!context.tokens.isEndOfLine()) {
-      throw new Error('Parser: must be at the end of the line at this point.');
     }
   }
 

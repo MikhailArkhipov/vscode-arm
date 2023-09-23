@@ -119,7 +119,7 @@ export class EditorDocument {
     for (let i = 0; i < this._tokens.count && !ct.isCancellationRequested; i++) {
       const t = this._tokens.getItemAt(i);
 
-      if (t.tokenType === TokenType.Instruction) {
+      if (Token.isInstruction(t)) {
         const result = await this.validateInstruction(i, ct);
         diagnostics.push(...result);
       }

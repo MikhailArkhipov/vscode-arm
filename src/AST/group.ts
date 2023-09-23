@@ -18,7 +18,7 @@ export class Group extends Operator {
   private _closeBrace: TokenNode | undefined;
 
   constructor() {
-    super(OperatorType.Group, false);
+    super(false, OperatorType.Group);
   }
 
   public get associativity(): Associativity {

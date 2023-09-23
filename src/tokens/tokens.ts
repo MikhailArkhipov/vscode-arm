@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeImpl } from "../text/textRange";
+import { TextRangeImpl } from '../text/textRange';
 
 // Tokenizer performs some structure analysis since it helps
 // downstream code to avoid duplicated checks such as if
@@ -35,7 +35,7 @@ export enum TokenType {
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
   EndOfLine = 18,
-  EndOfStream = 19
+  EndOfStream = 19,
 }
 
 // Subtypes that are set by the parser after semantic analysis.
@@ -45,7 +45,7 @@ export enum TokenSubType {
   Instruction = 1,
   Register = 2,
   SymbolDeclaration = 3, // label: {\n}.data_directive (.byte, .word, .asciiz, ...)
-  SymbolReference = 4,   // Reference to a symbol or variable
+  SymbolReference = 4, // Reference to a symbol or variable
 }
 
 /**
@@ -62,14 +62,25 @@ export class Token extends TextRangeImpl {
     this.tokenType = tokenType;
     this.tokenSubType = TokenSubType.None;
   }
-
 }
 
 export namespace Token {
   export function isEndOfLine(t: Token): boolean {
+    return t.tokenType === TokenType.EndOfStream || t.tokenType === TokenType.EndOfLine;
+  }
+
+  export function isInstruction(t: Token): boolean {
+    return t.tokenType === TokenType.Symbol && t.tokenSubType === TokenSubType.Instruction;
+  }
+
+  export function isRegister(t: Token): boolean {
+    return t.tokenType === TokenType.Symbol && t.tokenSubType === TokenSubType.Register;
+  }
+
+  export function isVariable(t: Token): boolean {
     return (
-      t.tokenType === TokenType.EndOfStream ||
-      t.tokenType === TokenType.EndOfLine
+      t.tokenType === TokenType.Symbol &&
+      (t.tokenSubType === TokenSubType.SymbolDeclaration || t.tokenSubType === TokenSubType.SymbolReference)
     );
   }
 }

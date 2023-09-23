@@ -3,7 +3,7 @@
 
 import * as vscode from 'vscode';
 import { RDT } from './rdt';
-import { TokenType } from '../tokens/tokens';
+import { Token } from '../tokens/tokens';
 //import { getInstructionDocumentationUrl } from './documentation';
 
 export function openCurrentInstructionDocumenation(): void {
@@ -14,7 +14,7 @@ export function openCurrentInstructionDocumenation(): void {
       const tokenIndex = ed.getTokenIndexUnderCaret();
       if (tokenIndex !== undefined && tokenIndex >= 0) {
         const token = ed.tokens.getItemAt(tokenIndex);
-        if (token.tokenType === TokenType.Instruction) {
+        if (Token.isInstruction(token)) {
           // const instruction = ed.getTokenText(tokenIndex);
           // const url = getInstructionDocumentationUrl(instruction);
           // if (url) {

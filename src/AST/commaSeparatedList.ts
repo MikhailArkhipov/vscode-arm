@@ -9,13 +9,13 @@ import { Expression } from './expression';
 import { TokenNode } from './tokenNode';
 
 // An item in a comma-separated sequence, such as {a, b, c}.
-// Basically, anything that is followed by an optional comma.
+// Normally an expression followed by an optional comma.
 export class CommaSeparatedItem extends AstNodeImpl {
-  private _item: AstNode | undefined;
+  private _item: Expression | undefined;
   // Optional trailing comma
   private _comma: TokenNode | undefined;
 
-  public get item(): AstNode | undefined {
+  public get item(): Expression | undefined {
     return this._item;
   }
   public get comma(): TokenNode | undefined {
@@ -28,16 +28,6 @@ export class CommaSeparatedItem extends AstNodeImpl {
         // Missing item
         this._comma = TokenNode.create(context, this);
         context.addError(new MissingItemParseError(ParseErrorType.ExpressionExpected, context.currentToken));
-        break;
-
-      case TokenType.Symbol:
-      case TokenType.Number:
-      case TokenType.String:
-        this._item = TokenNode.create(context, this);
-        // Simple case - item then comma or a list terminating token.
-        if (context.currentToken.tokenType === TokenType.Comma.valueOf()) {
-          this._comma = TokenNode.create(context, this);
-        }
         break;
 
       default:
@@ -54,31 +44,48 @@ export class CommaSeparatedItem extends AstNodeImpl {
 
 export class CommaSeparatedList extends AstNodeImpl {
   // Type of the token to parse up to. For example, } in {a, b, c}
-  private readonly _terminatingTokenType: TokenType;
-  private readonly _items: AstNode[] = [];
+  private _openBrace: TokenNode | undefined;
+  private _closeBrace: TokenNode | undefined;
+  private readonly _items: CommaSeparatedItem[] = [];
 
-  constructor(terminatingTokenType: TokenType) {
-    super();
-    this._terminatingTokenType = terminatingTokenType;
+  public get closeBrace(): TokenNode | undefined {
+    return this._closeBrace;
   }
-
-  public get items(): readonly AstNode[] {
+  public get openBrace(): TokenNode | undefined {
+    return this._openBrace;
+  }
+  public get items(): readonly CommaSeparatedItem[] {
     return this._items;
   }
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // Check if list is surroinded by braces
+    const ct = context.currentToken;
+    let closeBraceType: TokenType | undefined;
+
+    if(ct.tokenType === TokenType.OpenCurly || ct.tokenType === TokenType.OpenBracket) {
+      this._openBrace = TokenNode.create(context, this);
+      closeBraceType = ParseContext.getMatchingBraceToken(this._openBrace.token.tokenType);
+    }
+
     while (!context.tokens.isEndOfLine()) {
-      if (context.currentToken.tokenType === this._terminatingTokenType) {
+      if(closeBraceType && context.currentToken.tokenType === closeBraceType) {
+        this._closeBrace = TokenNode.create(context, this);
         break;
       }
-      context.terminatingTokenType = this._terminatingTokenType;
       const item = new CommaSeparatedItem();
       item.parse(context, this);
     }
     // Do not include empty list in the tree since it has no positioning information.
-    if (this._items.length > 0) {
-      super.parse(context, parent);
+    if (!this._openBrace && !this._closeBrace && this._items.length === 0) {
+      return false;
     }
-    return true;
+    
+    // Check for a brace mismatch
+    if(this._openBrace && !this._closeBrace) {
+      context.addError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, context.tokens.previousToken));
+    }
+
+    return super.parse(context, parent);
   }
 }

@@ -10,14 +10,17 @@ import {
   SemanticTokensLegend,
 } from 'vscode';
 import { RDT } from './rdt';
-import { TokenType } from '../tokens/tokens';
+import { TokenSubType, TokenType } from '../tokens/tokens';
 import { Settings, getSetting } from '../core/settings';
 
 const tokenTypes = ['instruction', 'directive', 'register', 'label', 'comment', 'number', 'string', 'operator'];
 const tokenModifiers = [];
 export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 
-export async function provideSemanticTokens(td: TextDocument, ct: CancellationToken): Promise<SemanticTokens | undefined> {
+export async function provideSemanticTokens(
+  td: TextDocument,
+  ct: CancellationToken
+): Promise<SemanticTokens | undefined> {
   const ed = RDT.getEditorDocument(td);
   if (!ed || !getSetting<boolean>(Settings.showColors, true)) {
     return;
@@ -38,11 +41,19 @@ export async function provideSemanticTokens(td: TextDocument, ct: CancellationTo
         itemType = 'directive';
         break;
 
-      case TokenType.Instruction:
-        itemType = 'instruction';
-        break;
-      case TokenType.Register:
-        itemType = 'register';
+      case TokenType.Symbol:
+        switch (t.tokenSubType) {
+          case TokenSubType.Instruction:
+            itemType = 'instruction';
+            break;
+          case TokenSubType.Register:
+            itemType = 'register';
+            break;
+          case TokenSubType.SymbolDeclaration:
+          case TokenSubType.SymbolReference:
+            itemType = 'variable';
+            break;
+        }
         break;
 
       case TokenType.LineComment:

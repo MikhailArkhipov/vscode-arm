@@ -48,9 +48,8 @@ export class Operator extends TokenNode {
   public leftOperand: AstNode | undefined;
   public rightOperand: AstNode | undefined;
 
-  constructor(type: OperatorType, unary: boolean) {
+  constructor(unary: boolean, type?: OperatorType | undefined) {
     super();
-    this._type = type;
     this._unary = unary;
     this._associativity = unary ? Associativity.Right : Associativity.Left;
   }
@@ -72,7 +71,6 @@ export class Operator extends TokenNode {
     if (context.currentToken.tokenType !== TokenType.Operator) {
       throw new Error('Parser: expected operator token.');
     }
-
     this._type = Operator.getOperatorType(context.getCurrentTokenText());
     // If operator is preceded by an operator, it is then unary
     // Look back two tokens since operator parsing already consumed its token.
@@ -143,9 +141,6 @@ export namespace Operator {
 
       case OperatorType.Group: // ( ) around expression
         return 300;
-
-      case OperatorType.Set: // {a, b, c}
-        return 400;
     }
     return 1000;
   }

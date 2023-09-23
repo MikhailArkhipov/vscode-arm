@@ -29,7 +29,6 @@ export enum ParseErrorType {
   // Typically missing item like {a,}
   ExpressionExpected,
   CloseBraceExpected,
-  BraceMismatch,
   //DataExpected,
   //NumberExpected,
   //ExpressionExpected,
@@ -103,8 +102,6 @@ export function getMessage(errorType: ParseErrorType): string {
       return 'Symbol expected.';
     case ParseErrorType.CloseBraceExpected:
       return 'Closing brace expected.';
-    case ParseErrorType.BraceMismatch:
-      return 'Unexpected or missing closing brace, bracket or parenthesis.';
     case ParseErrorType.UnexpectedOperand:
       return 'Operand not expected.';
     case ParseErrorType.UnexpectedEndOfLine:

@@ -15,9 +15,14 @@ import { TokenNode } from './tokenNode';
 export class AstRoot extends AstNodeImpl {
   private _context: ParseContext;
 
+  // Recursice descent parser
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._context = context;
 
+    // Code is a sequence of statements. Statement can be a directive, instruction
+    // or an empty line. Empty line is still recorded as an empty statement
+    // since it helps formatter to preserve blank lines as needed. Anything that is
+    // not recognized is recorded as an 'unknown statement'.
     while (!context.tokens.isEndOfStream()) {
       const statement = new Statement();
       statement.parse(context, this);
@@ -26,7 +31,8 @@ export class AstRoot extends AstNodeImpl {
       if(!context.tokens.isEndOfLine()) {
         throw Error('Parser: must be at the end of a line.')
       }
-      context.moveToNextToken(); // no-op at the end of the file
+      // Skip line break. Thi is no-op at the end of the file
+      context.moveToNextToken();
     }
     return super.parse(context, this);
   }

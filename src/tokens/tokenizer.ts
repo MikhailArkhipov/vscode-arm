@@ -128,17 +128,12 @@ export class Tokenizer {
       this._pastLabel = true;
       return;
     }
-    if(this.tryDirective()) {
+    if (this.tryDirective()) {
       return;
     }
-    // Immediate?
-    if (this._cs.currentChar === Char.Hash) {
+    // Immediate? GNU also permits '$'
+    if (this._cs.currentChar === Char.Hash || this._cs.currentChar === Char.$) {
       this.handleImmediate();
-      return;
-    }
-    // A number?
-    if (Character.isDecimal(this._cs.currentChar)) {
-      this.handleNumber(this._cs.position);
       return;
     }
     // A symbol?
@@ -349,53 +344,23 @@ export class Tokenizer {
 
   private handleImmediate(): void {
     const start = this._cs.position;
+    // Skip hash/dollar, but remember actual start position
     this._cs.moveToNextChar();
-    this.handleNumber(start);
-  }
-
-  private handleNumber(start: number): void {
-    if (this.skipNumber()) {
+    if(this.tryNumber()) {
+      return;
+    }
+    // Possibly #:lower16:label
+    if (this._cs.currentChar === Char.Colon) {
+      this._cs.moveToNextChar;
+      this._cs.skipSequence((e) => e !== Char.Colon && e !== Char.At);
+    }
+    this.skipSymbol();
+    if(this._cs.position - start > 1) {
+      // File immediate as a number anyway. This helps colorizer
+      // and validator. Validator can dive into specific format eventually
+      // and validate :abc: sequences as well as label references.
       this.addToken(TokenType.Number, start, this._cs.position - start);
-    } else {
-      this.addToken(TokenType.Sequence, start, this._cs.position - start);
     }
-  }
-
-  private skipNumber(): boolean {
-    // Skip leading plus or minus
-    if (this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
-      this._cs.moveToNextChar();
-    }
-
-    // Skip leading '0x', if any
-    const hex = this._cs.currentChar === Char._0 && (this._cs.nextChar === Char.x || this._cs.nextChar === Char.X);
-    if (hex) {
-      this._cs.advance(2);
-    }
-
-    // TODO: floating point?
-    const start = this._cs.position;
-    this._cs.skipSequence((ch: number): boolean => {
-      if (hex) {
-        if (!Character.isHex(ch)) {
-          return false;
-        }
-      } else {
-        if (!Character.isDecimal(ch)) {
-          return false;
-        }
-      }
-      return true;
-    });
-
-    // Sanity check - number ends in whitespace, line break, operator, string,
-    // or a comma. 2R, 1_3 are not numbers.
-    if (!this._cs.isWhiteSpace() && !this._cs.isEndOfStream()) {
-      if (Character.isLetter(this._cs.currentChar) || this._cs.currentChar === Char.Underscore) {
-        return false;
-      }
-    }
-    return this._cs.position - start > 0;
   }
 
   private isRegister(start: number, length: number): boolean {

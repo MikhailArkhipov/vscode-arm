@@ -14,8 +14,6 @@ export class ParseContext {
   public readonly tokens: TokenStream;
   public readonly comments: TextRangeCollection<Token>;
   public readonly version: number;
-  // used when parsing comma-separated lists
-  public terminatingTokenType: TokenType;
 
   private readonly _errors: ParseError[] = [];
 
