@@ -63,7 +63,7 @@ export class TokenStream {
   }
 
   public isEndOfLine(): boolean {
-    return Token.isEndOfLine(this.currentToken);
+    return Token.isEndOfLine(this.currentToken) || this.isEndOfStream();
   }
 
   public moveToNextToken(): Token {

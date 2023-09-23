@@ -14,6 +14,8 @@ export class ParseContext {
   public readonly tokens: TokenStream;
   public readonly comments: TextRangeCollection<Token>;
   public readonly version: number;
+  // used when parsing comma-separated lists
+  public terminatingTokenType: TokenType;
 
   private readonly _errors: ParseError[] = [];
 
@@ -25,6 +27,25 @@ export class ParseContext {
     const filtered = this.filterOutComments(ts);
     this.tokens = new TokenStream(filtered.tokens);
     this.comments = filtered.comments;
+  }
+
+  public get currentToken(): Token {
+    return this.tokens.currentToken;
+  }
+  public get nextToken(): Token {
+    return this.tokens.nextToken;
+  }
+  public get previousToken(): Token {
+    return this.tokens.previousToken;
+  }
+  public moveToNextToken(): void {
+    this.tokens.moveToNextToken();
+  }
+  public getTokenText(t: Token): string {
+    return this.text.getText(t.start, t.length);
+  }
+  public getCurrentTokenText(): string {
+    return this.getTokenText(this.currentToken);
   }
 
   public get errors(): TextRangeCollection<ParseError> {
@@ -60,5 +81,28 @@ export class ParseContext {
       tokens: new TextRangeCollection(filteredTokens),
       comments: new TextRangeCollection(commentTokens),
     };
+  }
+}
+
+export namespace ParseContext {
+  export function getMatchingBraceToken(tokenType: TokenType): TokenType {
+    switch (tokenType) {
+      case TokenType.OpenBrace:
+        return TokenType.CloseBrace;
+      case TokenType.CloseBrace:
+        return TokenType.OpenBrace;
+
+      case TokenType.OpenBracket:
+        return TokenType.CloseBracket;
+      case TokenType.CloseBracket:
+        return TokenType.OpenBracket;
+
+      case TokenType.OpenCurly:
+        return TokenType.CloseCurly;
+      case TokenType.CloseCurly:
+        return TokenType.OpenCurly;
+    }
+
+    throw new Error('Parser: unknown brace type');
   }
 }

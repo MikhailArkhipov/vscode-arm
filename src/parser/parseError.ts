@@ -18,14 +18,23 @@ export enum ParseErrorType {
   UndefinedLabel,
   // Register is expected at this position.
   RegisterExpected,
-  // Instruction must have operands.
+  // Variable name, register or other symbol is expected.
+  SymbolExpected,
+  // Identifier or an expression appears to be missing. For example, two binary
+  // operators without anything between them or expression like x + y + '.
   OperandExpected,
+  // String value is expected
   StringExpected,
   OperatorExpected,
+  // Typically missing item like {a,}
+  ExpressionExpected,
+  CloseBraceExpected,
+  BraceMismatch,
   //DataExpected,
   //NumberExpected,
   //ExpressionExpected,
   UnexpectedOperand,
+  UnexpectedEndOfLine,
   UnexpectedEndOfFile,
 }
 
@@ -66,7 +75,6 @@ export class MissingItemParseError extends ParseError {
     super(errorType, ErrorLocation.AfterToken, token);
   }
 }
-
 export class InstructionError extends ParseError {
   constructor(errorType: ParseErrorType, range: TextRange) {
     super(errorType, ErrorLocation.Token, range);
@@ -82,15 +90,27 @@ export function getMessage(errorType: ParseErrorType): string {
     case ParseErrorType.UndefinedLabel:
       return 'Undefined label.';
     case ParseErrorType.UnknownDirective:
-      return 'Unknown directive';
+      return 'Unknown directive.';
     case ParseErrorType.StringExpected:
-      return 'String expected';
+      return 'String expected.';
     case ParseErrorType.RegisterExpected:
-      return 'Register expected';
+      return 'Register expected.';
     case ParseErrorType.OperandExpected:
-      return 'Operand expected';
+      return 'Operand expected.';
+    case ParseErrorType.ExpressionExpected:
+      return 'Expression expected.';
+    case ParseErrorType.SymbolExpected:
+      return 'Symbol expected.';
+    case ParseErrorType.CloseBraceExpected:
+      return 'Closing brace expected.';
+    case ParseErrorType.BraceMismatch:
+      return 'Unexpected or missing closing brace, bracket or parenthesis.';
     case ParseErrorType.UnexpectedOperand:
-      return 'Operand not expected';
+      return 'Operand not expected.';
+    case ParseErrorType.UnexpectedEndOfLine:
+      return 'Unexpected end of line.';
+    case ParseErrorType.UnexpectedEndOfFile:
+      return 'Unexpected end of file.';
   }
-  return '???';
+  return 'Unknown parse error';
 }

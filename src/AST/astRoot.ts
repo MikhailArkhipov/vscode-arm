@@ -19,11 +19,14 @@ export class AstRoot extends AstNodeImpl {
     this._context = context;
 
     while (!context.tokens.isEndOfStream()) {
-      const statement = Statement.create();
-      if(statement) {
-        statement.parse(context, this);
-        this.appendChild(statement);
+      const statement = new Statement();
+      statement.parse(context, this);
+      this.appendChild(statement);
+      
+      if(!context.tokens.isEndOfLine()) {
+        throw Error('Parser: must be at the end of a line.')
       }
+      context.moveToNextToken(); // no-op at the end of the file
     }
     return super.parse(context, this);
   }

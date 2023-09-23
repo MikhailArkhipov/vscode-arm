@@ -16,18 +16,27 @@ export class TokenNode extends AstNodeImpl {
   public get start(): number {
     return this._token.start;
   }
-
   public get length(): number {
     return this._token.length;
   }
-
   public get end(): number {
     return this._token.end;
   }
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    this._token = context.tokens.currentToken;
+    if(context.tokens.isEndOfLine()) {
+      throw new Error('TokenNode: unexpected line break or end of stream.')
+    }
+    this._token = context.currentToken;
     context.tokens.moveToNextToken();
     return super.parse(context, parent);
+  }
+}
+
+export namespace TokenNode {
+  export function create(context: ParseContext, parent: AstNode): TokenNode {
+    const tn = new TokenNode();
+    tn.parse(context, parent);
+    return tn;
   }
 }
