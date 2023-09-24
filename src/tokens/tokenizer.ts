@@ -322,8 +322,18 @@ export class Tokenizer {
   }
 
   private skipSymbol(): void {
+    // Allow period since there may be specifier on instructions
+    // like .I8 and it should be part of the instruction name.
+    // We may end up recognizing '.a.b.c' as directives, but we
+    // will let validator deal with it.
     this._cs.skipSequence((ch: number): boolean => {
-      return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore || ch === Char.$;
+      return (
+        Character.isAnsiLetter(ch) ||
+        Character.isDecimal(ch) ||
+        ch === Char.Underscore ||
+        ch === Char.$ ||
+        ch === Char.Period
+      );
     });
   }
 
@@ -346,7 +356,7 @@ export class Tokenizer {
     const start = this._cs.position;
     // Skip hash/dollar, but remember actual start position
     this._cs.moveToNextChar();
-    if(this.tryNumber()) {
+    if (this.tryNumber()) {
       return;
     }
     // Possibly #:lower16:label
@@ -355,7 +365,7 @@ export class Tokenizer {
       this._cs.skipSequence((e) => e !== Char.Colon && e !== Char.At);
     }
     this.skipSymbol();
-    if(this._cs.position - start > 1) {
+    if (this._cs.position - start > 1) {
       // File immediate as a number anyway. This helps colorizer
       // and validator. Validator can dive into specific format eventually
       // and validate :abc: sequences as well as label references.

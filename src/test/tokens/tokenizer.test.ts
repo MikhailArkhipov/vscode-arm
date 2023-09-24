@@ -59,9 +59,7 @@ test('Malformed numbers', () => {
   TestUtil.verifyTokenTypes(actual, [
     TokenType.Sequence,
     TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence,
+    TokenType.Sequence
   ]);
 });
 
