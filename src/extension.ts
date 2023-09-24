@@ -26,14 +26,13 @@ import { loadInstructionSet } from './instructions/instructionSet';
 import { convertHtmlToIndex } from './instructions';
 import { IdleTime } from './core/idletime';
 import { provideCompletions, resolveCompletionItem } from './editor/completions';
-import { DocView } from './documentation/docView';
 
 const languageName = 'arm';
 
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
   // don't wait here, let it run async
-  loadInstructionSet(new CancellationTokenSource().token); 
+  loadInstructionSet(new CancellationTokenSource().token);
 
   // Register capabilities
   registerCapabilities(context);
@@ -41,9 +40,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
   registerCommands(context);
 }
 
-export async function deactivate(): Promise<void> {
-  DocView.currentPanel?.dispose();
-}
+export async function deactivate(): Promise<void> {}
 
 function registerCapabilities(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -84,12 +81,11 @@ function registerCapabilities(context: ExtensionContext): void {
       semanticTokensLegend
     )
   );
-  window.registerWebviewPanelSerializer(DocView.viewType, {
-    async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
-      DocView.revive(webviewPanel);
-    },
-});
-
+  // window.registerWebviewPanelSerializer(DocView.viewType, {
+  //   async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
+  //     DocView.revive(webviewPanel);
+  //   },
+  // });
 }
 
 function registerEditorEvents(context: ExtensionContext) {
@@ -112,6 +108,6 @@ function registerEditorEvents(context: ExtensionContext) {
 function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
     commands.registerCommand('arm.openInstructionDocumentation', openCurrentInstructionDocumenation),
-    commands.registerCommand('arm.convertHtmlToIndex', convertHtmlToIndex),
+    commands.registerCommand('arm.convertHtmlToIndex', convertHtmlToIndex)
   );
 }

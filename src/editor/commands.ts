@@ -6,13 +6,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { RDT } from './rdt';
-import { Token } from '../tokens/tokens';
+//import { Token } from '../tokens/tokens';
 import { Settings, getSetting } from '../core/settings';
-import { DocView } from '../documentation/docView';
+// import { DocView } from '../documentation/docView';
 import { outputMessage } from '../core/utility';
 
 export function openCurrentInstructionDocumenation(): void {
-  const docFolder = getSetting<string>(Settings.documentationFolder, '');
+  const docFolder = getSetting<string>(Settings.documentationFolder, 'e:\\arm');
   if (!docFolder || docFolder.length === 0) {
     return;
   }
@@ -28,10 +28,10 @@ export function openCurrentInstructionDocumenation(): void {
   if (tokenIndex === undefined || tokenIndex < 0) {
     return;
   }
-  const token = ed.tokens.getItemAt(tokenIndex);
-  if (!Token.isInstruction(token)) {
-    return;
-  }
+  // const token = ed.tokens.getItemAt(tokenIndex);
+  // if (!Token.isInstruction(token)) {
+  //   return;
+  // }
   try {
     const instructionName = ed.getTokenText(tokenIndex).toLowerCase();
     const instructionSet = getSetting<string>(Settings.instructionSet, 'A64');
@@ -44,9 +44,10 @@ export function openCurrentInstructionDocumenation(): void {
     });
 
     if (docFile) {
-      const content = fs.readFileSync(path.join(instructionDocFolder, docFile), 'utf-8');
-      DocView.createOrShow(content);
-      //vscode.env.openExternal(vscode.Uri.parse(`http://{}`));
+      // const content = fs.readFileSync(, 'utf-8');
+      // DocView.createOrShow(content);
+      const uri = `file:///${instructionDocFolder.replace('\\', '/')}/${docFile}`;
+      vscode.env.openExternal(vscode.Uri.parse(uri));
     }
   } catch (e) {
     outputMessage(`Unable to display documentation. Error ${e.message}`);

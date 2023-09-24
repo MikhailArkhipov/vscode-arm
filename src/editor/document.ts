@@ -24,9 +24,10 @@ export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
   private readonly _td: TextDocument;
+  
+  private _tokens: TextRangeCollection<Token> = new TextRangeCollection([]);
   private _ast: AstRoot | undefined;
-  private _tokens: TextRangeCollection<Token>;
-  private _version: number;
+  private _version = 0;
 
   constructor(td: TextDocument) {
     this._td = td;
@@ -36,9 +37,9 @@ export class EditorDocument {
     return this._td;
   }
 
-  public getAst(): AstRoot {
+  public getAst(): AstRoot | undefined {
     if (!this._ast || this._ast.context.version < this._td.version) {
-      this._ast = AstRoot.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
+      // this._ast = AstRoot.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
     }
     return this._ast;
   }

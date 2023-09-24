@@ -34,7 +34,7 @@
     "commands": [
       {
         "command": "arm.openInstructionDocumentation",
-        "title": "Open ARM instruction documentation in browser",
+        "title": "Open ARM instruction documentation",
         "category": "ARM",
         "icon": {
           "light": "images/ArmIcon.png",
