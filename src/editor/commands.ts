@@ -37,11 +37,21 @@ export function openCurrentInstructionDocumenation(): void {
     const instructionSet = getSetting<string>(Settings.instructionSet, 'A64');
     const instructionDocFolder = path.join(docFolder, instructionSet);
 
-    const fsEntries = fs.readdirSync(instructionDocFolder);
-    const docFile = fsEntries.find((e) => {
-      const name = e.toLowerCase();
-      return name.startsWith(instructionName) && name.endsWith('.html');
-    });
+    const fsEntries = fs.readdirSync(instructionDocFolder).map((e) => e.toLowerCase());
+    // See if there is exact match
+    let docFile: string | undefined = `${instructionName}.html`;
+    const index = fsEntries.indexOf(docFile);
+    if (index < 0) {
+      const prefix = `${instructionName}_`;
+      docFile = fsEntries.find((e) => {
+        return e.startsWith(prefix) && e.endsWith('.html');
+      });
+      if (!docFile) {
+        docFile = fsEntries.find((e) => {
+          return e.startsWith(instructionName) && e.endsWith('.html');
+        });
+      }
+    }
 
     if (docFile) {
       // const content = fs.readFileSync(, 'utf-8');
