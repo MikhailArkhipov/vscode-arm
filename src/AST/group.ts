@@ -36,14 +36,14 @@ export class Group extends Operator {
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     const tokens = context.tokens;
-    if(tokens.currentToken.tokenType !== TokenType.OpenBrace) {
+    if(tokens.currentToken.type !== TokenType.OpenBrace) {
       throw new Error('Parser: expected open brace.')
     }
     this._openBrace = TokenNode.create(context, this);
     this._content = new Expression();
     this._content.parse(context, this);
     
-    if (tokens.currentToken.tokenType === TokenType.CloseBrace.valueOf()) {
+    if (tokens.currentToken.type === TokenType.CloseBrace.valueOf()) {
         this._closeBrace = TokenNode.create(context, this);
     } else {
         context.addError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.previousToken));

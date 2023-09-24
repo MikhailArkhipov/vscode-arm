@@ -16,23 +16,23 @@ test("TokenStream empty", () => {
   expect(ts.length).toBe(0);
   expect(ts.isEndOfStream()).toBe(true);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.nextToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.previousToken.tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.nextToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.previousToken.type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
   ts.advance(10);
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
   expect(ts.isEndOfStream()).toBe(true);
   expect(ts.position).toBe(0);
 
   ts.advance(-100);
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.nextToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.previousToken.tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.nextToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.previousToken.type).toBe(TokenType.EndOfStream);
 
   ts.position = 0;
   expect(ts.isEndOfStream()).toBe(true);
@@ -48,7 +48,7 @@ test("TokenStream test 1", () => {
     new Token(TokenType.Comma, 0, 1),
     new Token(TokenType.LineComment, 3, 1),
     new Token(TokenType.Label, 6, 2),
-    new Token(TokenType.Instruction, 12, 8),
+    new Token(TokenType.Symbol, 12, 8),
     new Token(TokenType.Unknown, 20, 1),
   ];
 
@@ -56,51 +56,51 @@ test("TokenStream test 1", () => {
   expect(ts.length).toBe(5);
 
   expect(ts.isEndOfStream()).toBe(false);
-  expect(ts.currentToken.tokenType).toBe(TokenType.Comma);
-  expect(ts.nextToken.tokenType).toBe(TokenType.LineComment);
-  expect(ts.previousToken.tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.Comma);
+  expect(ts.nextToken.type).toBe(TokenType.LineComment);
+  expect(ts.previousToken.type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(0);
 
   ts.moveToNextToken();
 
   expect(ts.isEndOfStream()).toBe(false);
-  expect(ts.currentToken.tokenType).toBe(TokenType.LineComment);
-  expect(ts.nextToken.tokenType).toBe(TokenType.Label);
-  expect(ts.previousToken.tokenType).toBe(TokenType.Comma);
-  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.LineComment);
+  expect(ts.nextToken.type).toBe(TokenType.Label);
+  expect(ts.previousToken.type).toBe(TokenType.Comma);
+  expect(ts.lookAhead(-2).type).toBe(TokenType.EndOfStream);
+  expect(ts.lookAhead(100).type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(1);
 
   ts.advance(2);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.Instruction);
-  expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
-  expect(ts.previousToken.tokenType).toBe(TokenType.Label);
-  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
-  expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.Symbol);
+  expect(ts.nextToken.type).toBe(TokenType.Unknown);
+  expect(ts.previousToken.type).toBe(TokenType.Label);
+  expect(ts.lookAhead(-2).type).toBe(TokenType.LineComment);
+  expect(ts.lookAhead(100).type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);
 
   ts.moveToNextToken();
   ts.moveToNextToken();
 
   expect(ts.isEndOfStream()).toBe(true);
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.nextToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.previousToken.tokenType).toBe(TokenType.Unknown);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.nextToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.previousToken.type).toBe(TokenType.Unknown);
 
   ts.moveToNextToken();
 
   expect(ts.isEndOfStream()).toBe(true);
-  expect(ts.currentToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.nextToken.tokenType).toBe(TokenType.EndOfStream);
-  expect(ts.previousToken.tokenType).toBe(TokenType.Unknown);
+  expect(ts.currentToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.nextToken.type).toBe(TokenType.EndOfStream);
+  expect(ts.previousToken.type).toBe(TokenType.Unknown);
 
   ts.advance(-2);
 
-  expect(ts.currentToken.tokenType).toBe(TokenType.Instruction);
-  expect(ts.nextToken.tokenType).toBe(TokenType.Unknown);
-  expect(ts.previousToken.tokenType).toBe(TokenType.Label);
-  expect(ts.lookAhead(-2).tokenType).toBe(TokenType.LineComment);
-  expect(ts.lookAhead(100).tokenType).toBe(TokenType.EndOfStream);
+  expect(ts.currentToken.type).toBe(TokenType.Symbol);
+  expect(ts.nextToken.type).toBe(TokenType.Unknown);
+  expect(ts.previousToken.type).toBe(TokenType.Label);
+  expect(ts.lookAhead(-2).type).toBe(TokenType.LineComment);
+  expect(ts.lookAhead(100).type).toBe(TokenType.EndOfStream);
   expect(ts.position).toBe(3);
 });

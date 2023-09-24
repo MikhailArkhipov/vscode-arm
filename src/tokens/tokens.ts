@@ -52,35 +52,35 @@ export enum TokenSubType {
  * Describes a token. Parse token is a text range with a type that describes nature of the range.
  */
 export class Token extends TextRangeImpl {
-  public readonly tokenType: TokenType;
-  // Only set by the parser while building the AST. Charifies if 'symbol' is 'instruction'
+  public readonly type: TokenType;
+  // Only set by tokenType the parser while building the AST. Charifies if 'symbol' is 'instruction'
   // or 'register' - information useful to semantic colorizer as well as to the syntax checker.
-  public tokenSubType: TokenSubType;
+  public subType: TokenSubType;
 
-  constructor(tokenType: TokenType, start: number, length: number) {
+  constructor(type: TokenType, start: number, length: number) {
     super(start, length);
-    this.tokenType = tokenType;
-    this.tokenSubType = TokenSubType.None;
+    this.type = type;
+    this.subType = TokenSubType.None;
   }
 }
 
 export namespace Token {
   export function isEndOfLine(t: Token): boolean {
-    return t.tokenType === TokenType.EndOfStream || t.tokenType === TokenType.EndOfLine;
+    return t.type === TokenType.EndOfStream || t.type === TokenType.EndOfLine;
   }
 
   export function isInstruction(t: Token): boolean {
-    return t.tokenType === TokenType.Symbol && t.tokenSubType === TokenSubType.Instruction;
+    return t.type === TokenType.Symbol && t.subType === TokenSubType.Instruction;
   }
 
   export function isRegister(t: Token): boolean {
-    return t.tokenType === TokenType.Symbol && t.tokenSubType === TokenSubType.Register;
+    return t.type === TokenType.Symbol && t.subType === TokenSubType.Register;
   }
 
   export function isVariable(t: Token): boolean {
     return (
-      t.tokenType === TokenType.Symbol &&
-      (t.tokenSubType === TokenSubType.SymbolDeclaration || t.tokenSubType === TokenSubType.SymbolReference)
+      t.type === TokenType.Symbol &&
+      (t.subType === TokenSubType.SymbolDeclaration || t.subType === TokenSubType.SymbolReference)
     );
   }
 }

@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { AstRoot } from '../AST/astRoot';
 import { AssemblerConfig } from '../core/syntaxConfig';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
@@ -14,10 +15,12 @@ export class ParseContext {
   public readonly tokens: TokenStream;
   public readonly comments: TextRangeCollection<Token>;
   public readonly version: number;
+  public readonly root: AstRoot;
 
   private readonly _errors: ParseError[] = [];
 
-  constructor(text: TextProvider, config: AssemblerConfig, ts: TokenStream, version: number) {
+  constructor(root: AstRoot, text: TextProvider, config: AssemblerConfig, ts: TokenStream, version: number) {
+    this.root = root;
     this.text = text;
     this.config = config;
     this.version = version;
@@ -67,7 +70,7 @@ export class ParseContext {
     const filteredTokens: Token[] = [];
     const commentTokens: Token[] = [];
     while (!ts.isEndOfStream()) {
-      if (ts.currentToken.tokenType === TokenType.BlockComment || ts.currentToken.tokenType === TokenType.LineComment) {
+      if (ts.currentToken.type === TokenType.BlockComment || ts.currentToken.type === TokenType.LineComment) {
         commentTokens.push(ts.currentToken);
       } else {
         filteredTokens.push(ts.currentToken);

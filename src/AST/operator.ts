@@ -68,7 +68,7 @@ export class Operator extends TokenNode {
   }
 
   public parse(context: ParseContext, parent: AstNode | undefined): boolean {
-    if (context.currentToken.tokenType !== TokenType.Operator) {
+    if (context.currentToken.type !== TokenType.Operator) {
       throw new Error('Parser: expected operator token.');
     }
     this._type = Operator.getOperatorType(context.getCurrentTokenText());
@@ -91,7 +91,7 @@ export namespace Operator {
     }
 
     // If operator is preceded by an operator, it is then unary
-    const precedingTokenType = tokens.lookAhead(offset).tokenType;
+    const precedingTokenType = tokens.lookAhead(offset).type;
     switch (precedingTokenType) {
       case TokenType.Operator:
       case TokenType.OpenBrace:
@@ -188,7 +188,7 @@ export namespace Operator {
       return false;
     }
     // If operator is preceded by an operator, it is then unary
-    const precedingTokenType = tokens.lookAhead(offset).tokenType;
+    const precedingTokenType = tokens.lookAhead(offset).type;
     switch (precedingTokenType) {
       case TokenType.Operator:
       case TokenType.OpenBrace:

@@ -28,11 +28,14 @@ export async function provideSemanticTokens(
 
   // on line 1, characters 1-5 are a class declaration
   const tokensBuilder = new SemanticTokensBuilder(semanticTokensLegend);
+  // Do request AST so tokens get proper subtypes
+  ed.getAst();
+
   for (let i = 0; i < ed.tokens.count && !ct.isCancellationRequested; i++) {
     let itemType: string | undefined;
 
     const t = ed.tokens.getItemAt(i);
-    switch (t.tokenType) {
+    switch (t.type) {
       case TokenType.Label:
         itemType = 'label';
         break;
@@ -42,7 +45,7 @@ export async function provideSemanticTokens(
         break;
 
       case TokenType.Symbol:
-        switch (t.tokenSubType) {
+        switch (t.subType) {
           case TokenSubType.Instruction:
             itemType = 'instruction';
             break;

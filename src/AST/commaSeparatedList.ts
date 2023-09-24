@@ -23,7 +23,7 @@ export class CommaSeparatedItem extends AstNodeImpl {
   }
 
   public parse(context: ParseContext, parent: AstNode | undefined): boolean {
-    switch (context.currentToken.tokenType) {
+    switch (context.currentToken.type) {
       case TokenType.Comma:
         // Missing item
         this._comma = TokenNode.create(context, this);
@@ -33,7 +33,7 @@ export class CommaSeparatedItem extends AstNodeImpl {
       default:
         this._item = new Expression();
         this._item.parse(context, this);
-        if (context.currentToken.tokenType === TokenType.Comma.valueOf()) {
+        if (context.currentToken.type === TokenType.Comma.valueOf()) {
           this._comma = TokenNode.create(context, this);
         }
         break;
@@ -63,13 +63,13 @@ export class CommaSeparatedList extends AstNodeImpl {
     const ct = context.currentToken;
     let closeBraceType: TokenType | undefined;
 
-    if(ct.tokenType === TokenType.OpenCurly || ct.tokenType === TokenType.OpenBracket) {
+    if(ct.type === TokenType.OpenCurly || ct.type === TokenType.OpenBracket) {
       this._openBrace = TokenNode.create(context, this);
-      closeBraceType = ParseContext.getMatchingBraceToken(this._openBrace.token.tokenType);
+      closeBraceType = ParseContext.getMatchingBraceToken(this._openBrace.token.type);
     }
 
     while (!context.tokens.isEndOfLine()) {
-      if(closeBraceType && context.currentToken.tokenType === closeBraceType) {
+      if(closeBraceType && context.currentToken.type === closeBraceType) {
         this._closeBrace = TokenNode.create(context, this);
         break;
       }

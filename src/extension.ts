@@ -13,6 +13,8 @@ import {
   commands,
   CancellationTokenSource,
   ProviderResult,
+  window,
+  WebviewPanel,
 } from 'vscode';
 import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';
@@ -24,6 +26,7 @@ import { loadInstructionSet } from './instructions/instructionSet';
 import { convertHtmlToIndex } from './instructions';
 import { IdleTime } from './core/idletime';
 import { provideCompletions, resolveCompletionItem } from './editor/completions';
+import { DocView } from './documentation/docView';
 
 const languageName = 'arm';
 
@@ -38,7 +41,9 @@ export async function activate(context: ExtensionContext): Promise<void> {
   registerCommands(context);
 }
 
-export async function deactivate(): Promise<void> {}
+export async function deactivate(): Promise<void> {
+  DocView.currentPanel?.dispose();
+}
 
 function registerCapabilities(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -79,6 +84,12 @@ function registerCapabilities(context: ExtensionContext): void {
       semanticTokensLegend
     )
   );
+  window.registerWebviewPanelSerializer(DocView.viewType, {
+    async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
+      DocView.revive(webviewPanel);
+    },
+});
+
 }
 
 function registerEditorEvents(context: ExtensionContext) {

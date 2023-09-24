@@ -3,7 +3,7 @@
 
 import { Directive } from '../instructions/directive';
 import { ParseContext } from '../parser/parseContext';
-import { Token, TokenType } from '../tokens/tokens';
+import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { AstNode, AstNodeImpl } from './astNode';
 import { CommaSeparatedList } from './commaSeparatedList';
 import { TokenNode } from './tokenNode';
@@ -60,28 +60,26 @@ export class Statement extends AstNodeImpl {
   }
 
   // {label:}{instruction}{operands}
-    public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     // Verify statement starts at the beginning of a line.
-    if (
-      context.previousToken.tokenType !== TokenType.EndOfLine &&
-      context.previousToken.tokenType !== TokenType.EndOfStream
-    ) {
+    if (context.previousToken.type !== TokenType.EndOfLine && context.previousToken.type !== TokenType.EndOfStream) {
       throw new Error('Parser: statement must begin at the start of the line.');
     }
 
-    if (context.currentToken.tokenType === TokenType.Label) {
+    if (context.currentToken.type === TokenType.Label) {
       this._label = TokenNode.create(context, this);
     }
 
     this.parseType(context);
     // Operands are a comma-separated list
-    this._operands
+    this._operands = new CommaSeparatedList();
+    this._operands.parse(context, this);
 
     return super.parse(context, parent);
   }
 
   private parseType(context: ParseContext): void {
-    switch (context.currentToken.tokenType) {
+    switch (context.currentToken.type) {
       case TokenType.EndOfLine:
       case TokenType.EndOfStream:
         // {label:} => empty statement
@@ -89,13 +87,18 @@ export class Statement extends AstNodeImpl {
         break;
 
       case TokenType.Directive:
-        // {label:} .directive => directive statement
-        this._type = StatementType.Directive;
-        // Check if this is a data declaration like '.word 0'
-        this._subType = this.isVariableDeclaration(context, context.currentToken)
-          ? StatementSubType.VariableDeclaration
-          : StatementSubType.None;
-        this._name = TokenNode.create(context, this);
+        {
+          this._type = StatementType.Directive;
+          // Check if this is a data declaration like 'label: .word 0'
+          const variableName = this.isVariableDeclaration(context, context.currentToken);
+          if (variableName) {
+            this._subType = StatementSubType.VariableDeclaration;
+            this._symbolName = variableName;
+          } else {
+            this._subType = StatementSubType.None;
+          }
+          this._name = TokenNode.create(context, this);
+        }
         break;
 
       case TokenType.Symbol:
@@ -106,6 +109,7 @@ export class Statement extends AstNodeImpl {
           this._subType = StatementSubType.SymbolDefinition;
           this._symbolName = TokenNode.create(context, this);
           this._name = TokenNode.create(context, this);
+          this._symbolName.token.subType = TokenSubType.SymbolDeclaration;
         } else {
           // {label:} symbol => instruction statement
           this._type = StatementType.Instruction;
@@ -124,7 +128,7 @@ export class Statement extends AstNodeImpl {
 
   // name .equ value, aka #define in C
   private isSymbolDefinition(context: ParseContext, t: Token): boolean {
-    if (t.tokenType === TokenType.Directive) {
+    if (t.type === TokenType.Directive) {
       const tokenText = context.text.getText(t.start, t.length);
       return Directive.isSymbolDefinition(tokenText);
     }
@@ -132,11 +136,23 @@ export class Statement extends AstNodeImpl {
   }
 
   // name: .word 0, aka int name = 0 in C
-  private isVariableDeclaration(context: ParseContext, t: Token): boolean {
-    if (t.tokenType === TokenType.Directive) {
+  private isVariableDeclaration(context: ParseContext, t: Token): TokenNode | undefined {
+    if (t.type === TokenType.Directive) {
       const tokenText = context.text.getText(t.start, t.length);
-      return Directive.isDataDeclaration(tokenText);
+      const isDataDirective = Directive.isVariableDeclaration(tokenText);
+      if (!isDataDirective) {
+        return;
+      }
+      // Now check if there is label on this or preceding statement.
+      // 'label: .word 0' and 'label:\n .word 0'.
+      if (this._label) {
+        return this._label;
+      }
+      // Check preceding statement
+      const st = context.root.statements;
+      const last = st.length > 0 ? st[st.length - 1] : undefined;
+      return last?.label;
     }
-    return false;
+    return;
   }
 }

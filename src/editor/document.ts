@@ -22,6 +22,7 @@ import { AstRoot } from '../AST/astRoot';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
+  private readonly _syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
   private readonly _td: TextDocument;
   private _ast: AstRoot | undefined;
   private _tokens: TextRangeCollection<Token>;
@@ -35,10 +36,9 @@ export class EditorDocument {
     return this._td;
   }
 
-  public get ast(): AstRoot {
+  public getAst(): AstRoot {
     if (!this._ast || this._ast.context.version < this._td.version) {
-      const config = SyntaxConfig.create(AssemblerType.GNU);
-      this._ast = AstRoot.create(this._td.getText(), config, this._tokens, this._td.version);
+      this._ast = AstRoot.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
     }
     return this._ast;
   }
@@ -46,7 +46,7 @@ export class EditorDocument {
   public get tokens(): TextRangeCollection<Token> {
     // We are not building ASTs just yet, so provide tokens explicitly.
     if (!this._tokens || this._version !== this._td.version) {
-      const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
+      const t = new Tokenizer(this._syntaxConfig);
       const text = this._td.getText();
       this._tokens = t.tokenize(new TextStream(text), 0, text.length);
     }
@@ -57,7 +57,7 @@ export class EditorDocument {
     // Locate matching document in RDT
     if (tokenIndex >= 0) {
       const t = this._tokens.getItemAt(tokenIndex);
-      return t.tokenType === TokenType.LineComment || t.tokenType === TokenType.BlockComment;
+      return t.type === TokenType.LineComment || t.type === TokenType.BlockComment;
     }
     return false;
   }

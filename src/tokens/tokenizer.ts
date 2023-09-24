@@ -393,7 +393,7 @@ export class Tokenizer {
   private isPositionFirstInLine(): boolean {
     for (let i = this._tokens.length - 1; i >= 0; i--) {
       const t = this._tokens[i];
-      switch (t.tokenType) {
+      switch (t.type) {
         case TokenType.EndOfLine:
           return true;
         case TokenType.BlockComment:

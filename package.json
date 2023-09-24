@@ -159,6 +159,10 @@
             "default": "A64",
             "enum": ["A32", "A64"],
             "description": "ARM instruction sets to use."
+          },
+          "arm.documentationFolder": {
+            "type": "string",
+            "description": "Folder with ARM instruction documentation in HTML. Editor appends A32 or A64 to the folder name."
           }
         }
       }

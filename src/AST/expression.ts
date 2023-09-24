@@ -63,7 +63,7 @@ export class Expression extends AstNodeImpl {
     while (!tokens.isEndOfLine() && errorType === ParseErrorType.None && !endOfExpression) {
       const ct = tokens.currentToken;
 
-      switch (ct.tokenType) {
+      switch (ct.type) {
         // Terminal constants
         case TokenType.Number:
         case TokenType.String:

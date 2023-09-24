@@ -23,6 +23,8 @@ export namespace Settings {
   export const completionShowAdvancedDirectives = "arm.completion.showAdvancedDirectives";
   // Validation
   export const editorValidation = "arm.editor.validation";
+  // Documentation
+  export const documentationFolder = "arm.documentationFolder";
 }
 
 export function getConfiguration(name: string): WorkspaceConfiguration {

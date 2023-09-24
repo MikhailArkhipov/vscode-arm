@@ -11,6 +11,9 @@ import { Token, TokenType } from "../tokens/tokens";
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from '../tokens/numberTokenizer';
 import { CharacterStream } from '../text/characterStream';
+import { AstRoot } from '../AST/astRoot';
+import { ParseContext } from '../parser/parseContext';
+import { TokenStream } from '../tokens/tokenStream';
 // import { Parser } from '../parser/parser';
 // import { AstRoot } from '../AST/astRoot';
 
@@ -20,7 +23,7 @@ export namespace TestUtil {
   }
 
   export function getTokenString(t: Token): string {
-    const name = TestUtil.getTokenName(t.tokenType);
+    const name = TestUtil.getTokenName(t.type);
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
@@ -39,7 +42,7 @@ export namespace TestUtil {
   export function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
     expect(actual.count).toBe(expected.length);
     for (let i = 0; i < actual.count; i++) {
-      expect(actual.getItemAt(i).tokenType).toBe(expected[i]);
+      expect(actual.getItemAt(i).type).toBe(expected[i]);
     }
   }
   
@@ -93,9 +96,16 @@ export namespace TestUtil {
     return -1;
   }
 
-  // export function parseText(text: string): AstRoot {
-  //   const config = SyntaxConfig.create(AssemblerType.GNU);
-  //   const p = new Parser();
-  //   return p.parse(new TextStream(text), config, 0);
-  // }
+  export function parseText(text: string): AstRoot {
+    const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
+
+    const t = new Tokenizer(syntaxConfig);
+    const textProvider = new TextStream(text);
+    const tokens = t.tokenize(textProvider, 0, text.length);
+    
+    const ast = new AstRoot();
+    const context = new ParseContext(ast, textProvider, syntaxConfig, new TokenStream(tokens), 0);
+    ast.parse(context);
+    return ast;
+  }
 }

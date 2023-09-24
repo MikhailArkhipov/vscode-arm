@@ -44,8 +44,8 @@ export class AstRoot extends AstNodeImpl {
     version = 0
   ): AstRoot {
     const ts = new TextStream(text);
-    const context = new ParseContext(ts, config, new TokenStream(tokens), version);
     const ast = new AstRoot();
+    const context = new ParseContext(ast, ts, config, new TokenStream(tokens), version);
     ast.parse(context);
     return ast;
   }

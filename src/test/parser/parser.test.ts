@@ -30,6 +30,6 @@ test("Label + empty statement", () => {
     expect(c2).toBeInstanceOf(TokenNode);
     const tn = c2 as TokenNode;
     expect(tn.children.count).toBe(0);
-    expect(tn.token.tokenType).toBe(TokenType.Label);
+    expect(tn.token.type).toBe(TokenType.Label);
     expect(root.text.getText(tn.start, tn.length)).toBe("label:");
 });

@@ -1,14 +1,11 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextDocument, Position, Hover, Range, MarkdownString, CancellationToken } from "vscode";
-import { TokenType } from "../tokens/tokens";
-import {
-  getDirectiveDocumentation,
-  getInstructionDocumentation,
-} from "./documentation";
-import { RDT } from "./rdt";
-import { Settings, getSetting } from "../core/settings";
+import { TextDocument, Position, Hover, Range, MarkdownString, CancellationToken } from 'vscode';
+import { TokenSubType, TokenType } from '../tokens/tokens';
+import { getDirectiveDocumentation, getInstructionDocumentation } from '../documentation/documentation';
+import { RDT } from './rdt';
+import { Settings, getSetting } from '../core/settings';
 
 export async function provideHover(
   td: TextDocument,
@@ -31,13 +28,15 @@ export async function provideHover(
   const tokenText = td.getText(range);
 
   let doc: MarkdownString | undefined;
-  switch (token.tokenType) {
+  switch (token.type) {
     case TokenType.Directive:
       doc = await getDirectiveDocumentation(tokenText, ct);
       break;
 
-    case TokenType.Instruction:
-      doc = await getInstructionDocumentation(tokenText, ct);
+    case TokenType.Symbol:
+      if (token.subType === TokenSubType.Instruction) {
+        doc = await getInstructionDocumentation(tokenText, ct);
+      }
       break;
   }
 

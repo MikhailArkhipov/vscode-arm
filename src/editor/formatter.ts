@@ -6,7 +6,7 @@ import { Character } from '../text/charCodes';
 import { TextProvider } from '../text/text';
 import { TokenStream } from '../tokens/tokenStream';
 import { Tokenizer } from '../tokens/tokenizer';
-import { Token, TokenType } from '../tokens/tokens';
+import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 
 // Common assumptions
 // - # comment starts at position 0
@@ -82,12 +82,11 @@ export class Formatter {
     // if there is more than one label or instruction.
     for (let i = 0; i < tokens.length; i++) {
       const t = tokens[i];
-      switch (t.tokenType) {
+      switch (t.type) {
         case TokenType.Label:
           this._lineText.push(this._text.getText(t.start, t.length));
           break;
 
-        case TokenType.Instruction:
         case TokenType.Directive:
           this.appendInstructionOrDirective(tokens, i);
           break;
@@ -103,7 +102,6 @@ export class Formatter {
         case TokenType.OpenCurly:
         case TokenType.CloseCurly:
         case TokenType.Exclamation:
-        case TokenType.Register:
         case TokenType.Number:
         case TokenType.String:
         case TokenType.Sequence:
@@ -147,11 +145,11 @@ export class Formatter {
     const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
     const ct = tokens[i];
 
-    switch (pt.tokenType) {
+    switch (pt.type) {
       case TokenType.EndOfLine:
       case TokenType.EndOfStream:
         // Indent instruction, leave directive as is
-        if (ct.tokenType === TokenType.Instruction) {
+        if (ct.type === TokenType.Symbol) {
           this._lineText.push(this.getWhitespace(this._instructionIndent));
         }
         break;
@@ -165,7 +163,7 @@ export class Formatter {
         break;
     }
     let text = this._text.getText(ct.start, ct.length);
-    if (ct.tokenType === TokenType.Instruction) {
+    if (ct.type === TokenType.Symbol && ct.subType === TokenSubType.Instruction) {
       text = this._options.uppercaseInstructions ? text.toUpperCase() : text.toLowerCase();
     } else {
       text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
@@ -177,8 +175,8 @@ export class Formatter {
     const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
     const ct = tokens[i];
 
-    switch (pt.tokenType) {
-      case TokenType.Instruction:
+    switch (pt.type) {
+      case TokenType.Symbol:
       case TokenType.Directive:
         // Indent instruction, leave directive as is
         if (this._options.alignOperands) {
@@ -213,7 +211,7 @@ export class Formatter {
         // indent to instructions
         this._lineText.push(this.getWhitespace(this._instructionIndent));
       }
-    } else if (pt.tokenType === TokenType.Label) {
+    } else if (pt.type === TokenType.Label) {
       this._lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
     } else {
       this._lineText.push(this.getWhitespace(1));
@@ -249,7 +247,7 @@ export class Formatter {
       }
     }
     // Do not add whitespace after opening or closing braces.
-    switch (this._tokens.previousToken.tokenType) {
+    switch (this._tokens.previousToken.type) {
       case TokenType.OpenBrace:
       case TokenType.CloseBrace:
       case TokenType.OpenBracket:
@@ -273,14 +271,14 @@ export class Formatter {
     for (let i = 0; i < this._tokens.length; i++) {
       const ct = this._tokens.currentToken;
       // Only measure labels that are on the same line as instructions/directives
-      switch (ct.tokenType) {
+      switch (ct.type) {
         case TokenType.Label:
           if (ct.length > maxLabelLength) {
             maxLabelLength = ct.length;
           }
           break;
         case TokenType.Directive:
-        case TokenType.Instruction:
+        case TokenType.Symbol:
           if (ct.length > maxInstructionLength) {
             maxInstructionLength = ct.length;
           }

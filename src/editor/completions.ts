@@ -5,7 +5,7 @@ import * as asmDirectives from '../instruction_sets/directives-gas.json';
 import { CancellationToken } from 'vscode-languageclient';
 
 import { TextDocument, Position, CompletionContext, CompletionItem, CompletionItemKind } from 'vscode';
-import { getDirectiveDocumentation } from './documentation';
+import { getDirectiveDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
 import { TokenType } from '../tokens/tokens';
 import { EditorDocument } from './document';
@@ -58,7 +58,7 @@ function handleDirectivesCompletion(
   if (!directiveCompletion) {
     if (tokenIndex >= 0) {
       // Explicit invoke like Ctrl+Space? Are we on an existing directive?
-      directiveCompletion = ed.tokens.getItemAt(tokenIndex).tokenType === TokenType.Directive;
+      directiveCompletion = ed.tokens.getItemAt(tokenIndex).type === TokenType.Directive;
     }
   }
 
@@ -67,7 +67,7 @@ function handleDirectivesCompletion(
     const prevTokenIndex = ed.tokens.getFirstItemBeforePosition(offset);
     if (prevTokenIndex >= 0) {
       const prevToken = ed.tokens.getItemAt(prevTokenIndex);
-      directiveCompletion = prevToken.tokenType === TokenType.Directive && prevToken.end === offset;
+      directiveCompletion = prevToken.type === TokenType.Directive && prevToken.end === offset;
     }
   }
 
@@ -94,26 +94,6 @@ async function handleInstructionsCompletion(
   ct: CancellationToken
 ): Promise<CompletionItem[]> {
   const comps: CompletionItem[] = [];
-  let ic = true;
-
-  // Instruction must be either first token in line or right after a label.
-  if (tokenIndex >= 0) {
-    ic = ed.tokens.getItemAt(tokenIndex).tokenType === TokenType.Instruction;
-  } else {
-    const prevTokenIndex = ed.tokens.getFirstItemBeforePosition(offset);
-    ic = prevTokenIndex < 0;
-    if (!ic) {
-      const prevToken = ed.tokens.getItemAt(prevTokenIndex);
-      ic =
-        prevToken.tokenType === TokenType.EndOfLine ||
-        prevToken.tokenType === TokenType.Label ||
-        (prevToken.tokenType === TokenType.Instruction && prevToken.end === offset);
-    }
-  }
-
-  if (!ic) {
-    return comps;
-  }
 
   const instructions = await getAvailableInstructions(ct);
   if (ct.isCancellationRequested) {

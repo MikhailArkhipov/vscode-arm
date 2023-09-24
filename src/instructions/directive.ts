@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-const dataDeclarations = new Set<string>([
+const variableDeclarations = new Set<string>([
   '.ascii',
   '.asciiz',
   '.byte',
@@ -25,8 +25,8 @@ const dataDeclarations = new Set<string>([
 const symbolDefinitions = new Set<string>(['.equ', '.eqv', '.equiv']);
 
 export namespace Directive {
-  export function isDataDeclaration(text: string): boolean {
-    return dataDeclarations.has(text);
+  export function isVariableDeclaration(text: string): boolean {
+    return variableDeclarations.has(text);
   }  
   export function isSymbolDefinition(text: string): boolean {
     return symbolDefinitions.has(text);
