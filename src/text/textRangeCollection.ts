@@ -33,7 +33,7 @@ export class TextRangeCollection<T extends TextRange> {
     return this._items.length;
   }
 
-  public get items(): readonly T[] {
+  public get asArray(): readonly T[] {
     return this._items;
   }
 
@@ -108,7 +108,7 @@ export class TextRangeCollection<T extends TextRange> {
       const mid = Math.floor(min + (max - min) / 2);
       const item = this._items[mid];
 
-      if (TextRange.contains(item.start, item.length, position)) {
+      if (item.contains(position)) {
         return mid;
       }
 
@@ -147,7 +147,7 @@ export class TextRangeCollection<T extends TextRange> {
       const mid = Math.floor(min + (max - min) / 2);
       const item = this._items[mid];
 
-      if (TextRange.contains(item.start, item.length, position)) {
+      if (item.contains(position)) {
         return mid - 1;
       }
 

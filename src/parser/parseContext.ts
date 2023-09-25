@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { AstNode } from '../AST/definitions';
 import { AstRoot } from '../AST/astRoot';
 import { AssemblerConfig } from '../core/syntaxConfig';
 import { TextProvider } from '../text/text';
@@ -106,4 +107,8 @@ export namespace ParseContext {
 
     throw new Error('Parser: unknown brace type');
   }
+}
+
+export interface ParseItem {
+  parse(context: ParseContext, parent?: AstNode): boolean;
 }

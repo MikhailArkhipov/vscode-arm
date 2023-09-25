@@ -10,6 +10,7 @@ export namespace Settings {
   export const showColors = "arm.editor.coloring";
   // Instruction set to use
   export const instructionSet = "arm.instructionSet";
+  export const reservedRegisterNames = "arm.reservedRegisterNames";
   // Formatting options
   export const formattingSpaceAfterComma = "arm.formatting.spaceAfterComma";
   export const formattingUpperCaseInstructions = "arm.formatting.upperCaseInstructions";

@@ -10,7 +10,8 @@ import { CharacterStream } from '../text/characterStream';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from './numberTokenizer';
-import { Token, TokenType } from './tokens';
+import { isRegisterName } from './registers';
+import { Token, TokenSubType, TokenType } from './tokens';
 
 // NOTE: use of .valueof() with enums is b/c of https://github.com/microsoft/TypeScript/issues/9998.
 // I am not inclined to change currentToken property to a function to work around the TS issue.
@@ -187,7 +188,7 @@ export class Tokenizer {
     const start = this._cs.position;
     const ch = this._cs.currentChar;
 
-    if (this.isLeadingSymbolCharacter(ch)) {
+    if (isLeadingSymbolCharacter(ch)) {
       // Regular label. Skip first char, then letters, underscores, digits,
       // dollar signs until colon, whitespace, odd characters or EOL/EOF.
       this.skipSymbol();
@@ -227,14 +228,21 @@ export class Tokenizer {
   }
 
   private tryDirective(): boolean {
-    if (this._cs.currentChar !== Char.Period) {
+    if (this._cs.currentChar !== Char.Period.valueOf()) {
       return false;
     }
     const start = this._cs.position;
     this._cs.moveToNextChar();
 
-    if (!Character.isAnsiLetter(this._cs.currentChar) && this._cs.currentChar !== Char.Underscore.valueOf()) {
-      return false;
+    switch (this._cs.currentChar) {
+      case Char._2:
+      case Char._4:
+      case Char._8:
+        break;
+      default:
+        if (!Character.isAnsiLetter(this._cs.currentChar)) {
+          return false;
+        }
     }
 
     this._cs.moveToNextChar();
@@ -263,14 +271,20 @@ export class Tokenizer {
     this.skipSymbol();
 
     if (this._cs.position > start) {
-      this.addToken(TokenType.Symbol, start, this._cs.position - start);
+      const token = new Token(TokenType.Symbol, start, this._cs.position - start);
+      this._tokens.push(token);
+      
+      const text = this._cs.text.getText(token.start, token.length);
+      if(isRegisterName(text, this._config.isA64)) {
+        token.subType = TokenSubType.Register;
+      }
       return;
     }
 
     // Unclear what it is. Skip unknown stuff, but do stop at important
     // characters, like potential comments, comma, operators.
     this._cs.skipNonWsSequence((ch: number): boolean => {
-      return !this.isHardStopCharacter(ch);
+      return !isHardStopCharacter(ch);
     });
     if (this._cs.position > start) {
       this.addToken(TokenType.Unknown, start, this._cs.position - start);
@@ -415,27 +429,13 @@ export class Tokenizer {
     // like .I8 and it should be part of the instruction name.
     // We may end up recognizing '.a.b.c' as directives, but we
     // will let validator deal with it.
-    if (!this.isLeadingSymbolCharacter(this._cs.currentChar)) {
+    if (!isLeadingSymbolCharacter(this._cs.currentChar)) {
       return;
     }
     this._cs.moveToNextChar();
     this._cs.skipNonWsSequence((ch: number): boolean => {
-      return this.isSymbolCharacter(ch);
+      return isSymbolCharacter(ch);
     });
-  }
-
-  private isLeadingSymbolCharacter(ch: number): boolean {
-    return Character.isAnsiLetter(ch) || ch === Char.Underscore;
-  }
-
-  private isSymbolCharacter(ch: number): boolean {
-    return (
-      Character.isAnsiLetter(ch) ||
-      Character.isDecimal(ch) ||
-      ch === Char.Underscore ||
-      ch === Char.$ ||
-      ch === Char.Period
-    );
   }
 
   // Checks if position is first in line OR is preceded by block comments only.
@@ -454,57 +454,46 @@ export class Tokenizer {
     }
     return true;
   }
+}
 
-  // When skipping unrecognized sequences we need to stop at potential
-  // operators, comments, braces, so tokenizer can recover.
-  private isHardStopCharacter(ch: number): boolean {
-    switch (ch) {
-      case Char.Less: // <<
-      case Char.Greater: // >>
-      case Char.Equal:
-      case Char.Slash:
-      case Char.Asterisk:
-      case Char.Percent:
-      case Char.ExclamationMark:
-      case Char.Ampersand:
-      case Char.Bar:
-      case Char.Caret:
-      case Char.OpenBracket:
-      case Char.CloseBracket:
-      case Char.OpenBrace:
-      case Char.CloseBrace:
-      case Char.OpenParenthesis:
-      case Char.CloseParenthesis:
-      case Char.Comma:
-      case Char.SingleQuote:
-      case Char.DoubleQuote:
-        return true;
-    }
-    return false;
-  }
+function isLeadingSymbolCharacter(ch: number): boolean {
+  return Character.isAnsiLetter(ch) || ch === Char.Underscore;
+}
 
-  private isRegister(start: number, length: number): boolean {
-    if (length < 2 || length > 3) {
-      return false;
-    }
+function isSymbolCharacter(ch: number): boolean {
+  return (
+    Character.isAnsiLetter(ch) ||
+    Character.isDecimal(ch) ||
+    ch === Char.Underscore ||
+    ch === Char.$ ||
+    ch === Char.Period
+  );
+}
 
-    const t = this._cs.text.getText(start, length).toUpperCase();
-    const ch1 = t.charCodeAt(0);
-    const ch2 = t.charCodeAt(1);
-    const ch3 = length === 3 ? t.charCodeAt(2) : Char._1;
-
-    if ((ch1 === Char.R || ch1 === Char.X) && Character.isDecimal(ch2) && Character.isDecimal(ch3)) {
+// When skipping unrecognized sequences we need to stop at potential
+// operators, comments, braces, so tokenizer can recover.
+function isHardStopCharacter(ch: number): boolean {
+  switch (ch) {
+    case Char.Less: // <<
+    case Char.Greater: // >>
+    case Char.Equal:
+    case Char.Slash:
+    case Char.Asterisk:
+    case Char.Percent:
+    case Char.ExclamationMark:
+    case Char.Ampersand:
+    case Char.Bar:
+    case Char.Caret:
+    case Char.OpenBracket:
+    case Char.CloseBracket:
+    case Char.OpenBrace:
+    case Char.CloseBrace:
+    case Char.OpenParenthesis:
+    case Char.CloseParenthesis:
+    case Char.Comma:
+    case Char.SingleQuote:
+    case Char.DoubleQuote:
       return true;
-    }
-
-    if (length === 2) {
-      if (ch1 === Char.S && ch2 === Char.P) {
-        return true;
-      }
-      if (ch1 === Char.F && ch2 === Char.P) {
-        return true;
-      }
-    }
-    return false;
   }
+  return false;
 }

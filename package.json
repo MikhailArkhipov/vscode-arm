@@ -160,6 +160,11 @@
             "enum": ["A32", "A64"],
             "description": "ARM instruction sets to use."
           },
+          "arm.reservedRegisterNames": {
+            "type": "boolean",
+            "default": true,
+            "description": "Treat symbol names like R0-R15 or W0-W31 (B/D/H/Q/V/X) as reserved identifiers (register names)."
+          },
           "arm.documentationFolder": {
             "type": "string",
             "description": "Folder with ARM instruction documentation in HTML. Editor appends A32 or A64 to the folder name."

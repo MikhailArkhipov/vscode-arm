@@ -4,13 +4,13 @@
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { Token } from '../tokens/tokens';
-import { AstNode, AstNodeImpl } from './astNode';
+import { AstNode, TokenNode } from './definitions';
 import { Statement } from './statement';
 import { ParseContext } from '../parser/parseContext';
 import { AssemblerConfig } from '../core/syntaxConfig';
 import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
-import { TokenNode } from './tokenNode';
+import { AstNodeImpl } from './astNodeImpl';
 
 export class AstRoot extends AstNodeImpl {
   private _context: ParseContext;
@@ -31,9 +31,9 @@ export class AstRoot extends AstNodeImpl {
     while (!context.tokens.isEndOfStream()) {
       const statement = new Statement();
       statement.parse(context, this);
-      
-      if(!context.tokens.isEndOfLine()) {
-        throw Error('Parser: must be at the end of a line.')
+
+      if (!context.tokens.isEndOfLine()) {
+        throw Error('Parser: must be at the end of a line.');
       }
       // Skip line break. Thi is no-op at the end of the file
       context.moveToNextToken();
@@ -67,10 +67,15 @@ export class AstRoot extends AstNodeImpl {
   }
 
   public get labels(): readonly Token[] {
-    return this.statements.filter((s) => s.label instanceof TokenNode).map((s) => (s.label as TokenNode).token);
+    return this.statements
+      .filter((s) => {
+        const tn = s.label as TokenNode;
+        return tn.token && tn.token.type;
+      })
+      .map((s) => (s.label as TokenNode).token);
   }
 
   public get statements(): readonly Statement[] {
-    return this.children.items.map((e) => e as Statement);
+    return this.children.asArray.map((e) => e as Statement);
   }
 }

@@ -1,21 +1,21 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as fs from 'fs'
+import * as fs from 'fs';
 
-import { AssemblerType, SyntaxConfig } from "../core/syntaxConfig";
-import { Character } from "../text/charCodes";
-import { TextStream } from "../text/textStream";
-import { Tokenizer } from "../tokens/tokenizer";
-import { Token, TokenType } from "../tokens/tokens";
+import { AssemblerType, SyntaxConfig } from '../core/syntaxConfig';
+import { Character } from '../text/charCodes';
+import { TextStream } from '../text/textStream';
+import { Tokenizer } from '../tokens/tokenizer';
+import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from '../tokens/numberTokenizer';
 import { CharacterStream } from '../text/characterStream';
 import { AstRoot } from '../AST/astRoot';
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
-// import { Parser } from '../parser/parser';
-// import { AstRoot } from '../AST/astRoot';
+import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, TokenNode } from '../AST/definitions';
+import { TextProvider } from '../text/text';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -45,19 +45,51 @@ export namespace TestUtil {
       expect(actual.getItemAt(i).type).toBe(expected[i]);
     }
   }
-  
+
+  export function verifyNode<T>(node: AstNode, nodeType: any): T {
+    expect(typeof node).toBe(nodeType.name);
+    return node as T;
+  }
+
+  export function verifyNodeText(tp: TextProvider, node: AstNode, text: string): void {
+    expect(tp.getText(node.start, node.length)).toBe(text);
+  }
+
+  export function verifyNodeTokenType(
+    node: AstNode,
+    tokenType: TokenType,
+    tokenSubType?: TokenSubType
+  ): void {
+    const tn = node as TokenNode;
+    expect(tn.token.type).toBe(tokenType);
+    if (tokenSubType) {
+      expect(tn.token.subType).toBe(tokenSubType);
+    }
+  }
+
+  export function verifyListItem(list: CommaSeparatedList, index: number): Expression {
+    expect(list.children.count).toBeGreaterThan(0);
+    let child = list.children.getItemAt(0);
+
+    const csi = child as CommaSeparatedItem;
+    expect(csi.children.count).toBeGreaterThan(0);
+    child = list.children.getItemAt(0);
+
+    return child as Expression;
+  }
+
   // Compares result to a baseline file line by line.
   export function compareFiles(baselineFile: string, actualResult: string[], regenerateBaseline: boolean): void {
-    if(regenerateBaseline) {
-      const result = actualResult.join("\n");
+    if (regenerateBaseline) {
+      const result = actualResult.join('\n');
       fs.writeFileSync(baselineFile, result);
       return;
-    } 
+    }
 
     const baselineContent = fs.readFileSync(baselineFile).toString();
-    const lines = baselineContent.split("\n");
+    const lines = baselineContent.split('\n');
 
-    for(let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
       const diff = compareLines(lines[i].trim(), actualResult[i]);
       expect(diff).toBe(-1);
     }
@@ -67,31 +99,31 @@ export namespace TestUtil {
     const minLength = Math.min(expectedLine.length, actualLine.length);
     let i = 0;
     for (i = 0; i < minLength; i++) {
-        const act = actualLine.charAt(i);
-        const exp = expectedLine.charAt(i);
-        if (act !== exp) {
-            return i;
-        }
+      const act = actualLine.charAt(i);
+      const exp = expectedLine.charAt(i);
+      if (act !== exp) {
+        return i;
+      }
     }
 
-    if(expectedLine.length === actualLine.length) {
+    if (expectedLine.length === actualLine.length) {
       return -1;
     }
 
-    if(expectedLine.length > actualLine.length) {
+    if (expectedLine.length > actualLine.length) {
       // whitespace is irrelevant
       for (let j = i; j < expectedLine.length; j++) {
-        if(!Character.isWhitespace(expectedLine.charCodeAt(i))) {
+        if (!Character.isWhitespace(expectedLine.charCodeAt(i))) {
           return i;
         }
-      }     
+      }
     }
 
     for (let j = i; j < actualLine.length; j++) {
-      if(!Character.isWhitespace(actualLine.charCodeAt(i))) {
+      if (!Character.isWhitespace(actualLine.charCodeAt(i))) {
         return i;
       }
-    }     
+    }
 
     return -1;
   }
@@ -102,10 +134,12 @@ export namespace TestUtil {
     const t = new Tokenizer(syntaxConfig);
     const textProvider = new TextStream(text);
     const tokens = t.tokenize(textProvider, 0, text.length);
-    
+
     const ast = new AstRoot();
     const context = new ParseContext(ast, textProvider, syntaxConfig, new TokenStream(tokens), 0);
     ast.parse(context);
     return ast;
   }
+
+  export function writeTokens(filePath: string): void {}
 }

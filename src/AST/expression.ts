@@ -1,14 +1,15 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, AstNodeImpl } from './astNode';
-import { Associativity, Operator, OperatorType } from './operator';
-import { TokenNode } from './tokenNode';
+import { Associativity, AstNode, Expression, Operator, OperatorType } from './definitions';
 import { TextRange } from '../text/textRange';
 import { TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
 import { ErrorLocation, ParseError, ParseErrorType } from '../parser/parseError';
-import { Group } from './group';
+import { AstNodeImpl } from './astNodeImpl';
+import { OperatorImpl } from './operator';
+import { GroupImpl } from './group';
+import { TokenNodeImpl } from './tokenNode';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs
@@ -27,23 +28,24 @@ const enum OperationType {
   EndOfExpression,
 }
 
-const sentinel = new Operator(false, OperatorType.Sentinel);
+const sentinel = new OperatorImpl(false, OperatorType.Sentinel);
 
 interface ParseResult {
   operationType: OperationType;
   errorType: ParseErrorType;
 }
 
-export class Expression extends AstNodeImpl {
+export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
 
+  // Expression
   public get content(): AstNode | undefined {
     return this._content;
   }
 
   // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
-  private readonly _operands: TokenNode[] = [];
-  private readonly _operators: Operator[] = [];
+  private readonly _operands: AstNode[] = [];
+  private readonly _operators: OperatorImpl[] = [];
   private _previousOperationType = OperationType.None;
 
   public parse(context: ParseContext, parent: AstNode | undefined) {
@@ -213,20 +215,20 @@ export class Expression extends AstNodeImpl {
   }
 
   private handleTokenOperand(context: ParseContext): OperationType {
-    const constant = TokenNode.create(context, undefined);
+    const constant = TokenNodeImpl.create(context, undefined);
     this._operands.push(constant);
     return OperationType.Operand;
   }
 
   private handleGroup(context: ParseContext): ParseResult {
-    const group = new Group();
+    const group = new GroupImpl();
     group.parse(context, undefined);
     this._operands.push(group);
     return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
   }
 
   private handleOperator(context: ParseContext): ParseResult {
-    const currentOperator = new Operator(this._operands.length === 0);
+    const currentOperator = new OperatorImpl(this._operands.length === 0);
     currentOperator.parse(context, undefined);
 
     const isUnary = currentOperator.unary;
@@ -236,7 +238,7 @@ export class Expression extends AstNodeImpl {
     return { operationType, errorType };
   }
 
-  private handleOperatorPrecedence(context: ParseContext, currentOperator: Operator): ParseErrorType {
+  private handleOperatorPrecedence(context: ParseContext, currentOperator: OperatorImpl): ParseErrorType {
     let errorType = ParseErrorType.None;
     const lastOperator = this._operators[this._operators.length - 1];
 

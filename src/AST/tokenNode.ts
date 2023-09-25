@@ -3,10 +3,11 @@
 
 import { ParseContext } from "../parser/parseContext";
 import { Token } from "../tokens/tokens";
-import { AstNode, AstNodeImpl } from "./astNode";
+import { AstNode, TokenNode } from "./definitions";
+import { AstNodeImpl } from "./astNodeImpl";
 
 // Node that represents a single token item
-export class TokenNode extends AstNodeImpl {
+export class TokenNodeImpl extends AstNodeImpl implements TokenNode {
   private _token: Token;
 
   public get token(): Token {
@@ -33,9 +34,9 @@ export class TokenNode extends AstNodeImpl {
   }
 }
 
-export namespace TokenNode {
-  export function create(context: ParseContext, parent: AstNode | undefined): TokenNode {
-    const tn = new TokenNode();
+export namespace TokenNodeImpl {
+  export function create(context: ParseContext, parent: AstNode | undefined): TokenNodeImpl {
+    const tn = new TokenNodeImpl();
     tn.parse(context, parent);
     return tn;
   }

@@ -1,6 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { Settings, getSetting } from "./settings";
+
 // GCC/GAS:
 //   https://sourceware.org/binutils/docs/as/
 //   https://developers.redhat.com/blog/2021/02/26/tips-for-writing-portable-assembler-with-gnu-assembler-gas
@@ -54,6 +56,12 @@ export class AssemblerConfig {
   // GNU labels are 'label:' while ARM does not require colon and rather 
   // require label to start at the beginning of the line.
   public colonInLabels: boolean; 
+  // Indicates A32 or A64 mode.
+  public isA64: boolean;
+  // Treat R0-R15, W0-W31, etc as register names. This helps
+  // colorizer and parser and may flag other (confusing) uses of
+  // identifiers that look like registers elsewhere.
+  public reservedRegisterNames: boolean;  
 }
 
 export namespace SyntaxConfig {
@@ -73,6 +81,8 @@ export namespace SyntaxConfig {
         // # comment must start at the beginning of the line.
         ac.hashComments = true;
         ac.colonInLabels = true;
+        ac.reservedRegisterNames = getSetting<boolean>(Settings.reservedRegisterNames, true);
+        ac.isA64 = getSetting<string>(Settings.instructionSet, 'A64') === 'A64';
         break;
 
       // case AssemblerType.ARM:

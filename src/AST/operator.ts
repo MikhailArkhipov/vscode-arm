@@ -4,49 +4,16 @@
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
 import { TokenType } from '../tokens/tokens';
-import { AstNode } from './astNode';
-import { TokenNode } from './tokenNode';
-
-// https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_6.html#SEC60
-export const enum OperatorType {
-  Unknown,
-  Add,
-  Subtract,
-  Multiply,
-  Divide,
-  Modulo, // %
-  ShiftLeft, // <<
-  ShiftRight, // >>
-  Not, // !
-  And, // &
-  Or, // |
-  Xor, // ^
-  UnaryMinus,
-  UnaryPlus,
-  Group, // ( ) pseudo-operator
-  Sentinel, // pseudo-type used in expression parsing
-}
-
-// https://en.wikipedia.org/wiki/Operator_associativity
-// Operator associativity. Consider the expression a~b~c. If the operator
-// ~ has left associativity, this expression would be interpreted as (a~b)~c.
-// If the operator has right associativity, the expression would be
-// interpreted as a~(b~c).
-export const enum Associativity {
-  // Left associativity, the expression is interpreted as (a~b)~c
-  Left,
-  // Right associativity, the expression is interpreted as a~(b~c)
-  Right,
-}
+import { Associativity, AstNode, Operator, OperatorType } from './definitions';
+import { TokenNodeImpl } from './tokenNode';
 
 // All operators are single-token kind.
-export class Operator extends TokenNode {
+export class OperatorImpl extends TokenNodeImpl implements Operator {
   private _type = OperatorType.Unknown;
   private _associativity = Associativity.Left;
   private _unary = false;
-
-  public leftOperand: AstNode | undefined;
-  public rightOperand: AstNode | undefined;
+  private _leftOperand: AstNode | undefined;
+  private _rightOperand: AstNode | undefined;
 
   constructor(unary: boolean, type?: OperatorType | undefined) {
     super();
@@ -59,7 +26,7 @@ export class Operator extends TokenNode {
     return this._type;
   }
   public get precedence(): number {
-    return Operator.getPrecedence(this.type);
+    return this.getPrecedence();
   }
   public get associativity(): Associativity {
     return this._associativity;
@@ -68,26 +35,38 @@ export class Operator extends TokenNode {
     return this._unary;
   }
 
+  public get leftOperand(): AstNode | undefined {
+    return this._leftOperand;
+  }
+  public set leftOperand(value: AstNode) {
+    this._leftOperand = value;
+  }
+
+  public get rightOperand(): AstNode | undefined {
+    return this._rightOperand;
+  }
+  public set rightOperand(value: AstNode) {
+    this._rightOperand = value;
+  }
+
   public parse(context: ParseContext, parent: AstNode | undefined): boolean {
     if (context.currentToken.type !== TokenType.Operator) {
       throw new Error('Parser: expected operator token.');
     }
-    this._type = Operator.getOperatorType(context.getCurrentTokenText());
+    this._type = this.getOperatorType(context.getCurrentTokenText());
     // If operator is preceded by an operator, it is then unary
     // Look back two tokens since operator parsing already consumed its token.
-    if (this._unary || Operator.isUnaryOperator(context.tokens, this._type, -2)) {
-      this._type = Operator.getUnaryForm(this._type);
+    if (this._unary || this.isUnaryOperator(context.tokens, this._type, -2)) {
+      this._type = this.getUnaryForm();
       this._unary = true;
       this._associativity = Associativity.Right;
     }
     return super.parse(context, parent);
   }
-}
 
-export namespace Operator {
   /// Given token stream and operator type determines if operator is unary
-  export function isUnary(tokens: TokenStream, operatorType: OperatorType, offset: number): boolean {
-    if (!isPossiblyUnary(operatorType)) {
+  private isUnary(tokens: TokenStream, offset: number): boolean {
+    if (!this.isPossiblyUnary()) {
       return false;
     }
 
@@ -103,13 +82,13 @@ export namespace Operator {
     return false;
   }
 
-  export function getPrecedence(operatorType: OperatorType): number {
+  private getPrecedence(): number {
     // Lower number means lower priority. Lowest priority operators
     // appear higher in the tree so they are evaluated last.
     // http://cs.stmarys.ca/~porter/csc/ref/cpp_operators.html
     // https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_6.html#SEC60
 
-    switch (operatorType) {
+    switch (this._type) {
       case OperatorType.Sentinel:
         return 0;
 
@@ -146,7 +125,7 @@ export namespace Operator {
     return 1000;
   }
 
-  export function getOperatorType(text: string): OperatorType {
+  private getOperatorType(text: string): OperatorType {
     switch (text) {
       case '+':
         return OperatorType.Add;
@@ -174,18 +153,18 @@ export namespace Operator {
     return OperatorType.Unknown;
   }
 
-  export function getUnaryForm(operatorType: OperatorType): OperatorType {
-    switch (operatorType) {
+  private getUnaryForm(): OperatorType {
+    switch (this._type) {
       case OperatorType.Subtract:
         return OperatorType.UnaryMinus;
       case OperatorType.Add:
         return OperatorType.UnaryPlus;
     }
-    return operatorType;
+    return this._type;
   }
 
-  export function isUnaryOperator(tokens: TokenStream, operatorType: OperatorType, offset: number) {
-    if (!isPossiblyUnary(operatorType)) {
+  private isUnaryOperator(tokens: TokenStream, operatorType: OperatorType, offset: number) {
+    if (!this.isPossiblyUnary()) {
       return false;
     }
     // If operator is preceded by an operator, it is then unary
@@ -200,8 +179,8 @@ export namespace Operator {
     return false;
   }
 
-  function isPossiblyUnary(operatorType: OperatorType): boolean {
-    switch (operatorType) {
+  private isPossiblyUnary(): boolean {
+    switch (this._type) {
       case OperatorType.Subtract:
       case OperatorType.Add:
       case OperatorType.Not:

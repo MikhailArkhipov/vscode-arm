@@ -123,36 +123,36 @@ test("TextRange construction", () => {
 test("TextRange contains 1", () => {
   const r = TextRange.fromBounds(1, 3);
 
-  expect(TextRange.contains(r.start, r.length, Number.MIN_VALUE)).toBe(false);
-  expect(TextRange.contains(r.start, r.length, 0)).toBe(false);
+  expect(r.contains(Number.MIN_VALUE)).toBe(false);
+  expect(r.contains(0)).toBe(false);
 
-  expect(TextRange.contains(r.start, r.length, 1)).toBe(true);
-  expect(TextRange.contains(r.start, r.length, 2)).toBe(true);
+  expect(r.contains(1)).toBe(true);
+  expect(r.contains(2)).toBe(true);
 
-  expect(TextRange.contains(r.start, r.length, 3)).toBe(false);
-  expect(TextRange.contains(r.start, r.length, Number.MAX_VALUE)).toBe(false);
+  expect(r.contains(3)).toBe(false);
+  expect(r.contains(Number.MAX_VALUE)).toBe(false);
 });
 
 test("TextRange contains 2", () => {
   const r1 = TextRange.fromBounds(1, 5);
 
   let r2 = TextRange.fromBounds(Number.MIN_VALUE / 2, 0);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
+  expect(r1.containsRange(r2)).toBe(false);
   r2 = TextRange.fromBounds(0, 1);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
+  expect(r1.containsRange(r2)).toBe(false);
 
   r2 = TextRange.fromBounds(5, 6);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
+  expect(r1.containsRange(r2)).toBe(false);
   r2 = TextRange.fromBounds(5, Number.MAX_VALUE / 2);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
+  expect(r1.containsRange(r2)).toBe(false);
 
   r2 = TextRange.fromBounds(1, 2);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(true);
+  expect(r1.containsRange(r2)).toBe(true);
   r2 = TextRange.fromBounds(3, 4);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(true);
+  expect(r1.containsRange(r2)).toBe(true);
 
   r2 = TextRange.fromBounds(1, 5);
-  expect(TextRange.containsRange(r1.start, r1.length, r2.start, r2.length)).toBe(false);
+  expect(r1.containsRange(r2)).toBe(false);
 });
 
 test("TextRange empty", () => {
