@@ -139,8 +139,8 @@ export class CharacterStream {
     }
   }
 
-  public skipSequence(check: (ch: number) => boolean): void {
-    while (!this.isEndOfStream() && !this.isAtNewLine() && check(this.currentChar)) {
+  public skipNonWsSequence(check: (ch: number) => boolean): void {
+    while (!this.isEndOfStream() && !this.isAtNewLine() && !this.isWhiteSpace() && check(this.currentChar)) {
       this.moveToNextChar();
     }
   }

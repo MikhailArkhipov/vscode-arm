@@ -13,8 +13,6 @@ import {
   commands,
   CancellationTokenSource,
   ProviderResult,
-  window,
-  WebviewPanel,
 } from 'vscode';
 import { provideHover } from './editor/hover';
 import { formatDocument } from './editor/formatting';

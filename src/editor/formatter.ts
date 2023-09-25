@@ -101,10 +101,9 @@ export class Formatter {
         case TokenType.CloseBracket:
         case TokenType.OpenCurly:
         case TokenType.CloseCurly:
-        case TokenType.Exclamation:
         case TokenType.Number:
         case TokenType.String:
-        case TokenType.Sequence:
+        case TokenType.Unknown:
           this.appendOperand(tokens, i);
           break;
 

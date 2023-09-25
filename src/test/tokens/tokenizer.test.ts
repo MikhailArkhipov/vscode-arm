@@ -36,11 +36,10 @@ test('Single directive', () => {
   expect(result.getItemAt(0).type).toBe(TokenType.Directive);
 });
 
-test('Single string', () => {
-  const result = TestUtil.tokenizeToArray("'string'");
-  expect(result.length).toBe(8);
-  expect(result.count).toBe(1);
-  expect(result.getItemAt(0).type).toBe(TokenType.String);
+test('Strings', () => {
+  const actual = TestUtil.tokenizeToArray('\'a b c\' "a b c" #\'a\' #"b"');
+  expect(actual.count).toBe(4);
+  TestUtil.verifyTokenTypes(actual, [TokenType.String, TokenType.String, TokenType.String, TokenType.String]);
 });
 
 test('Single number', () => {
@@ -56,10 +55,14 @@ test('Numbers', () => {
 
 test('Malformed numbers', () => {
   const actual = TestUtil.tokenizeToArray(' #0x #ZA #0xZ');
+  expect(actual.count).toBe(6);
   TestUtil.verifyTokenTypes(actual, [
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence
+    TokenType.Unknown, // #
+    TokenType.Unknown, // 0x
+    TokenType.Unknown, // #
+    TokenType.Symbol, // ZA
+    TokenType.Unknown, // #
+    TokenType.Unknown, // 0xZ
   ]);
 });
 
@@ -81,11 +84,11 @@ test('Instruction with operands', () => {
   expect(actual.length).toBe(text.length);
   TestUtil.verifyTokenTypes(actual, [
     TokenType.Symbol,
-    TokenType.Sequence,
+    TokenType.Symbol,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Symbol,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Symbol,
   ]);
 });
 
@@ -94,12 +97,11 @@ test('Not a register', () => {
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
   TestUtil.verifyTokenTypes(actual, [
-    TokenType.Sequence,
-    TokenType.Sequence,
+    TokenType.Unknown,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Symbol,
     TokenType.Comma,
-    TokenType.Sequence,
+    TokenType.Symbol,
   ]);
 });
 
@@ -144,19 +146,6 @@ test('Line breaks', () => {
   ]);
 });
 
-test('Not an instruction', () => {
-  const text = '8K R1, R2';
-  const actual = TestUtil.tokenizeToArray(text);
-  expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Comma,
-    TokenType.Sequence,
-  ]);
-});
-
 test('Hash comments', () => {
   const text = '# comment\nabc';
   const actual = TestUtil.tokenizeToArray(text);
@@ -175,7 +164,12 @@ test('C++ comments', () => {
   const text = 'abc // comment\n// abc';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.LineComment, TokenType.EndOfLine, TokenType.LineComment]);
+  TestUtil.verifyTokenTypes(actual, [
+    TokenType.Symbol,
+    TokenType.LineComment,
+    TokenType.EndOfLine,
+    TokenType.LineComment,
+  ]);
 });
 
 test('C block comments 1', () => {
@@ -185,7 +179,7 @@ test('C block comments 1', () => {
   TestUtil.verifyTokenTypes(actual, [
     TokenType.Symbol,
     TokenType.BlockComment,
-    TokenType.Sequence,
+    TokenType.Symbol,
     TokenType.EndOfLine,
     TokenType.BlockComment,
     TokenType.Symbol,
@@ -202,7 +196,7 @@ test('C block comments 2', () => {
     TokenType.BlockComment,
     TokenType.Symbol,
     TokenType.BlockComment,
-    TokenType.Sequence,
+    TokenType.Symbol,
     TokenType.EndOfLine,
     TokenType.BlockComment,
     TokenType.Symbol,
@@ -235,10 +229,10 @@ test('Not a comment', () => {
   const text = '; not a comment \n\n';
   const actual = TestUtil.tokenizeToArray(text);
   TestUtil.verifyTokenTypes(actual, [
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence,
-    TokenType.Sequence,
+    TokenType.Unknown,
+    TokenType.Symbol,
+    TokenType.Symbol,
+    TokenType.Symbol,
     TokenType.EndOfLine,
   ]);
 });
@@ -247,7 +241,7 @@ test('EQU directive', () => {
   const text = 'name .equ 1';
   const actual = TestUtil.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Sequence, TokenType.Directive, TokenType.Number]);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Directive, TokenType.Number]);
 });
 
 test('ASCII directive', () => {
@@ -256,4 +250,3 @@ test('ASCII directive', () => {
   expect(actual.length).toBe(text.length);
   TestUtil.verifyTokenTypes(actual, [TokenType.Directive, TokenType.String]);
 });
-

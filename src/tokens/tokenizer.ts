@@ -12,6 +12,9 @@ import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from './numberTokenizer';
 import { Token, TokenType } from './tokens';
 
+// NOTE: use of .valueof() with enums is b/c of https://github.com/microsoft/TypeScript/issues/9998.
+// I am not inclined to change currentToken property to a function to work around the TS issue.
+
 export class Tokenizer {
   private readonly _config: AssemblerConfig;
   private _numberTokenizer: NumberTokenizer;
@@ -48,41 +51,68 @@ export class Tokenizer {
   private addNextToken(): void {
     this.skipWhitespace();
 
-    if (this.tryNumber()) {
-      return;
-    }
-    if (this.tryBasicChars()) {
-      return;
-    }
-
     // Handle possible comments
     this.handleCBlockComment();
     if (this.isAtLineComment()) {
       this.handleLineComment();
     }
+
+    // Try immediate with # right away so we don't have to
+    if (this.tryImmediate()) {
+      return;
+    }
+    // Handle simple cases that do NOT conflict with numbers.
+    if (this.tryBasicChars1()) {
+      return;
+    }
+    // Try and detect numbers - without leading #.
+    if (this.tryNumber(this._cs.position)) {
+      return;
+    }
+    // Remanining simple cases that do conflict with numbers.
+    if (this.tryBasicChars2()) {
+      return;
+    }
     this.handleOtherChars();
   }
 
-  private tryNumber(): boolean {
-    const start = this._cs.position;
+  private tryNumber(start: number): boolean {
     const length = this._numberTokenizer.tryNumber();
     if (length > 0) {
-      this.addToken(TokenType.Number, start, length);
+      this.addToken(TokenType.Number, start, this._cs.position - start);
       return true;
     }
     return false;
   }
 
-  private tryBasicChars(): boolean {
+  // No plus or minus here or you may lose a number!!!
+  private tryBasicChars1(): boolean {
     switch (this._cs.currentChar) {
+      case Char.Less: // <<
+        if (this._cs.nextChar === Char.Less) {
+          this.addToken(TokenType.Operator, this._cs.position, 2);
+          this._cs.advance(2);
+        }
+        break;
+
+      case Char.Greater: // >>
+        if (this._cs.nextChar === Char.Greater) {
+          this.addToken(TokenType.Operator, this._cs.position, 2);
+          this._cs.advance(2);
+        }
+        break;
+
       case Char.Equal:
-      case Char.Plus:
-      case Char.Minus:
+      case Char.Slash:
+      case Char.Asterisk:
+      case Char.Percent:
+      case Char.ExclamationMark:
+      case Char.Ampersand:
+      case Char.Bar:
+      case Char.Caret:
         this.addTokenAndMove(TokenType.Operator, this._cs.position);
         return true;
-      case Char.ExclamationMark:
-        this.addTokenAndMove(TokenType.Exclamation, this._cs.position);
-        return true;
+
       case Char.OpenBracket:
         this.addTokenAndMove(TokenType.OpenBracket, this._cs.position);
         return true;
@@ -113,7 +143,17 @@ export class Tokenizer {
 
       case Char.SingleQuote:
       case Char.DoubleQuote:
-        this.handleString();
+        this.handleString(this._cs.position);
+        return true;
+    }
+    return false;
+  }
+
+  private tryBasicChars2(): boolean {
+    switch (this._cs.currentChar) {
+      case Char.Plus:
+      case Char.Minus:
+        this.addTokenAndMove(TokenType.Operator, this._cs.position);
         return true;
     }
     return false;
@@ -131,13 +171,8 @@ export class Tokenizer {
     if (this.tryDirective()) {
       return;
     }
-    // Immediate? GNU also permits '$'
-    if (this._cs.currentChar === Char.Hash || this._cs.currentChar === Char.$) {
-      this.handleImmediate();
-      return;
-    }
     // A symbol?
-    this.handleSymbolOrSequence();
+    this.handleSymbolOrUnknown();
   }
 
   // Attempt to determine if sequence is a label.
@@ -152,18 +187,17 @@ export class Tokenizer {
     const start = this._cs.position;
     const ch = this._cs.currentChar;
 
-    if (Character.isAnsiLetter(ch) || ch === Char.Underscore) {
+    if (this.isLeadingSymbolCharacter(ch)) {
       // Regular label. Skip first char, then letters, underscores, digits,
       // dollar signs until colon, whitespace, odd characters or EOL/EOF.
-      this._cs.moveToNextChar();
       this.skipSymbol();
     } else if (Character.isDecimal(ch)) {
       // Local label. 22:, 33$: or .L77$:
-      this._cs.skipSequence((ch: number): boolean => {
+      this._cs.skipNonWsSequence((ch: number): boolean => {
         return Character.isDecimal(ch);
       });
       if (this._cs.currentChar === Char.$) {
-        this._cs.skipSequence((ch: number): boolean => {
+        this._cs.skipNonWsSequence((ch: number): boolean => {
           return ch === Char.$;
         });
       }
@@ -171,7 +205,7 @@ export class Tokenizer {
       // Local label .L77$: this is rare since it mostly appears in generated code
       // after as or ld transform local label names into .L?? form. Also allow dash here.
       this._cs.advance(2);
-      this._cs.skipSequence((ch: number): boolean => {
+      this._cs.skipNonWsSequence((ch: number): boolean => {
         return (
           Character.isAnsiLetter(ch) ||
           Character.isDecimal(ch) ||
@@ -204,7 +238,7 @@ export class Tokenizer {
     }
 
     this._cs.moveToNextChar();
-    this._cs.skipSequence((ch: number): boolean => {
+    this._cs.skipNonWsSequence((ch: number): boolean => {
       return Character.isAnsiLetter(ch) || Character.isDecimal(ch) || ch === Char.Underscore;
     });
 
@@ -223,24 +257,24 @@ export class Tokenizer {
     return false;
   }
 
-  private handleSymbolOrSequence(): void {
+  private handleSymbolOrUnknown(): void {
     //https://sourceware.org/binutils/docs-2.26/as/Symbol-Intro.html#Symbol-Intro
     const start = this._cs.position;
-    if (Character.isAnsiLetter(this._cs.currentChar)) {
-      this.skipSymbol();
-    }
+    this.skipSymbol();
 
-    const length = this._cs.position - start;
-    if (length === 0) {
-      // Unclear what it is. Just skip to whitespace and record as a sequence.
-      this._cs.skipToWhitespace();
-      if (this._cs.position > start) {
-        this.addToken(TokenType.Sequence, start, this._cs.position - start);
-      }
+    if (this._cs.position > start) {
+      this.addToken(TokenType.Symbol, start, this._cs.position - start);
       return;
     }
 
-    this.addToken(TokenType.Symbol, start, length);
+    // Unclear what it is. Skip unknown stuff, but do stop at important
+    // characters, like potential comments, comma, operators.
+    this._cs.skipNonWsSequence((ch: number): boolean => {
+      return !this.isHardStopCharacter(ch);
+    });
+    if (this._cs.position > start) {
+      this.addToken(TokenType.Unknown, start, this._cs.position - start);
+    }
   }
 
   // Handle generic comment that spans to the end of the line.
@@ -301,6 +335,61 @@ export class Tokenizer {
     }
   }
 
+  private handleString(start: number): void {
+    const openQuote = this._cs.currentChar;
+    this._cs.moveToNextChar();
+
+    while (!this._cs.isEndOfStream() && !this._cs.isAtNewLine() && this._cs.currentChar !== openQuote) {
+      this._cs.moveToNextChar();
+    }
+    if (this._cs.currentChar === openQuote) {
+      this._cs.moveToNextChar();
+    }
+    // String may be unterminated
+    this.addToken(TokenType.String, start, this._cs.position - start);
+  }
+
+  private tryImmediate(): boolean {
+    // Immediate can be anything - a number (most commn case) such as #0x1,
+    // but also a string or a single character, or. with GCC, an operator
+    // over label or variable like #:lower16:label. We file immediate
+    // as an underlying type since for the user both 1 and #1 are the same
+    // thing and should be colorized identically. This also simplifies parser.
+
+    // Immediate? GNU also permits '$'
+    if (this._cs.currentChar !== Char.Hash && this._cs.currentChar !== Char.$) {
+      return false;
+    }
+    // Skip hash/dollar, but remember actual start position
+    const start = this._cs.position;
+    this._cs.moveToNextChar();
+
+    // #"abc"
+    if (this._cs.isAtString()) {
+      this.handleString(start);
+      return true;
+    }
+
+    // Possibly #:lower16:label
+    if (this._cs.currentChar === Char.Colon.valueOf()) {
+      this._cs.moveToNextChar;
+      this.skipSymbol();
+      if (this._cs.currentChar === Char.Colon.valueOf()) {
+        this._cs.moveToNextChar();
+        this.skipSymbol();
+        this.addToken(TokenType.Symbol, start, this._cs.position - start);
+        return true;
+      }
+    }
+
+    if (this.tryNumber(start)) {
+      return true;
+    }
+
+    this.addToken(TokenType.Unknown, start, this._cs.position - start);
+    return true;
+  }
+
   private addToken(type: TokenType, start: number, length: number): void {
     const token = new Token(type, start, length);
     this._tokens.push(token);
@@ -326,51 +415,72 @@ export class Tokenizer {
     // like .I8 and it should be part of the instruction name.
     // We may end up recognizing '.a.b.c' as directives, but we
     // will let validator deal with it.
-    this._cs.skipSequence((ch: number): boolean => {
-      return (
-        Character.isAnsiLetter(ch) ||
-        Character.isDecimal(ch) ||
-        ch === Char.Underscore ||
-        ch === Char.$ ||
-        ch === Char.Period
-      );
-    });
-  }
-
-  private handleString(): void {
-    const start = this._cs.position;
-    const openQuote = this._cs.currentChar;
-
-    this._cs.moveToNextChar();
-    this._cs.skipSequence((ch: number): boolean => {
-      return ch !== openQuote;
-    });
-
-    if (this._cs.currentChar === openQuote) {
-      this._cs.moveToNextChar();
-    }
-    this.addToken(TokenType.String, start, this._cs.position - start);
-  }
-
-  private handleImmediate(): void {
-    const start = this._cs.position;
-    // Skip hash/dollar, but remember actual start position
-    this._cs.moveToNextChar();
-    if (this.tryNumber()) {
+    if (!this.isLeadingSymbolCharacter(this._cs.currentChar)) {
       return;
     }
-    // Possibly #:lower16:label
-    if (this._cs.currentChar === Char.Colon) {
-      this._cs.moveToNextChar;
-      this._cs.skipSequence((e) => e !== Char.Colon && e !== Char.At);
+    this._cs.moveToNextChar();
+    this._cs.skipNonWsSequence((ch: number): boolean => {
+      return this.isSymbolCharacter(ch);
+    });
+  }
+
+  private isLeadingSymbolCharacter(ch: number): boolean {
+    return Character.isAnsiLetter(ch) || ch === Char.Underscore;
+  }
+
+  private isSymbolCharacter(ch: number): boolean {
+    return (
+      Character.isAnsiLetter(ch) ||
+      Character.isDecimal(ch) ||
+      ch === Char.Underscore ||
+      ch === Char.$ ||
+      ch === Char.Period
+    );
+  }
+
+  // Checks if position is first in line OR is preceded by block comments only.
+  // Example: \nFoo, \n/* */ Foo, \n/* */ /* */ Foo, etc.
+  private isPositionFirstInLine(): boolean {
+    for (let i = this._tokens.length - 1; i >= 0; i--) {
+      const t = this._tokens[i];
+      switch (t.type) {
+        case TokenType.EndOfLine:
+          return true;
+        case TokenType.BlockComment:
+          continue;
+        default:
+          return false;
+      }
     }
-    this.skipSymbol();
-    if (this._cs.position - start > 1) {
-      // File immediate as a number anyway. This helps colorizer
-      // and validator. Validator can dive into specific format eventually
-      // and validate :abc: sequences as well as label references.
-      this.addToken(TokenType.Number, start, this._cs.position - start);
+    return true;
+  }
+
+  // When skipping unrecognized sequences we need to stop at potential
+  // operators, comments, braces, so tokenizer can recover.
+  private isHardStopCharacter(ch: number): boolean {
+    switch (ch) {
+      case Char.Less: // <<
+      case Char.Greater: // >>
+      case Char.Equal:
+      case Char.Slash:
+      case Char.Asterisk:
+      case Char.Percent:
+      case Char.ExclamationMark:
+      case Char.Ampersand:
+      case Char.Bar:
+      case Char.Caret:
+      case Char.OpenBracket:
+      case Char.CloseBracket:
+      case Char.OpenBrace:
+      case Char.CloseBrace:
+      case Char.OpenParenthesis:
+      case Char.CloseParenthesis:
+      case Char.Comma:
+      case Char.SingleQuote:
+      case Char.DoubleQuote:
+        return true;
     }
+    return false;
   }
 
   private isRegister(start: number, length: number): boolean {
@@ -396,22 +506,5 @@ export class Tokenizer {
       }
     }
     return false;
-  }
-
-  // Checks if position is first in line OR is preceded by block comments only.
-  // Example: \nFoo, \n/* */ Foo, \n/* */ /* */ Foo, etc.
-  private isPositionFirstInLine(): boolean {
-    for (let i = this._tokens.length - 1; i >= 0; i--) {
-      const t = this._tokens[i];
-      switch (t.type) {
-        case TokenType.EndOfLine:
-          return true;
-        case TokenType.BlockComment:
-          continue;
-        default:
-          return false;
-      }
-    }
-    return true;
   }
 }

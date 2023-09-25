@@ -8,6 +8,7 @@ import { TextRangeImpl } from '../text/textRange';
 // symbol is a label or a directive.
 // TODO: ARM syntax is not currently supported.
 export enum TokenType {
+  // Anything else, just a non-ws sequence of characters.
   Unknown = 0,
   // Label appear first in line and in GNU ends in :.
   // ARM does not require :, but requires labes to start at 0.
@@ -27,15 +28,12 @@ export enum TokenType {
   OpenCurly = 11,
   CloseCurly = 12,
   Operator = 13,
-  Exclamation = 14,
-  // Anything else, just a non-ws sequence of characters.
-  Sequence = 15,
-  LineComment = 16, // C-type // or GNU @, ARM ; or # (legacy).
-  BlockComment = 17, // /* ... */, GNU
+  LineComment = 14, // C-type // or GNU @, ARM ; or # (legacy).
+  BlockComment = 15, // /* ... */, GNU
   // Explicitly indicates line break which terminates current statement
   // per https://sourceware.org/binutils/docs/as/Statements.html
-  EndOfLine = 18,
-  EndOfStream = 19,
+  EndOfLine = 16,
+  EndOfStream = 17,
 }
 
 // Subtypes that are set by the parser after semantic analysis.

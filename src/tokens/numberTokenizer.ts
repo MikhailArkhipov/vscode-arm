@@ -62,7 +62,7 @@ export class NumberTokenizer {
     const startChar = this._cs.currentChar;
 
     // collect decimals (there may be none like in .1e+20
-    this._cs.skipSequence((ch) => Character.isDecimal(ch));
+    this._cs.skipNonWsSequence((ch) => Character.isDecimal(ch));
     integerPartLength = this._cs.position - start;
 
     let isFloat = this._cs.currentChar === Char.Period;
@@ -70,7 +70,7 @@ export class NumberTokenizer {
       this._cs.moveToNextChar();
       // If we've seen period, we need to collect the fractional part
       const startFractionalPart = this._cs.position;
-      this._cs.skipSequence((ch) => Character.isDecimal(ch));
+      this._cs.skipNonWsSequence((ch) => Character.isDecimal(ch));
       fractionPartLength = this._cs.position - startFractionalPart;
     }
 
@@ -95,7 +95,7 @@ export class NumberTokenizer {
     // cannot start with 0. See if this is really octal.
     if (!isFloat && numberLength > 0 && startChar === Char._0) {
       this._cs.position = start;
-      this._cs.skipSequence((ch) => Character.isOctal(ch));
+      this._cs.skipNonWsSequence((ch) => Character.isOctal(ch));
       if (this._cs.position - start !== numberLength) {
         numberLength = 0;
       }
@@ -114,14 +114,14 @@ export class NumberTokenizer {
     if ((this._cs.nextChar === Char.x || this._cs.nextChar === Char.X) && Character.isHex(this._cs.lookAhead(2))) {
       // Hex
       this._cs.advance(3);
-      this._cs.skipSequence((ch) => Character.isHex(ch));
+      this._cs.skipNonWsSequence((ch) => Character.isHex(ch));
     } else if (
       (this._cs.nextChar === Char.b || this._cs.nextChar === Char.B) &&
       Character.isBinary(this._cs.lookAhead(2))
     ) {
       // Binary
       this._cs.advance(3);
-      this._cs.skipSequence((ch) => Character.isBinary(ch));
+      this._cs.skipNonWsSequence((ch) => Character.isBinary(ch));
     } else {
       return 0;
     }
@@ -150,7 +150,7 @@ export class NumberTokenizer {
 
     const digitsStart = this._cs.position;
     // collect decimals
-    this._cs.skipSequence((ch) => Character.isDecimal(ch));
+    this._cs.skipNonWsSequence((ch) => Character.isDecimal(ch));
     if (hasSign && digitsStart === this._cs.position) {
       return 0; // NaN like 1.0E-
     }
