@@ -250,3 +250,59 @@ test('ASCII directive', () => {
   expect(actual.length).toBe(text.length);
   TestUtil.verifyTokenTypes(actual, [TokenType.Directive, TokenType.String]);
 });
+
+test('Unterminated string', () => {
+  const text = '"string @ comment';
+  const actual = TestUtil.tokenizeToArray(text);
+  TestUtil.verifyTokenTypes(actual, [TokenType.String]);
+});
+
+test('Expression 1', () => {
+  const text = 'a+b';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
+});
+
+test('Expression 2', () => {
+  const text = 'a +b';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
+});
+
+test('Expression 3', () => {
+  const text = '2*(a +(b*!_c) >> 17 << x2_1';
+  const actual = TestUtil.tokenizeToArray(text);  
+  TestUtil.verifyTokenTypes(actual, [
+    TokenType.Number, 
+    TokenType.Operator,
+    TokenType.OpenBrace,
+    TokenType.Symbol,
+    TokenType.Operator,
+    TokenType.OpenBrace,
+    TokenType.Symbol,
+    TokenType.Operator,
+    TokenType.Operator,
+    TokenType.Symbol,
+    TokenType.CloseBrace,
+    TokenType.Operator,
+    TokenType.Number,
+    TokenType.Operator,
+    TokenType.Symbol,
+  ]);
+});
+
+test('Unknown symbols 1', () => {
+  const text = '2_@foo';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Number, TokenType.Symbol, TokenType.LineComment]);
+});
+
+test('Unknown symbols 2', () => {
+  const text = ';;`*';
+  const actual = TestUtil.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TestUtil.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
+});
