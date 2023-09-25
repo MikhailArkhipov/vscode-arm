@@ -36,7 +36,7 @@ function isRegister64Name(text: string): boolean {
 
 function isRegister32Name(text: string): boolean {
   populateRegister32Map();
-  return isRegister32Name(text);
+  return _registers32.has(text.toUpperCase());
 }
 
 function populateRegister32Map(): void {
@@ -77,6 +77,8 @@ function populateRegister32Map(): void {
   _registers32.add('LR');
   _registers32.add('PC');
   _registers32.add('APSR');
+  // FP not listed, but appeas that it is used...
+  _registers32.add('FP');
 }
 
 function populateRegister64Map(): void {

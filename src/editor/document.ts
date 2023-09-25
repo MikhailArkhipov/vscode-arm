@@ -24,7 +24,6 @@ import { AstRootImpl } from '../AST/astRoot';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
-  private readonly _syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
   private readonly _td: TextDocument;
   
   private _tokens: TextRangeCollection<Token> = new TextRangeCollection([]);
@@ -49,7 +48,8 @@ export class EditorDocument {
   public get tokens(): TextRangeCollection<Token> {
     // We are not building ASTs just yet, so provide tokens explicitly.
     if (!this._tokens || this._version !== this._td.version) {
-      const t = new Tokenizer(this._syntaxConfig);
+      const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
+      const t = new Tokenizer(syntaxConfig);
       const text = this._td.getText();
       this._tokens = t.tokenize(new TextStream(text), 0, text.length);
     }

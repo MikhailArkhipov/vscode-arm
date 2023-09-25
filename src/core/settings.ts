@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { WorkspaceConfiguration, workspace } from "vscode";
+import { workspace } from "vscode";
 
 export namespace Settings {
   // General functionality
@@ -28,11 +28,7 @@ export namespace Settings {
   export const documentationFolder = "arm.documentationFolder";
 }
 
-export function getConfiguration(name: string): WorkspaceConfiguration {
-  return workspace.getConfiguration('vscode-arm');
-}
-
 export function getSetting<T>(name: string, defaultValue: T): T {
-  const config = workspace.getConfiguration('vscode-arm');
+  const config = workspace.getConfiguration();
   return config.get(name, defaultValue) as T;
 }
