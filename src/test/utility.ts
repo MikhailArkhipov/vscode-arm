@@ -11,11 +11,9 @@ import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from '../tokens/numberTokenizer';
 import { CharacterStream } from '../text/characterStream';
-import { AstRoot } from '../AST/astRoot';
-import { ParseContext } from '../parser/parseContext';
-import { TokenStream } from '../tokens/tokenStream';
-import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, TokenNode } from '../AST/definitions';
+import { AstNode, AstRoot, CommaSeparatedItem, CommaSeparatedList, Expression, TokenNode } from '../AST/definitions';
 import { TextProvider } from '../text/text';
+import { AstRootImpl } from '../AST/astRoot';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -130,15 +128,9 @@ export namespace TestUtil {
 
   export function parseText(text: string): AstRoot {
     const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
-
     const t = new Tokenizer(syntaxConfig);
-    const textProvider = new TextStream(text);
-    const tokens = t.tokenize(textProvider, 0, text.length);
-
-    const ast = new AstRoot();
-    const context = new ParseContext(ast, textProvider, syntaxConfig, new TokenStream(tokens), 0);
-    ast.parse(context);
-    return ast;
+    const tokens = t.tokenize(new TextStream(text), 0, text.length);
+    return AstRootImpl.create(text, syntaxConfig, tokens, 0);
   }
 
   export function writeTokens(filePath: string): void {}

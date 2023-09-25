@@ -4,7 +4,7 @@
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { Token } from '../tokens/tokens';
-import { AstNode, TokenNode } from './definitions';
+import { AstNode, AstRoot, TokenNode } from './definitions';
 import { Statement } from './statement';
 import { ParseContext } from '../parser/parseContext';
 import { AssemblerConfig } from '../core/syntaxConfig';
@@ -12,7 +12,7 @@ import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
 import { AstNodeImpl } from './astNodeImpl';
 
-export class AstRoot extends AstNodeImpl {
+export class AstRootImpl extends AstNodeImpl implements AstRoot {
   private _context: ParseContext;
 
   constructor() {
@@ -48,7 +48,7 @@ export class AstRoot extends AstNodeImpl {
     version = 0
   ): AstRoot {
     const ts = new TextStream(text);
-    const ast = new AstRoot();
+    const ast = new AstRootImpl();
     const context = new ParseContext(ast, ts, config, new TokenStream(tokens), version);
     ast.parse(context);
     return ast;
@@ -76,6 +76,6 @@ export class AstRoot extends AstNodeImpl {
   }
 
   public get statements(): readonly Statement[] {
-    return this.children.asArray.map((e) => e as Statement);
+    return this.children.asArray.map((e) => e as Statement).filter((e) => e);
   }
 }

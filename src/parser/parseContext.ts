@@ -1,8 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode } from '../AST/definitions';
-import { AstRoot } from '../AST/astRoot';
+import { AstNode, AstRoot } from '../AST/definitions';
 import { AssemblerConfig } from '../core/syntaxConfig';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';

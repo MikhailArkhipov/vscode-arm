@@ -18,7 +18,9 @@ import { Token, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { parseInstruction } from '../instructions/instruction';
 import { getMessage } from '../parser/parseError';
-import { AstRoot } from '../AST/astRoot';
+import { AstRoot } from '../AST/definitions';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { AstRootImpl } from '../AST/astRoot';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
@@ -39,7 +41,7 @@ export class EditorDocument {
 
   public getAst(): AstRoot | undefined {
     if (!this._ast || this._ast.context.version < this._td.version) {
-      // this._ast = AstRoot.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
+      //this._ast = AstRootImpl.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
     }
     return this._ast;
   }

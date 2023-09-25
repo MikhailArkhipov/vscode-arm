@@ -136,6 +136,7 @@ export class Statement extends AstNodeImpl implements Statement {
     } else {
       this._type = StatementType.Instruction;
       this._name = TokenNodeImpl.create(context, this); // directive name
+      this._name.token.subType = TokenSubType.Instruction;
     }
   }
 

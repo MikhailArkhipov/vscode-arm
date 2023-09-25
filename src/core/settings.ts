@@ -31,6 +31,7 @@ export namespace Settings {
 export function getConfiguration(name: string): WorkspaceConfiguration {
   return workspace.getConfiguration('vscode-arm');
 }
+
 export function getSetting<T>(name: string, defaultValue: T): T {
   const config = workspace.getConfiguration('vscode-arm');
   return config.get(name, defaultValue) as T;

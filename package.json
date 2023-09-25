@@ -175,7 +175,7 @@
     "semanticTokenTypes": [
       {
         "id": "instruction",
-        "superType": "function",
+        "superType": "enumMember",
         "description": "Assembly instruction."
       },
       {
@@ -185,7 +185,7 @@
       },
       {
         "id": "register",
-        "superType": "parameter",
+        "superType": "macro",
         "description": "Processor register."
       }
     ],

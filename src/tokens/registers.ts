@@ -96,25 +96,25 @@ function populateRegister64Map(): void {
   // ELR_EL1, ELR_EL2, and ELR_EL3
 
   for (let i = 0; i < 31; i++) {
-    _registers32.add(`W${i}`);
-    _registers32.add(`X${i}`);
+    _registers64.add(`W${i}`);
+    _registers64.add(`X${i}`);
   }
 
   for (let i = 0; i < 32; i++) {
-    _registers32.add(`B${i}`);
-    _registers32.add(`D${i}`);
-    _registers32.add(`H${i}`);
-    _registers32.add(`S${i}`);
-    _registers32.add(`Q${i}`);
-    _registers32.add(`V${i}`);
+    _registers64.add(`B${i}`);
+    _registers64.add(`D${i}`);
+    _registers64.add(`H${i}`);
+    _registers64.add(`S${i}`);
+    _registers64.add(`Q${i}`);
+    _registers64.add(`V${i}`);
   }
-  _registers32.add('WZR');
-  _registers32.add('XZR');
-  _registers32.add('WSP');
-  _registers32.add('SP');
-  _registers32.add('LR');
+  _registers64.add('WZR');
+  _registers64.add('XZR');
+  _registers64.add('WSP');
+  _registers64.add('SP');
+  _registers64.add('LR');
 
-  _registers32.add('ELR_EL1');
-  _registers32.add('ELR_EL2');
-  _registers32.add('ELR_EL3');
+  _registers64.add('ELR_EL1');
+  _registers64.add('ELR_EL2');
+  _registers64.add('ELR_EL3');
 }
