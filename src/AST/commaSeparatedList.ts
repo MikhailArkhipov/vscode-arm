@@ -75,6 +75,7 @@ export class CommaSeparatedList extends AstNodeImpl {
       }
       const item = new CommaSeparatedItem();
       item.parse(context, this);
+      this._items.push(item);
     }
     // Do not include empty list in the tree since it has no positioning information.
     if (!this._openBrace && !this._closeBrace && this._items.length === 0) {

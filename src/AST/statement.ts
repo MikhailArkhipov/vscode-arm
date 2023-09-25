@@ -107,8 +107,8 @@ export class Statement extends AstNodeImpl {
           // name .equ value, like #define in C
           this._type = StatementType.Directive;
           this._subType = StatementSubType.SymbolDefinition;
-          this._symbolName = TokenNode.create(context, this);
-          this._name = TokenNode.create(context, this);
+          this._symbolName = TokenNode.create(context, this); // label name
+          this._name = TokenNode.create(context, this); // directive name
           this._symbolName.token.subType = TokenSubType.SymbolDeclaration;
         } else {
           // {label:} symbol => instruction statement
@@ -120,9 +120,6 @@ export class Statement extends AstNodeImpl {
         // {label:} ??? => Unknown statement
         this._type = StatementType.Unknown;
         break;
-    }
-    if (this._name) {
-      this.appendChild(this._name);
     }
   }
 

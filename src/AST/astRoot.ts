@@ -15,6 +15,11 @@ import { TokenNode } from './tokenNode';
 export class AstRoot extends AstNodeImpl {
   private _context: ParseContext;
 
+  constructor() {
+    super();
+    this._parent = this;
+  }
+
   // Recursice descent parser
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._context = context;
@@ -26,7 +31,6 @@ export class AstRoot extends AstNodeImpl {
     while (!context.tokens.isEndOfStream()) {
       const statement = new Statement();
       statement.parse(context, this);
-      this.appendChild(statement);
       
       if(!context.tokens.isEndOfLine()) {
         throw Error('Parser: must be at the end of a line.')
@@ -34,7 +38,7 @@ export class AstRoot extends AstNodeImpl {
       // Skip line break. Thi is no-op at the end of the file
       context.moveToNextToken();
     }
-    return super.parse(context, this);
+    return true;
   }
 
   public static create(
@@ -48,10 +52,6 @@ export class AstRoot extends AstNodeImpl {
     const context = new ParseContext(ast, ts, config, new TokenStream(tokens), version);
     ast.parse(context);
     return ast;
-  }
-
-  public get parent(): AstNode {
-    return this;
   }
 
   public get context(): ParseContext {

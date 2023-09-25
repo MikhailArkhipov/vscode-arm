@@ -52,6 +52,7 @@ export class Operator extends TokenNode {
     super();
     this._unary = unary;
     this._associativity = unary ? Associativity.Right : Associativity.Left;
+    this._type = type ?? OperatorType.Unknown;
   }
 
   public get type(): OperatorType {

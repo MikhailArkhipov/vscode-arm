@@ -149,7 +149,7 @@ export class Expression extends AstNodeImpl {
         this.appendChild(this._content);
       }
     }
-    return true;
+    return super.parse(context, parent);
   }
 
   private isConsistentOperationSequence(context: ParseContext, currentOperationType: OperationType): boolean {
@@ -213,14 +213,14 @@ export class Expression extends AstNodeImpl {
   }
 
   private handleTokenOperand(context: ParseContext): OperationType {
-    const constant = TokenNode.create(context, this);
+    const constant = TokenNode.create(context, undefined);
     this._operands.push(constant);
     return OperationType.Operand;
   }
 
   private handleGroup(context: ParseContext): ParseResult {
     const group = new Group();
-    group.parse(context, this);
+    group.parse(context, undefined);
     this._operands.push(group);
     return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
   }

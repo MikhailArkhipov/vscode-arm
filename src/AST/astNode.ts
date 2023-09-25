@@ -1,12 +1,12 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange } from "../text/textRange";
-import { TextRangeCollection } from "../text/textRangeCollection";
-import { ParseContext } from "../parser/parseContext";
+import { TextRange } from '../text/textRange';
+import { TextRangeCollection } from '../text/textRangeCollection';
+import { ParseContext } from '../parser/parseContext';
 
 export interface AstNode extends TextRange {
-  readonly parent?: AstNode;
+  parent: AstNode | undefined;
   readonly children: TextRangeCollection<AstNode>;
 
   appendChild(node: AstNode): void;
@@ -33,15 +33,19 @@ export namespace AstNode {
 export interface ParseItem {}
 
 export class AstNodeImpl implements AstNode, ParseItem {
-  private _parent?: AstNode;
+  protected _parent: AstNode | undefined;
   private readonly _children: AstNode[] = [];
 
   public get parent(): AstNode | undefined {
     return this._parent;
   }
+
   public set parent(value: AstNode | undefined) {
-    if (this._parent && this._parent !== value && value !== null) {
-      throw new Error("Node already has parent");
+    if (this._parent === value) {
+      return;
+    }
+    if (this._parent && value && this._parent !== value) {
+      throw new Error('Node already has parent');
     }
     this._parent = value;
     if (this._parent) {
@@ -66,11 +70,16 @@ export class AstNodeImpl implements AstNode, ParseItem {
   }
 
   public appendChild(node: AstNode): void {
-    this._children.push(node);
+    if (!node.parent) {
+      node.parent = this;
+    } else{
+      this._children.push(node);
+    }
   }
 
   public parse(context: ParseContext, parent?: AstNode): boolean {
-    this._parent = parent;
+    // Use property so item gets added to the parent collection.
+    this.parent = parent;
     return true;
   }
 }

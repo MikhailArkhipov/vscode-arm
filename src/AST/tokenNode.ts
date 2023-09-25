@@ -34,7 +34,7 @@ export class TokenNode extends AstNodeImpl {
 }
 
 export namespace TokenNode {
-  export function create(context: ParseContext, parent: AstNode): TokenNode {
+  export function create(context: ParseContext, parent: AstNode | undefined): TokenNode {
     const tn = new TokenNode();
     tn.parse(context, parent);
     return tn;

@@ -3,8 +3,11 @@
 
 import { Statement } from "../../AST/statement";
 import { TokenNode } from "../../AST/tokenNode";
-import { TokenType } from "../../tokens/tokens";
 import { TestUtil } from "../../test/utility";
+import { CommaSeparatedItem, CommaSeparatedList } from "../../AST/commaSeparatedList";
+import { AstNode } from "../../AST/astNode";
+import { Expression } from "../../AST/expression";
+import { Operator } from "../../AST/operator";
 
 test("Empty string", () => {
     const root = TestUtil.parseText("");
@@ -13,23 +16,42 @@ test("Empty string", () => {
     expect(root.parent).toBe(root);
 });
 
-test("Label + empty statement", () => {
-    const root = TestUtil.parseText("label: ");
+test("Simple expression", () => {
+    const root = TestUtil.parseText("a+b");
+    let child: AstNode;
+
     expect(root).toBeDefined();
     expect(root.children.count).toBe(1);
-    expect(root.parent).toBe(root);
 
     expect(root.context.errors.count).toBe(0);
     const c1 = root.children.getItemAt(0); 
     expect(c1).toBeInstanceOf(Statement);
+    
     const s = c1 as Statement;
     expect(s.children.count).toBe(1);
-    expect(root.text.getText(s.start, s.length)).toBe("label:");
-    
-    const c2 = s.children.getItemAt(0);
-    expect(c2).toBeInstanceOf(TokenNode);
-    const tn = c2 as TokenNode;
-    expect(tn.children.count).toBe(0);
-    expect(tn.token.type).toBe(TokenType.Label);
-    expect(root.text.getText(tn.start, tn.length)).toBe("label:");
+    child = s.children.getItemAt(0);
+    expect(child).toBeInstanceOf(CommaSeparatedList);
+
+    const csl = child as CommaSeparatedList;
+    expect(csl.children.count).toBe(1);
+    child = csl.children.getItemAt(0);
+    expect(child).toBeInstanceOf(CommaSeparatedItem);
+
+    const csi = child as CommaSeparatedItem;
+    expect(csi.children.count).toBe(1);
+    child = csi.children.getItemAt(0);
+    expect(child).toBeInstanceOf(Expression);
+
+    const e = child as Expression;
+    expect(e.children.count).toBe(1);
+    child = e.children.getItemAt(0);
+    expect(child).toBeInstanceOf(Operator);
+   
+    const op = child as Operator;
+    expect(op.children.count).toBe(2);
+    expect(op.leftOperand).toBeInstanceOf(TokenNode);
+    expect(op.rightOperand).toBeInstanceOf(TokenNode);
+
+    expect(root.text.getText(op.leftOperand!.start, op.leftOperand!.length)).toBe("a");
+    expect(root.text.getText(op.rightOperand!.start, op.rightOperand!.length)).toBe("b");
 });
