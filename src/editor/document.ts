@@ -18,12 +18,16 @@ import { TextRangeCollection } from '../text/textRangeCollection';
 import { AstRoot } from '../AST/definitions';
 import { getLanguageOptions } from './options';
 import { getMessage as getParseErrorMessage } from '../parser/parseError';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { AstRootImpl } from '../AST/astRoot';
+import { LanguageOptions } from '../core/languageOptions';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _td: TextDocument;
 
   private _tokens: TextRangeCollection<Token> = new TextRangeCollection([]);
+  private _options: LanguageOptions;
   private _ast: AstRoot | undefined;
   private _version = 0;
 
@@ -37,14 +41,15 @@ export class EditorDocument {
 
   public getAst(): AstRoot | undefined {
     if (!this._ast || this._ast.context.version < this._td.version) {
-      //this._ast = AstRootImpl.create(this._td.getText(), this._syntaxConfig, this.tokens, this._td.version);
+      // this._ast = AstRootImpl.create(this._td.getText(), this._options, this.tokens, this._td.version);
     }
     return this._ast;
   }
 
   public get tokens(): TextRangeCollection<Token> {
     if (!this._tokens || this._version !== this._td.version) {
-      const t = new Tokenizer(getLanguageOptions());
+      this._options = getLanguageOptions();
+      const t = new Tokenizer(this._options);
       const text = this._td.getText();
       this._tokens = t.tokenize(new TextStream(text), 0, text.length);
     }
