@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from '../parser/parseContext';
-import { MissingItemParseError, ParseErrorType } from '../parser/parseError';
+import { MissingItemParseError } from '../parser/parseError';
 import { TokenType } from '../tokens/tokens';
-import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, TokenNode } from './definitions';
+import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, ParseErrorType, TokenNode } from './definitions';
 import { AstNodeImpl } from './astNodeImpl';
 import { TokenNodeImpl } from './tokenNode';
 import { ExpressionImpl } from './expression';

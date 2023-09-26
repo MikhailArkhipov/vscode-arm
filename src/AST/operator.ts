@@ -4,11 +4,11 @@
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
 import { TokenType } from '../tokens/tokens';
-import { Associativity, AstNode, Operator, OperatorType } from './definitions';
+import { Associativity, AstNode, OperatorType, TokenOperator } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 
 // All operators are single-token kind.
-export class OperatorImpl extends TokenNodeImpl implements Operator {
+export class OperatorImpl extends TokenNodeImpl implements TokenOperator {
   private _type = OperatorType.Unknown;
   private _associativity = Associativity.Left;
   private _unary = false;
@@ -26,7 +26,7 @@ export class OperatorImpl extends TokenNodeImpl implements Operator {
     return this._type;
   }
   public get precedence(): number {
-    return this.getPrecedence();
+    return getOperatorPrecedence(this._type);
   }
   public get associativity(): Associativity {
     return this._associativity;
@@ -80,49 +80,6 @@ export class OperatorImpl extends TokenNodeImpl implements Operator {
         return true;
     }
     return false;
-  }
-
-  private getPrecedence(): number {
-    // Lower number means lower priority. Lowest priority operators
-    // appear higher in the tree so they are evaluated last.
-    // http://cs.stmarys.ca/~porter/csc/ref/cpp_operators.html
-    // https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_6.html#SEC60
-
-    switch (this._type) {
-      case OperatorType.Sentinel:
-        return 0;
-
-      case OperatorType.Add:
-      case OperatorType.Subtract:
-        return 100;
-
-      case OperatorType.Or:
-      case OperatorType.And:
-      case OperatorType.Xor:
-        return 40;
-
-      case OperatorType.Not:
-        return 50;
-
-      case OperatorType.ShiftLeft:
-      case OperatorType.ShiftRight:
-        return 120;
-
-      case OperatorType.Modulo: // %
-        return 130;
-
-      case OperatorType.Multiply:
-      case OperatorType.Divide:
-        return 140;
-
-      case OperatorType.UnaryMinus: // -
-      case OperatorType.UnaryPlus: // +
-        return 200;
-
-      case OperatorType.Group: // ( ) around expression
-        return 300;
-    }
-    return 1000;
   }
 
   private getOperatorType(text: string): OperatorType {
@@ -188,4 +145,47 @@ export class OperatorImpl extends TokenNodeImpl implements Operator {
     }
     return false;
   }
+}
+
+export function getOperatorPrecedence(operatorType: OperatorType): number {
+  // Lower number means lower priority. Lowest priority operators
+  // appear higher in the tree so they are evaluated last.
+  // http://cs.stmarys.ca/~porter/csc/ref/cpp_operators.html
+  // https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_6.html#SEC60
+
+  switch (operatorType) {
+    case OperatorType.Sentinel:
+      return 0;
+
+    case OperatorType.Add:
+    case OperatorType.Subtract:
+      return 100;
+
+    case OperatorType.Or:
+    case OperatorType.And:
+    case OperatorType.Xor:
+      return 40;
+
+    case OperatorType.Not:
+      return 50;
+
+    case OperatorType.ShiftLeft:
+    case OperatorType.ShiftRight:
+      return 120;
+
+    case OperatorType.Modulo: // %
+      return 130;
+
+    case OperatorType.Multiply:
+    case OperatorType.Divide:
+      return 140;
+
+    case OperatorType.UnaryMinus: // -
+    case OperatorType.UnaryPlus: // +
+      return 200;
+
+    case OperatorType.Group: // ( ) around expression
+      return 300;
+  }
+  return 1000;
 }

@@ -2,28 +2,44 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from '../parser/parseContext';
-import { MissingItemParseError, ParseErrorType } from '../parser/parseError';
+import { MissingItemParseError } from '../parser/parseError';
 import { TokenType } from '../tokens/tokens';
-import { Associativity, AstNode, Expression, Group, OperatorType, TokenNode } from './definitions';
+import { AstNodeImpl } from './astNodeImpl';
+import { Associativity, AstNode, Expression, Group, OperatorType, ParseErrorType, TokenNode } from './definitions';
 import { ExpressionImpl } from './expression';
-import { OperatorImpl } from './operator';
+import { getOperatorPrecedence } from './operator';
 import { TokenNodeImpl } from './tokenNode';
 
 // Braces (grouping) operator. Applies to an expression as in (a+b).
 // Operator is effectively a no-op and returns value of the expression
 // inside braces. It just makes parsing expressions like (b) easier.
-export class GroupImpl extends OperatorImpl implements Group {
+export class GroupImpl extends AstNodeImpl implements Group {
+  // Group
   private _openBrace: TokenNode;
   private _content: Expression | undefined;
   private _closeBrace: TokenNode | undefined;
 
-  constructor() {
-    super(false, OperatorType.Group);
+  // Operator
+  public get type(): OperatorType {
+    return OperatorType.Group;
   }
-
+  public get precedence(): number {
+    return getOperatorPrecedence(OperatorType.Group);
+  }
   public get associativity(): Associativity {
     return Associativity.Right;
   }
+  public get unary(): boolean {
+    return false;
+  }
+  public get leftOperand(): AstNode | undefined {
+    return;
+  }
+  public get rightOperand(): AstNode | undefined {
+    return;
+  }
+
+  // Group
   public get openBrace(): TokenNode {
     return this._openBrace;
   }

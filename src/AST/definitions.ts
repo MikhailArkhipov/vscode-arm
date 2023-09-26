@@ -68,7 +68,7 @@ export const enum Associativity {
   Right,
 }
 
-export interface Operator extends TokenNode {
+export interface Operator extends AstNode {
   get type(): OperatorType;
   get precedence(): number;
   get associativity(): Associativity;
@@ -77,11 +77,15 @@ export interface Operator extends TokenNode {
   get rightOperand(): AstNode | undefined;
 }
 
+export interface TokenOperator extends Operator {
+  get token(): Token;
+}
+
 export interface Expression extends AstNode {
   get content(): AstNode | undefined;
 }
 
-export interface Group extends AstNode {
+export interface Group extends Operator {
   get openBrace(): TokenNode;
   get content(): Expression | undefined;
   get closeBrace(): TokenNode | undefined;
@@ -131,4 +135,64 @@ export interface AstRoot extends AstNode {
   get options(): LanguageOptions;
   get labels(): readonly Token[];
   get statements(): readonly Statement[];
+}
+
+export enum ParseErrorType {
+  None,
+  UnexpectedToken,
+
+  // Assembler expects line to start with label or directive.
+  InstructionOrDirectiveExpected,
+  // Instruction is not recognized.
+  UnknownInstruction,
+  // Unknown directive
+  UnknownDirective,
+  // Instruction references label that is not defined.
+  UndefinedLabel,
+  // Register is expected at this position.
+  RegisterExpected,
+  // Variable name, register or other symbol is expected.
+  SymbolExpected,
+  // Identifier or an expression appears to be missing. For example, two binary
+  // operators without anything between them or expression like x + y + '.
+  LeftOperandExpected,
+  RightOperandExpected,
+  // String value is expected
+  StringExpected,
+  OperatorExpected,
+  // Typically missing item like {a,}
+  ExpressionExpected,
+  CloseBraceExpected,
+  //DataExpected,
+  //NumberExpected,
+  //ExpressionExpected,
+  UnexpectedOperand,
+  UnexpectedEndOfLine,
+  UnexpectedEndOfFile,
+}
+
+export enum ErrorLocation {
+  // Whitespace or token before the provided text range. Relatively rare case.
+  BeforeToken,
+  // The range specified such as when variable in undefined so its reference is squiggled.
+  Token,
+  // Whitespace after the provided token or end of file. Typical case when required
+  // token is missing such as missing close brace or a required operand.
+  AfterToken,
+}
+
+export enum ErrorSeverity {
+  // Informational message, a suggestion
+  Informational,
+  // Warnings such as obsolete constructs
+  Warning,
+  // Syntax error
+  Error,
+  // Fatal error, such as internal product error.
+  Fatal,
+}
+
+export interface ParseError extends TextRange {
+  readonly errorType: ParseErrorType;
+  readonly location: ErrorLocation;
 }

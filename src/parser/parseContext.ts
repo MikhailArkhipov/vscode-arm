@@ -1,13 +1,12 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, AstRoot } from '../AST/definitions';
+import { AstNode, AstRoot, ParseError } from '../AST/definitions';
 import { LanguageOptions } from '../core/languageOptions';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { TokenStream } from '../tokens/tokenStream';
 import { Token, TokenType } from '../tokens/tokens';
-import { ParseError } from './parseError';
 
 export class ParseContext {
   public readonly text: TextProvider;

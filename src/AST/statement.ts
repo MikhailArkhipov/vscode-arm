@@ -3,13 +3,21 @@
 
 import { Directive } from '../instructions/directive';
 import { ParseContext } from '../parser/parseContext';
-import { ErrorLocation, ParseError, ParseErrorType } from '../parser/parseError';
 import { Token, TokenSubType, TokenType } from '../tokens/tokens';
-import { AstNode, CommaSeparatedList, StatementSubType, StatementType, TokenNode } from './definitions';
+import {
+  AstNode,
+  CommaSeparatedList,
+  ErrorLocation,
+  ParseErrorType,
+  StatementSubType,
+  StatementType,
+  TokenNode,
+} from './definitions';
 import { AstNodeImpl } from './astNodeImpl';
 import { TokenNodeImpl } from './tokenNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
 import { parseInstruction } from '../instructions/instruction';
+import { ParseErrorImpl } from '../parser/parseError';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -98,7 +106,7 @@ export class Statement extends AstNodeImpl implements Statement {
         // {label:} ??? => Unknown statement
         this._type = StatementType.Unknown;
         context.addError(
-          new ParseError(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
+          new ParseErrorImpl(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
         );
         break;
     }
@@ -132,7 +140,7 @@ export class Statement extends AstNodeImpl implements Statement {
     // Comma after symbol most probably means instruction name is missing
     if (context.nextToken.type === TokenType.Comma) {
       context.addError(
-        new ParseError(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
+        new ParseErrorImpl(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
       );
     } else {
       this._type = StatementType.Instruction;
@@ -181,8 +189,8 @@ export class Statement extends AstNodeImpl implements Statement {
   private instructionSyntaxCheck(context: ParseContext): void {
     const nameText = context.getTokenText(this._name!.token);
     const instruction = parseInstruction(nameText);
-    if(!instruction.isValid) {
-      context.addError(new ParseError(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!))
+    if (!instruction.isValid) {
+      context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
     }
   }
 

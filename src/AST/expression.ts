@@ -1,15 +1,23 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Associativity, AstNode, Expression, Operator, OperatorType } from './definitions';
+import {
+  Associativity,
+  AstNode,
+  ErrorLocation,
+  Expression,
+  Operator,
+  OperatorType,
+  ParseErrorType,
+} from './definitions';
 import { TextRange } from '../text/textRange';
 import { TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
-import { ErrorLocation, ParseError, ParseErrorType } from '../parser/parseError';
 import { AstNodeImpl } from './astNodeImpl';
 import { OperatorImpl } from './operator';
 import { GroupImpl } from './group';
 import { TokenNodeImpl } from './tokenNode';
+import { ParseErrorImpl } from '../parser/parseError';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs
@@ -118,9 +126,9 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     if (errorType !== ParseErrorType.None) {
       if (errorLocation === ErrorLocation.AfterToken) {
-        context.addError(new ParseError(errorType, ErrorLocation.AfterToken, tokens.previousToken));
+        context.addError(new ParseErrorImpl(errorType, ErrorLocation.AfterToken, tokens.previousToken));
       } else {
-        context.addError(new ParseError(errorType, ErrorLocation.Token, tokens.currentToken));
+        context.addError(new ParseErrorImpl(errorType, ErrorLocation.Token, tokens.currentToken));
       }
     }
 
@@ -133,7 +141,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     if (errorType !== ParseErrorType.None) {
       if (errorType !== ParseErrorType.LeftOperandExpected) {
-        context.addError(new ParseError(errorType, ErrorLocation.Token, this.getErrorRange(context)));
+        context.addError(new ParseErrorImpl(errorType, ErrorLocation.Token, this.getErrorRange(context)));
       }
 
       // Although there may be errors we still want to include the result into the tree
@@ -143,10 +151,11 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       }
     } else {
       if (this._operators.length !== 1) {
+        // At this point we should only have sentinel remaining on the stack.
         throw new Error('Expression parser: inconsistent operator stack.');
       }
       // If operand stack is empty and there is no error then the expression is empty.
-      if (this._operators.length > 0) {
+      if (this._operands.length > 0) {
         this._content = this._operands.pop()!;
         this.appendChild(this._content);
       }
@@ -165,7 +174,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         case OperationType.Operand:
           // 'operand operand' sequence is an error
           context.addError(
-            new ParseError(ParseErrorType.OperatorExpected, ErrorLocation.Token, this.getOperandErrorRange(context))
+            new ParseErrorImpl(ParseErrorType.OperatorExpected, ErrorLocation.Token, this.getOperandErrorRange(context))
           );
           break;
 
@@ -176,7 +185,11 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         default:
           // 'operator operator' sequence is an error
           context.addError(
-            new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
+            new ParseErrorImpl(
+              ParseErrorType.RightOperandExpected,
+              ErrorLocation.Token,
+              this.getOperatorErrorRange(context)
+            )
           );
           break;
       }
@@ -186,7 +199,11 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     if (currentOperationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
       // 'operator <EOF>' sequence is an error
       context.addError(
-        new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
+        new ParseErrorImpl(
+          ParseErrorType.RightOperandExpected,
+          ErrorLocation.Token,
+          this.getOperatorErrorRange(context)
+        )
       );
       return false;
     }
@@ -196,7 +213,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     ) {
       // unary followed by binary doesn't make sense
       context.addError(
-        new ParseError(ParseErrorType.SymbolExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
+        new ParseErrorImpl(ParseErrorType.SymbolExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
       );
       return false;
     }
@@ -206,7 +223,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     ) {
       // a +
       context.addError(
-        new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
+        new ParseErrorImpl(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
       );
       return false;
     }
@@ -320,7 +337,9 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     } else {
       const leftOperand = this.safeGetOperand(operatorNode);
       if (!leftOperand) {
-        context.addError(new ParseError(ParseErrorType.LeftOperandExpected, ErrorLocation.Token, context.currentToken));
+        context.addError(
+          new ParseErrorImpl(ParseErrorType.LeftOperandExpected, ErrorLocation.Token, context.currentToken)
+        );
         return ParseErrorType.LeftOperandExpected;
       }
       if (leftOperand.end <= operatorNode.start && rightOperand.start >= operatorNode.end) {
