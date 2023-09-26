@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AssemblerConfig } from '../core/syntaxConfig';
+import { LanguageOptions } from '../core/languageOptions';
 import { Character } from '../text/charCodes';
 import { TextProvider } from '../text/text';
 import { TokenStream } from '../tokens/tokenStream';
@@ -39,12 +39,12 @@ export class Formatter {
   private _lines: string[] = [];
   private _lineText: string[] = [];
 
-  public formatDocument(text: TextProvider, options: FormatOptions, config: AssemblerConfig): string {
+  public formatDocument(text: TextProvider, options: FormatOptions, languageOptions: LanguageOptions): string {
     this._text = text;
     this._options = options;
     this._lines = [];
 
-    const t = new Tokenizer(config);
+    const t = new Tokenizer(languageOptions);
     const tokens = t.tokenize(text, 0, text.length);
     this._tokens = new TokenStream(tokens);
 

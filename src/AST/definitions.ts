@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AssemblerConfig } from '../core/syntaxConfig';
+import { LanguageOptions } from '../core/languageOptions';
 import { ParseContext } from '../parser/parseContext';
 import { TextProvider } from '../text/text';
 import { TextRange } from '../text/textRange';
@@ -128,7 +128,7 @@ export function isTokenNode(node: AstNode | undefined): node is TokenNode {
 export interface AstRoot extends AstNode {
   get context(): ParseContext;
   get text(): TextProvider;
-  get config(): AssemblerConfig;
+  get options(): LanguageOptions;
   get labels(): readonly Token[];
   get statements(): readonly Statement[];
 }

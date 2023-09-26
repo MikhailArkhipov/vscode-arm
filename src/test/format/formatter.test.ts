@@ -1,9 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { LanguageOptions } from '../../core/languageOptions';
 import { FormatOptions, Formatter } from '../../editor/formatter';
 import { TextStream } from '../../text/textStream';
-import { AssemblerType, SyntaxConfig } from '../../core/syntaxConfig';
+import { TestUtil } from '../utility';
 
 test('Empty string', () => {
   const result = format('');
@@ -76,15 +77,16 @@ test('Uppercase option', () => {
   expect(result).toBe('  SUBS  R7, R0, #1 // and repeat if R0 != 1');
 });
 
-function formatWithOptions(original: string, options: FormatOptions): string {
-  const f = new Formatter();
-  return f.formatDocument(new TextStream(original), options, SyntaxConfig.create(AssemblerType.GNU));
-}
-
 function format(original: string): string {
   const options = new FormatOptions();
   options.ignoreComments = false;
   options.spaceAfterComma = true;
   options.tabSize = 4;
   return formatWithOptions(original, options);
+}
+
+export function formatWithOptions(original: string, formatOptions: FormatOptions, languageOptions?: LanguageOptions): string {
+  const f = new Formatter();
+  languageOptions = languageOptions ?? TestUtil.makeLanguageOptions(true, true);
+  return f.formatDocument(new TextStream(original), formatOptions, languageOptions);
 }

@@ -3,7 +3,6 @@
 
 import * as fs from 'fs';
 
-import { AssemblerType, SyntaxConfig } from '../core/syntaxConfig';
 import { Character } from '../text/charCodes';
 import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
@@ -14,6 +13,7 @@ import { CharacterStream } from '../text/characterStream';
 import { AstNode, AstRoot, CommaSeparatedItem, CommaSeparatedList, Expression, TokenNode } from '../AST/definitions';
 import { TextProvider } from '../text/text';
 import { AstRootImpl } from '../AST/astRoot';
+import { LanguageOptions } from '../core/languageOptions';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -25,8 +25,9 @@ export namespace TestUtil {
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
-  export function tokenizeToArray(text: string): TextRangeCollection<Token> {
-    const t = new Tokenizer(SyntaxConfig.create(AssemblerType.GNU));
+  export function tokenizeToArray(text: string, options?: LanguageOptions): TextRangeCollection<Token> {
+    options = options ?? makeLanguageOptions(true, true)
+    const t = new Tokenizer(options);
     return t.tokenize(new TextStream(text), 0, text.length);
   }
 
@@ -53,11 +54,7 @@ export namespace TestUtil {
     expect(tp.getText(node.start, node.length)).toBe(text);
   }
 
-  export function verifyNodeTokenType(
-    node: AstNode,
-    tokenType: TokenType,
-    tokenSubType?: TokenSubType
-  ): void {
+  export function verifyNodeTokenType(node: AstNode, tokenType: TokenType, tokenSubType?: TokenSubType): void {
     const tn = node as TokenNode;
     expect(tn.token.type).toBe(tokenType);
     if (tokenSubType) {
@@ -126,12 +123,24 @@ export namespace TestUtil {
     return -1;
   }
 
-  export function parseText(text: string): AstRoot {
-    const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
-    const t = new Tokenizer(syntaxConfig);
+  export function parseText(text: string, options?: LanguageOptions): AstRoot {
+    options = options ?? makeLanguageOptions(true, true);
+    const t = new Tokenizer(options);
     const tokens = t.tokenize(new TextStream(text), 0, text.length);
-    return AstRootImpl.create(text, syntaxConfig, tokens, 0);
+    return AstRootImpl.create(text, options, tokens, 0);
   }
 
   export function writeTokens(filePath: string): void {}
+
+  export function makeLanguageOptions(isA64: boolean, reservedRegisterNames: true): LanguageOptions {
+    return {
+      lineCommentChar: '@', // Line comments start with @
+      cLineComments: true, // Allow C++ style line comments i.e. //
+      cBlockComments: true, // Allow C block comments /* */
+      hashComments: true,
+      colonInLabels: true,
+      reservedRegisterNames,
+      isA64,
+    };
+  }
 }

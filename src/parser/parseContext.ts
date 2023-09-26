@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { AstNode, AstRoot } from '../AST/definitions';
-import { AssemblerConfig } from '../core/syntaxConfig';
+import { LanguageOptions } from '../core/languageOptions';
 import { TextProvider } from '../text/text';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { TokenStream } from '../tokens/tokenStream';
@@ -11,7 +11,7 @@ import { ParseError } from './parseError';
 
 export class ParseContext {
   public readonly text: TextProvider;
-  public readonly config: AssemblerConfig;
+  public readonly options: LanguageOptions;
   public readonly tokens: TokenStream;
   public readonly comments: TextRangeCollection<Token>;
   public readonly version: number;
@@ -19,10 +19,10 @@ export class ParseContext {
 
   private readonly _errors: ParseError[] = [];
 
-  constructor(root: AstRoot, text: TextProvider, config: AssemblerConfig, ts: TokenStream, version: number) {
+  constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, ts: TokenStream, version: number) {
     this.root = root;
     this.text = text;
-    this.config = config;
+    this.options = options;
     this.version = version;
 
     const filtered = this.filterOutComments(ts);

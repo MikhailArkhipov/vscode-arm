@@ -3,9 +3,9 @@
 
 import { TextDocument, FormattingOptions, TextEdit, Position, Range } from 'vscode';
 import { FormatOptions, Formatter } from './formatter';
-import { SyntaxConfig, AssemblerType } from '../core/syntaxConfig';
 import { TextStream } from '../text/textStream';
 import { Settings, getSetting } from '../core/settings';
+import { getLanguageOptions } from './options';
 
 export function formatDocument(document: TextDocument, options: FormattingOptions): TextEdit[] {
   const fo = new FormatOptions();
@@ -20,7 +20,7 @@ export function formatDocument(document: TextDocument, options: FormattingOption
 
   const formatter = new Formatter();
   const text = document.getText();
-  const formattedText = formatter.formatDocument(new TextStream(text), fo, SyntaxConfig.create(AssemblerType.GNU));
+  const formattedText = formatter.formatDocument(new TextStream(text), fo, getLanguageOptions());
 
   const start = new Position(0, 0);
   const end = document.lineAt(document.lineCount - 1).range.end;

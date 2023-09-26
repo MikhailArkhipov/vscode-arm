@@ -12,7 +12,6 @@ import {
   window,
 } from 'vscode';
 import { TextStream } from '../text/textStream';
-import { AssemblerType, SyntaxConfig } from '../core/syntaxConfig';
 import { Tokenizer } from '../tokens/tokenizer';
 import { Token, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
@@ -21,6 +20,7 @@ import { getMessage } from '../parser/parseError';
 import { AstRoot } from '../AST/definitions';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AstRootImpl } from '../AST/astRoot';
+import { getLanguageOptions } from './options';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
@@ -48,7 +48,7 @@ export class EditorDocument {
   public get tokens(): TextRangeCollection<Token> {
     // We are not building ASTs just yet, so provide tokens explicitly.
     if (!this._tokens || this._version !== this._td.version) {
-      const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
+      const syntaxConfig = getLanguageOptions();
       const t = new Tokenizer(syntaxConfig);
       const text = this._td.getText();
       this._tokens = t.tokenize(new TextStream(text), 0, text.length);
@@ -145,6 +145,3 @@ export class EditorDocument {
   }
 }
 
-export namespace EditorDocument {
-  export const syntaxConfig = SyntaxConfig.create(AssemblerType.GNU);
-}

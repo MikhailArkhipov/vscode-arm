@@ -4,7 +4,7 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
-import { AssemblerConfig } from '../core/syntaxConfig';
+import { LanguageOptions } from '../core/languageOptions';
 import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
 import { TextProvider } from '../text/text';
@@ -17,14 +17,14 @@ import { Token, TokenSubType, TokenType } from './tokens';
 // I am not inclined to change currentToken property to a function to work around the TS issue.
 
 export class Tokenizer {
-  private readonly _config: AssemblerConfig;
+  private readonly _options: LanguageOptions;
   private _numberTokenizer: NumberTokenizer;
   private _cs: CharacterStream;
   private _tokens: Token[] = [];
   private _pastLabel = false;
 
-  constructor(config: AssemblerConfig) {
-    this._config = config;
+  constructor(options: LanguageOptions) {
+    this._options = options;
   }
 
   public tokenize(textProvider: TextProvider, start: number, length: number): TextRangeCollection<Token> {
@@ -275,7 +275,7 @@ export class Tokenizer {
       this._tokens.push(token);
       
       const text = this._cs.text.getText(token.start, token.length);
-      if(isRegisterName(text, this._config.isA64)) {
+      if(isRegisterName(text, this._options.isA64)) {
         token.subType = TokenSubType.Register;
       }
       return;
@@ -300,18 +300,18 @@ export class Tokenizer {
         // GNU # comment, must start at the beginning of the line.
         // TODO: support GNU preprocessing instructions, like #IF? This
         // would be for semantic coloring or special completions after #.
-        return this._config.hashComments && (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0);
+        return this._options.hashComments && (Character.isNewLine(this._cs.prevChar) || this._cs.position === 0);
 
       case Char.Slash:
-        return this._config.cLineComments && this._cs.nextChar === Char.Slash;
+        return this._options.cLineComments && this._cs.nextChar === Char.Slash;
 
       default:
-        return this._config.lineCommentChar.charCodeAt(0) === this._cs.currentChar;
+        return this._options.lineCommentChar.charCodeAt(0) === this._cs.currentChar;
     }
   }
 
   private isAtBlockComment(): boolean {
-    return this._config.cBlockComments && this._cs.currentChar === Char.Slash && this._cs.nextChar === Char.Asterisk;
+    return this._options.cBlockComments && this._cs.currentChar === Char.Slash && this._cs.nextChar === Char.Asterisk;
   }
 
   private handleLineComment(): void {

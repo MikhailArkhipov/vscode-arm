@@ -7,10 +7,10 @@ import { Token } from '../tokens/tokens';
 import { AstNode, AstRoot, TokenNode } from './definitions';
 import { Statement } from './statement';
 import { ParseContext } from '../parser/parseContext';
-import { AssemblerConfig } from '../core/syntaxConfig';
 import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
 import { AstNodeImpl } from './astNodeImpl';
+import { LanguageOptions } from '../core/languageOptions';
 
 export class AstRootImpl extends AstNodeImpl implements AstRoot {
   private _context: ParseContext;
@@ -43,13 +43,13 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
 
   public static create(
     text: string,
-    config: AssemblerConfig,
+    options: LanguageOptions,
     tokens: TextRangeCollection<Token>,
     version = 0
   ): AstRoot {
     const ts = new TextStream(text);
     const ast = new AstRootImpl();
-    const context = new ParseContext(ast, ts, config, new TokenStream(tokens), version);
+    const context = new ParseContext(ast, ts, options, new TokenStream(tokens), version);
     ast.parse(context);
     return ast;
   }
@@ -62,8 +62,8 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
     return this._context.text;
   }
 
-  public get config(): AssemblerConfig {
-    return this._context.config;
+  public get options(): LanguageOptions {
+    return this._context.options;
   }
 
   public get labels(): readonly Token[] {
