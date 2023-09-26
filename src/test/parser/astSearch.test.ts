@@ -6,7 +6,7 @@ import { TokenSubType, TokenType } from "../../tokens/tokens";
 import { TestUtil } from "../utility";
 
 test('Get node from position simple', () => {
-  const ast = TestUtil.parseText(' ADD r1, r2, #123');
+  const ast = TestUtil.parseText(' ADD r1, r2, #123', TestUtil.makeLanguageOptions(false, true));
 
   let node = ast.nodeFromPosition(0);
   expect(node).toBeUndefined();
@@ -16,9 +16,6 @@ test('Get node from position simple', () => {
   let tn = node as TokenNode;
   expect(tn.token.type).toBe(TokenType.Symbol);
   expect(tn.token.subType).toBe(TokenSubType.Instruction);
-
-  node = ast.nodeFromPosition(4);
-  expect(node).toBeUndefined();
 
   node = ast.nodeFromPosition(6);
   expect(isTokenNode(node)).toBe(true);

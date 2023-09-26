@@ -169,4 +169,14 @@ export class Statement extends AstNodeImpl implements Statement {
     }
     return;
   }
+
+  // General syntax check after parsing complete.
+  private syntaxCheck(): void {
+
+  }
+
+  private instructionSyntaxCheck(): void {
+    // Instruction argument list is 
+  }
+
 }

@@ -53,8 +53,8 @@ test('Simple expression', () => {
   expect(root.text.getText(op.rightOperand!.start, op.rightOperand!.length)).toBe('b');
 });
 
-test('Simple instruction', () => {
-    const root = TestUtil.parseText('add r1, r2, #1');
+test('Simple A32 instruction', () => {
+    const root = TestUtil.parseText('add r1, r2, #1', TestUtil.makeLanguageOptions(false, true));
     let child: AstNode;
   
     expect(root).toBeDefined();
@@ -65,18 +65,18 @@ test('Simple instruction', () => {
     expect(c1).toBeInstanceOf(Statement);
   
     const s = c1 as Statement;
-    expect(s.children.count).toBe(1);
+    expect(s.children.count).toBe(2); // name and list of operands
     child = s.children.getItemAt(0);
     let tn = child as TokenNode;
     TestUtil.verifyNodeText(root.text, tn, "add");
     TestUtil.verifyNodeTokenType(tn, TokenType.Symbol, TokenSubType.Instruction);
   
-    const csl = child as CommaSeparatedList;
-    expect(csl.children.count).toBe(1);
+    const csl =  s.children.getItemAt(1) as CommaSeparatedList;
+    expect(csl.children.count).toBe(3);
     child = csl.children.getItemAt(0);
   
     const csi = child as CommaSeparatedItem;
-    expect(csi.children.count).toBe(1);
+    expect(csi.children.count).toBe(2); // Expression and comma
     child = csi.children.getItemAt(0);
   
     const e = child as Expression;
@@ -84,12 +84,6 @@ test('Simple instruction', () => {
     child = e.children.getItemAt(0);
     tn = child as TokenNode;
     TestUtil.verifyNodeText(root.text, tn, "r1");
-    TestUtil.verifyNodeTokenType(tn, TokenType.Symbol, TokenSubType.Register);
-  
-    const op = child as Operator;
-    expect(op.children.count).toBe(2);
-  
-    expect(root.text.getText(op.leftOperand!.start, op.leftOperand!.length)).toBe('a');
-    expect(root.text.getText(op.rightOperand!.start, op.rightOperand!.length)).toBe('b');
+    TestUtil.verifyNodeTokenType(tn, TokenType.Symbol, TokenSubType.Register); 
   });
   
