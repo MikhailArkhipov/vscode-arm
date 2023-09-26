@@ -257,7 +257,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
   private handleOperatorPrecedence(context: ParseContext, currentOperator: OperatorImpl): ParseErrorType {
     let errorType = ParseErrorType.None;
-    const lastOperator = this._operators[this._operators.length - 1];
+    const lastOperator = this.getLastOperator();
 
     if (
       currentOperator.precedence < lastOperator.precedence ||
@@ -397,10 +397,11 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   }
 
   private getOperatorErrorRange(context: ParseContext): TextRange {
-    if (this._operators.length > 0) {
-      const node = this._operators[this._operands.length - 1];
-      return node.children.count > 0 ? node.children.getItemAt(0) : node;
-    }
-    return this.getErrorRange(context);
+    const lastOperator = this.getLastOperator();
+    return lastOperator.type !== OperatorType.Sentinel ? lastOperator : this.getErrorRange(context);
+  }
+
+  private getLastOperator(): OperatorImpl {
+    return this._operators[this._operators.length - 1];
   }
 }
