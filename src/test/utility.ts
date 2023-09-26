@@ -14,6 +14,9 @@ import { AstNode, AstRoot, CommaSeparatedItem, CommaSeparatedList, Expression, T
 import { TextProvider } from '../text/text';
 import { AstRootImpl } from '../AST/astRoot';
 import { LanguageOptions } from '../core/languageOptions';
+import { ParseContext } from '../parser/parseContext';
+import { TokenStream } from '../tokens/tokenStream';
+import { ExpressionImpl } from '../AST/expression';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {
@@ -130,6 +133,14 @@ export namespace TestUtil {
     return AstRootImpl.create(text, options, tokens, 0);
   }
 
+  export function makeParseContext(text: string, options?: LanguageOptions): ParseContext {
+    options = options ?? makeLanguageOptions(true, true);
+    const t = new Tokenizer(options);
+    const ts = new TextStream(text);
+    const tokens = t.tokenize(ts, 0, text.length);
+    const ast = new AstRootImpl();
+    return new ParseContext(ast, ts, options, new TokenStream(tokens), 0);
+  }
   export function writeTokens(filePath: string): void {}
 
   export function makeLanguageOptions(isA64: boolean, reservedRegisterNames: true): LanguageOptions {
