@@ -10,7 +10,7 @@ import { RDT } from './rdt';
 import { TokenType } from '../tokens/tokens';
 import { EditorDocument } from './document';
 import { Settings, getSetting } from '../core/settings';
-import { getAvailableInstructions } from '../instructions/instructionSet';
+import { getAvailableInstructions, waitForInstructionSetLoadingComplete } from '../instructions/instructionSet';
 
 export async function provideCompletions(
   td: TextDocument,
@@ -95,7 +95,8 @@ async function handleInstructionsCompletion(
 ): Promise<CompletionItem[]> {
   const comps: CompletionItem[] = [];
 
-  const instructions = await getAvailableInstructions(ct);
+  await waitForInstructionSetLoadingComplete();
+  const instructions = await getAvailableInstructions();
   if (ct.isCancellationRequested) {
     return [];
   }

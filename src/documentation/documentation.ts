@@ -3,8 +3,8 @@
 
 import { HttpClient } from 'typed-rest-client/HttpClient';
 import { CancellationToken, MarkdownString } from 'vscode';
-import { TextRange } from '../text/textRange';
 import { parseInstruction } from '../instructions/instruction';
+import { waitForInstructionSetLoadingComplete } from '../instructions/instructionSet';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const TurndownService = require('turndown');
@@ -35,7 +35,8 @@ export async function getDirectiveDocumentation(directiveName: string, ct: Cance
 }
 
 export async function getInstructionDocumentation(instructionName: string, ct: CancellationToken): Promise<MarkdownString | undefined> {
-  const pi = await parseInstruction(instructionName, TextRange.fromBounds(0, 0), ct);
+  await waitForInstructionSetLoadingComplete();
+  const pi = parseInstruction(instructionName);
   if (pi.name && pi.name.length > 0 && pi.description && pi.description.length > 0) {
     return new MarkdownString(`${pi.name}\n\n${pi.description}`);
   }

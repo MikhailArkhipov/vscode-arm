@@ -11,7 +11,6 @@ import {
   CancellationToken,
   workspace,
   commands,
-  CancellationTokenSource,
   ProviderResult,
 } from 'vscode';
 import { provideHover } from './editor/hover';
@@ -20,17 +19,17 @@ import { RDT } from './editor/rdt';
 import { openCurrentInstructionDocumenation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
 import { setExtensionPath } from './core/utility';
-import { loadInstructionSet } from './instructions/instructionSet';
 import { convertHtmlToIndex } from './instructions';
 import { IdleTime } from './core/idletime';
 import { provideCompletions, resolveCompletionItem } from './editor/completions';
+import { loadInstructionSetFromSettings, onSettingsChange } from './core/settings';
 
 const languageName = 'arm';
 
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
   // don't wait here, let it run async
-  loadInstructionSet(new CancellationTokenSource().token);
+  loadInstructionSetFromSettings();
 
   // Register capabilities
   registerCapabilities(context);
@@ -79,11 +78,6 @@ function registerCapabilities(context: ExtensionContext): void {
       semanticTokensLegend
     )
   );
-  // window.registerWebviewPanelSerializer(DocView.viewType, {
-  //   async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
-  //     DocView.revive(webviewPanel);
-  //   },
-  // });
 }
 
 function registerEditorEvents(context: ExtensionContext) {
@@ -93,6 +87,9 @@ function registerEditorEvents(context: ExtensionContext) {
     }),
     workspace.onDidCloseTextDocument((e: TextDocument) => {
       RDT.removeTextDocument(e);
+    }),
+    workspace.onDidChangeConfiguration((e) => {
+      onSettingsChange();
     })
   );
 

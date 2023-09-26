@@ -9,6 +9,7 @@ import { AstNode, CommaSeparatedList, StatementSubType, StatementType, TokenNode
 import { AstNodeImpl } from './astNodeImpl';
 import { TokenNodeImpl } from './tokenNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
+import { parseInstruction } from '../instructions/instruction';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -171,12 +172,21 @@ export class Statement extends AstNodeImpl implements Statement {
   }
 
   // General syntax check after parsing complete.
-  private syntaxCheck(): void {
-
+  private syntaxCheck(context: ParseContext): void {
+    if (this._name && this._name.token.subType === TokenSubType.Instruction) {
+      this.instructionSyntaxCheck(context);
+    }
   }
 
-  private instructionSyntaxCheck(): void {
-    // Instruction argument list is 
+  private instructionSyntaxCheck(context: ParseContext): void {
+    const nameText = context.getTokenText(this._name!.token);
+    const instruction = parseInstruction(nameText);
+    if(!instruction.isValid) {
+      context.addError(new ParseError(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!))
+    }
   }
 
+  private directiveSyntaxCheck(): void {
+    // Instruction argument list is
+  }
 }

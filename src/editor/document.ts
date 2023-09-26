@@ -15,17 +15,14 @@ import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
 import { Token, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
-import { parseInstruction } from '../instructions/instruction';
-import { getMessage } from '../parser/parseError';
 import { AstRoot } from '../AST/definitions';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AstRootImpl } from '../AST/astRoot';
 import { getLanguageOptions } from './options';
+import { getMessage as getParseErrorMessage } from '../parser/parseError';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _td: TextDocument;
-  
+
   private _tokens: TextRangeCollection<Token> = new TextRangeCollection([]);
   private _ast: AstRoot | undefined;
   private _version = 0;
@@ -46,10 +43,8 @@ export class EditorDocument {
   }
 
   public get tokens(): TextRangeCollection<Token> {
-    // We are not building ASTs just yet, so provide tokens explicitly.
     if (!this._tokens || this._version !== this._td.version) {
-      const syntaxConfig = getLanguageOptions();
-      const t = new Tokenizer(syntaxConfig);
+      const t = new Tokenizer(getLanguageOptions());
       const text = this._td.getText();
       this._tokens = t.tokenize(new TextStream(text), 0, text.length);
     }
@@ -108,40 +103,16 @@ export class EditorDocument {
     }
 
     const diagnostics: Diagnostic[] = [];
-    const result = await this.validateTokens(ct);
-    diagnostics.push(...result);
+    if (this._ast) {
+      this._ast.context.errors.asArray.forEach((e) => {
+        const range = new Range(this._td.positionAt(e.start), this._td.positionAt(e.end));
+        const d = new Diagnostic(range, getParseErrorMessage(e.errorType), DiagnosticSeverity.Warning);
+        diagnostics.push(d);
+      });
+    }
 
     if (!ct.isCancellationRequested) {
       this._diagnosticsCollection.set(this._td.uri, diagnostics);
     }
   }
-
-  private async validateTokens(ct: CancellationToken): Promise<Diagnostic[]> {
-    const diagnostics: Diagnostic[] = [];
-
-    for (let i = 0; i < this._tokens.count && !ct.isCancellationRequested; i++) {
-      const t = this._tokens.getItemAt(i);
-
-      if (Token.isInstruction(t)) {
-        const result = await this.validateInstruction(i, ct);
-        diagnostics.push(...result);
-      }
-    }
-    return diagnostics;
-  }
-
-  private async validateInstruction(tokenIndex: number, ct: CancellationToken): Promise<Diagnostic[]> {
-    const diagnostics: Diagnostic[] = [];
-
-    const token = this._tokens.getItemAt(tokenIndex);
-    const instruction = await parseInstruction(this.getTokenText(tokenIndex), token, ct);
-
-    instruction.errors.forEach((e) => {
-      const range = new Range(this._td.positionAt(token.start), this._td.positionAt(token.end));
-      const d = new Diagnostic(range, getMessage(e.errorType), DiagnosticSeverity.Warning);
-      diagnostics.push(d);
-    });
-    return diagnostics;
-  }
 }
-

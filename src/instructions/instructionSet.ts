@@ -3,10 +3,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Settings, getSetting } from '../core/settings';
-import { getExtensionPath, outputMessage } from '../core/utility';
+//import { outputMessage } from '../core/utility';
 import { Deferred, createDeferred } from '../core/deferred';
-import { CancellationToken } from 'vscode';
 
 export interface InstructionSet {
   // Try to parse and locate instruction info based on
@@ -48,40 +46,30 @@ let _currentInstructionSetName: string;
 let _currentInstructionSet: InstructionSetImpl;
 let _runningLoader: Deferred<void>;
 
+export async function waitForInstructionSetLoadingComplete(): Promise<void> {
+  return await _runningLoader.promise;
+}
+
 export function currentInstructionSetName(): string {
   return _currentInstructionSetName;
 }
 
-export async function getAvailableInstructions(ct: CancellationToken): Promise<readonly InstructionJson[]> {
-  await _runningLoader.promise;
-  await loadInstructionSet(ct);
+export function getAvailableInstructions(): readonly InstructionJson[] {
   return _currentInstructionSet ? _currentInstructionSet.instructions : [];
 }
 
-// Loads instruction sets from JSON. Sets to load come from settings.
-export async function loadInstructionSet(ct: CancellationToken): Promise<void> {
-  const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
-  const setName = getSetting<string>(Settings.instructionSet, 'A32');
-  return loadInstructionSetByName(setFolder, setName, ct);
-}
-
-export async function findInstructionInfo(
-  candidateName: string,
-  ct: CancellationToken
-): Promise<InstructionJson | undefined> {
-  await _runningLoader.promise;
-  await loadInstructionSet(ct);
+export function findInstructionInfo(candidateName: string): InstructionJson | undefined {
   return _currentInstructionSet?.findInstruction(candidateName);
 }
 
 // Load single instruction set.
-function loadInstructionSetByName(setFolder: string, setName: string, ct: CancellationToken): Promise<void> {
+export function loadInstructionSet(setFolder: string, setName: string): void {
   _runningLoader = createDeferred<void>();
 
   // Is the set already loaded?
   if (_currentInstructionSetName === setName) {
     _runningLoader.resolve();
-    return _runningLoader.promise;
+    return;
   }
 
   // Load instruction set data from JSON file.
@@ -89,21 +77,18 @@ function loadInstructionSetByName(setFolder: string, setName: string, ct: Cancel
   try {
     fs.readFile(setFilePath, 'utf8', (err, jsonString: string): void => {
       if (err) {
-        outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${err.message}`);
+        //outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${err.message}`);
       } else {
-        if (!ct.isCancellationRequested) {
-          const iset = JSON.parse(jsonString) as InstructionJson[];
-          // Transfer instructions to a map for faster lookup.
-          const set = new InstructionSetImpl(iset);
-          _currentInstructionSet = set;
-          _currentInstructionSetName = setName;
-        }
+        const iset = JSON.parse(jsonString) as InstructionJson[];
+        // Transfer instructions to a map for faster lookup.
+        const set = new InstructionSetImpl(iset);
+        _currentInstructionSet = set;
+        _currentInstructionSetName = setName;
       }
       _runningLoader.resolve();
     });
   } catch (e) {
-    outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
+    //outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
     _runningLoader.resolve();
   }
-  return _runningLoader.promise;
 }
