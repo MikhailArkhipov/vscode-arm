@@ -68,7 +68,7 @@ export const enum Associativity {
   Right,
 }
 
-export interface Operator extends AstNode {
+export interface Operator extends TokenNode {
   get type(): OperatorType;
   get precedence(): number;
   get associativity(): Associativity;

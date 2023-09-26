@@ -22,7 +22,8 @@ export enum ParseErrorType {
   SymbolExpected,
   // Identifier or an expression appears to be missing. For example, two binary
   // operators without anything between them or expression like x + y + '.
-  OperandExpected,
+  LeftOperandExpected,
+  RightOperandExpected,
   // String value is expected
   StringExpected,
   OperatorExpected,
@@ -80,34 +81,4 @@ export class InstructionError extends ParseError {
   }
 }
 
-export function getMessage(errorType: ParseErrorType): string {
-  switch (errorType) {
-    case ParseErrorType.UnknownInstruction:
-      return 'Unknown instruction.';
-    case ParseErrorType.InstructionOrDirectiveExpected:
-      return 'Instruction or directive expected.';
-    case ParseErrorType.UndefinedLabel:
-      return 'Undefined label.';
-    case ParseErrorType.UnknownDirective:
-      return 'Unknown directive.';
-    case ParseErrorType.StringExpected:
-      return 'String expected.';
-    case ParseErrorType.RegisterExpected:
-      return 'Register expected.';
-    case ParseErrorType.OperandExpected:
-      return 'Operand expected.';
-    case ParseErrorType.ExpressionExpected:
-      return 'Expression expected.';
-    case ParseErrorType.SymbolExpected:
-      return 'Symbol expected.';
-    case ParseErrorType.CloseBraceExpected:
-      return 'Closing brace expected.';
-    case ParseErrorType.UnexpectedOperand:
-      return 'Operand not expected.';
-    case ParseErrorType.UnexpectedEndOfLine:
-      return 'Unexpected end of line.';
-    case ParseErrorType.UnexpectedEndOfFile:
-      return 'Unexpected end of file.';
-  }
-  return 'Unknown parse error';
-}
+

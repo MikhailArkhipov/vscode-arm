@@ -16,7 +16,6 @@ import { AstRootImpl } from '../AST/astRoot';
 import { LanguageOptions } from '../core/languageOptions';
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
-import { ExpressionImpl } from '../AST/expression';
 
 export namespace TestUtil {
   export function getTokenName(t: TokenType): string {

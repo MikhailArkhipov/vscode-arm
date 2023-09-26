@@ -132,7 +132,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
 
     if (errorType !== ParseErrorType.None) {
-      if (errorType !== ParseErrorType.OperandExpected) {
+      if (errorType !== ParseErrorType.LeftOperandExpected) {
         context.addError(new ParseError(errorType, ErrorLocation.Token, this.getErrorRange(context)));
       }
 
@@ -176,7 +176,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         default:
           // 'operator operator' sequence is an error
           context.addError(
-            new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
+            new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
           );
           break;
       }
@@ -186,7 +186,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     if (currentOperationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
       // 'operator <EOF>' sequence is an error
       context.addError(
-        new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
+        new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
       );
       return false;
     }
@@ -204,9 +204,9 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       this._previousOperationType === OperationType.BinaryOperator &&
       currentOperationType === OperationType.EndOfExpression
     ) {
-      // missing list selector: z$ }
+      // a +
       context.addError(
-        new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, this.getErrorRange(context))
+        new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
       );
       return false;
     }
@@ -311,7 +311,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     const rightOperand = this.safeGetOperand(operatorNode);
     if (!rightOperand) {
       // Oddly, no operands
-      return ParseErrorType.OperandExpected;
+      return ParseErrorType.RightOperandExpected;
     }
 
     if (operatorNode.unary) {
@@ -320,8 +320,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     } else {
       const leftOperand = this.safeGetOperand(operatorNode);
       if (!leftOperand) {
-        context.addError(new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, context.currentToken));
-        return ParseErrorType.OperandExpected;
+        context.addError(new ParseError(ParseErrorType.LeftOperandExpected, ErrorLocation.Token, context.currentToken));
+        return ParseErrorType.LeftOperandExpected;
       }
       if (leftOperand.end <= operatorNode.start && rightOperand.start >= operatorNode.end) {
         operatorNode.leftOperand = leftOperand;

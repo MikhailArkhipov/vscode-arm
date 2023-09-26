@@ -17,10 +17,10 @@ import { Token, TokenType } from '../tokens/tokens';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { AstRoot } from '../AST/definitions';
 import { getLanguageOptions } from './options';
-import { getMessage as getParseErrorMessage } from '../parser/parseError';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AstRootImpl } from '../AST/astRoot';
 import { LanguageOptions } from '../core/languageOptions';
+import { getParseErrorMessage } from './messages';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
