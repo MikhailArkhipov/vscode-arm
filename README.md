@@ -23,6 +23,7 @@ ARM Assembler syntax is not supported. Syntax check is basic, the feature is far
 - The code is partially based on my work when at Microsoft: [R Tools for VS Code](https://github.com/MikhailArkhipov/vscode-r), which, in turn, was forked off [Microsoft RTVS](https://github.com/microsoft/rtvs). Mostly tokenizer and parser, translated from C# to TypeScript, simplified and adapted for assembly language syntax. 
 - Some original C# code was already translated to TypeScript in [Pyright](https://github.com/microsoft/pyright), hence small amount was taken from there (fragments primarily related to the tokenization and supporting classes).
 - Documentation on instruction was extracted from ARM doc archives downloaded from [here](https://developer.arm.com/downloads/-/exploration-tools). All documentation belongs to Arm Limited. 
+- Documentation on directives in hover tooltips is fetched online directly from the [GAS Web site](https://sourceware.org/binutils/docs/as/index.html#SEC_Contents).
 
 # Bugs and feedback
 Feel free to file bugs and suggestings at [vscode-arm](https://github.com/MikhailArkhipov/vscode-arm) repo.
