@@ -1,11 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { LanguageOptions } from '../core/languageOptions';
 import { Character } from '../text/charCodes';
 import { TextProvider, makeWhitespace } from '../text/text';
+import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
-import { Tokenizer } from '../tokens/tokenizer';
 import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 
 // Common assumptions
@@ -39,25 +38,20 @@ export class Formatter {
   private _lines: string[] = [];
   private _lineText: string[] = [];
 
-  public formatDocument(text: TextProvider, options: FormatOptions, languageOptions: LanguageOptions): string {
-    this._text = text;
+  public formatDocument(text: string, tokens: TokenStream, options: FormatOptions): string {
+    this._text = new TextStream(text);
+    this._tokens = tokens;
     this._options = options;
     this._lines = [];
-
-    const t = new Tokenizer(languageOptions);
-    const tokens = t.tokenize(text, 0, text.length);
-    this._tokens = new TokenStream(tokens);
 
     const indents = this.getIndents();
     this._instructionIndent = indents.instructions;
     this._operandsIndent = indents.operands;
+    this._tokens.position = 0;
 
     // Format line by line.
     while (!this._tokens.isEndOfStream()) {
-      // Collect tokens up to EOL or EOF
-      const lineTokens = this.getLineTokens();
-
-      const lineText = this.formatLine(lineTokens);
+      const lineText = this.formatLine();
       if (lineText.length > 0) {
         this._lines.push(lineText);
       }
@@ -71,28 +65,23 @@ export class Formatter {
     return result;
   }
 
-  private formatLine(tokens: Token[]): string {
-    // There is at least one token
-    if (tokens.length === 0) {
-      return '';
-    }
-
+  private formatLine(): string {
     this._lineText = [];
     // We trust tokenizer so we are not going to check here
     // if there is more than one label or instruction.
-    for (let i = 0; i < tokens.length; i++) {
-      const t = tokens[i];
+    while (!this._tokens.isEndOfLine()) {
+      const t = this._tokens.currentToken;
       switch (t.type) {
         case TokenType.Label:
           this._lineText.push(this._text.getText(t.start, t.length));
           break;
 
         case TokenType.Directive:
-          this.appendInstructionOrDirective(tokens, i);
+          this.appendInstructionOrDirective();
           break;
 
         case TokenType.Operator:
-          this.appendOperator(t);
+          this.appendOperator();
           break;
 
         case TokenType.OpenBrace:
@@ -104,12 +93,12 @@ export class Formatter {
         case TokenType.Number:
         case TokenType.String:
         case TokenType.Unknown:
-          this.appendOperand(tokens, i);
+          this.appendOperand();
           break;
 
         case TokenType.LineComment:
           // Block comments are added verbatim
-          this.appendLineComment(tokens, i);
+          this.appendLineComment();
           break;
 
         case TokenType.Comma:
@@ -121,6 +110,7 @@ export class Formatter {
           this._lineText.push(this._text.getText(t.start, t.length));
           break;
       }
+      this._tokens.moveToNextToken();
     }
 
     const result = this._lineText.join('');
@@ -136,13 +126,13 @@ export class Formatter {
     return lineTokens;
   }
 
-  private appendInstructionOrDirective(tokens: Token[], i: number): void {
+  private appendInstructionOrDirective(): void {
     // label:<tab>instruction ...
     // <tab>      instruction
     // label:<tab>.directive
     // .directive
-    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    const ct = tokens[i];
+    const pt = this._tokens.previousToken;
+    const ct = this._tokens.currentToken;
 
     switch (pt.type) {
       case TokenType.EndOfLine:
@@ -170,9 +160,9 @@ export class Formatter {
     this._lineText.push(text);
   }
 
-  private appendOperand(tokens: Token[], i: number) {
-    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    const ct = tokens[i];
+  private appendOperand() {
+    const pt = this._tokens.previousToken;
+    const ct = this._tokens.currentToken;
 
     switch (pt.type) {
       case TokenType.Symbol:
@@ -197,11 +187,11 @@ export class Formatter {
     }
   }
 
-  private appendLineComment(tokens: Token[], i: number): void {
+  private appendLineComment(): void {
     // Line comments when nothing else at the line get aligned
     // to either 0 or to instructions indent, whichever is closer.
-    const pt = i > 0 ? tokens[i - 1] : new Token(TokenType.EndOfLine, 0, 0);
-    const ct = tokens[i];
+    const pt = this._tokens.previousToken;
+    const ct = this._tokens.currentToken;
 
     if (Token.isEndOfLine(pt)) {
       // Get current indentation
@@ -226,10 +216,11 @@ export class Formatter {
     }
   }
 
-  private appendOperator(t: Token): void {
+  private appendOperator(): void {
     if (this._options.spaceAroundOperators) {
       this.appendWhitespace();
     }
+    const t = this._tokens.currentToken;
     this._lineText.push(this._text.getText(t.start, t.length));
     if (this._options.spaceAroundOperators) {
       this._lineText.push(' ');

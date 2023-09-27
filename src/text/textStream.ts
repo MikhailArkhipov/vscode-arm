@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextProvider } from "./text";
+import { TextProvider } from './text';
 
 export class TextStream implements TextProvider {
   private readonly _text: string;
@@ -10,7 +10,7 @@ export class TextStream implements TextProvider {
     this._text = text;
   }
 
-  public static readonly Empty = new TextStream("");
+  public static readonly Empty = new TextStream('');
 
   public get length() {
     return this._text.length;
@@ -18,7 +18,7 @@ export class TextStream implements TextProvider {
 
   public charAt(position: number): string {
     if (position < 0 || position >= this._text.length) {
-      return "\0";
+      return '\0';
     }
     return this._text.charAt(position);
   }
@@ -30,9 +30,12 @@ export class TextStream implements TextProvider {
     return this._text.charCodeAt(position);
   }
 
-  public getText(position: number = 0, length: number = 0): string {
-    if (length === 0 || position >= this._text.length) {
-      return "";
+  public getText(position?: number, length?: number): string {
+    if(!position) {
+      return this._text;
+    }
+    if (!length || length === 0 || position >= this._text.length) {
+      return '';
     }
     const start = Math.max(position, 0);
     const end = Math.min(position + length, this._text.length);

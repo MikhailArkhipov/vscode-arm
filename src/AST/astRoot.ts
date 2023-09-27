@@ -38,6 +38,8 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
       // Skip line break. Thi is no-op at the end of the file
       context.moveToNextToken();
     }
+    // Rewind back as a courtesy to potential users downstream.
+    this.context.tokens.position = 0;
     return true;
   }
 

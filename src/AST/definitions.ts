@@ -126,7 +126,6 @@ export interface Statement extends AstNode {
 
 export interface AstRoot extends AstNode {
   get context(): ParseContext;
-  get text(): TextProvider;
   get options(): LanguageOptions;
   get labels(): readonly Token[];
   get statements(): readonly Statement[];

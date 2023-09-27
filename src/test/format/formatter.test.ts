@@ -3,8 +3,7 @@
 
 import { LanguageOptions } from '../../core/languageOptions';
 import { FormatOptions, Formatter } from '../../editor/formatter';
-import { TextStream } from '../../text/textStream';
-import { makeLanguageOptions } from '../utility/parsing';
+import { parseText } from '../utility/parsing';
 
 test('Empty string', () => {
   const result = format('');
@@ -86,7 +85,7 @@ function format(original: string): string {
 }
 
 export function formatWithOptions(original: string, formatOptions: FormatOptions, languageOptions?: LanguageOptions): string {
+  const ast = parseText(original);
   const f = new Formatter();
-  languageOptions = languageOptions ?? makeLanguageOptions(true, true);
-  return f.formatDocument(new TextStream(original), formatOptions, languageOptions);
+  return f.formatDocument(ast.context.text.getText(), ast.context.tokens, formatOptions);
 }
