@@ -138,3 +138,32 @@ test('"a"+\'b\'', () => {
 `;
   verifyParseExpression(expected, '"a"+\'b\'');
 });
+
+test('[pc, #-0]', () => {
+  const expected = String.raw`CommaSeparatedList [0...9)
+  TokenNode [0...1)
+  CommaSeparatedItem [1...4)
+    Expression [1...3)
+      TokenNode [1...3)
+    TokenNode [3...4)
+  CommaSeparatedItem [5...8)
+    Expression [5...8)
+      TokenNode [5...8)
+  TokenNode [8...9)
+`;
+  verifyParseExpression(expected, '[pc, #-0]');
+});
+
+test('{pc}+8', () => {
+  const expected = String.raw`TokenOperator [0...6)
+  CommaSeparatedList [0...4)
+    TokenNode [0...1)
+    CommaSeparatedItem [1...3)
+      Expression [1...3)
+        TokenNode [1...3)
+    TokenNode [3...4)
+  TokenNode [4...5)
+  TokenNode [5...6)
+`;
+  verifyParseExpression(expected, '{pc}+8');
+});

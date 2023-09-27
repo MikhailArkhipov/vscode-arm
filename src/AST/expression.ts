@@ -18,6 +18,7 @@ import { GroupImpl } from './group';
 import { TokenNodeImpl } from './tokenNode';
 import { ParseErrorImpl } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
+import { CommaSeparatedListImpl } from './commaSeparatedList';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs
@@ -45,6 +46,12 @@ interface ParseResult {
 export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
   private _start: number; // If expression is empty we still need start position.
+  private _nestedListAllowed = true;
+
+  constructor(nestedListAllowed?: boolean) {
+    super();
+    this._nestedListAllowed = nestedListAllowed ?? true;
+  }
 
   // Expression
   public get content(): AstNode | undefined {
@@ -93,8 +100,13 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
           currentOperationType = this.handleTokenOperand(context);
           break;
 
-        // Nested expression such as a*(b+c) or a nameless
-        // function call like a[2](x, y) or func(a, b)(c, d)
+        case TokenType.OpenBracket:
+        case TokenType.OpenCurly:
+          result = this.handleList(context);
+          currentOperationType = result.operationType;
+          errorType = result.errorType;
+          break;
+
         case TokenType.OpenBrace:
           result = this.handleGroup(context);
           currentOperationType = result.operationType;
@@ -116,10 +128,6 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
           break;
 
         default:
-          // Nesting of comma-separated lists is not allowed.
-          // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
-          // but pop {r1, {...}} or 'mov r12, [sp + []]' are illegal.
-          // Hence we are not handling opening [ or { here
           errorType = ParseErrorType.UnexpectedToken;
           errorLocation = ErrorLocation.Token;
           break;
@@ -247,9 +255,38 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   }
 
   private handleGroup(context: ParseContext): ParseResult {
+    // Nesting of braced comma-separated lists is not allowed.
+    // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
+    // but pop {r1, {...}} or 'mov r12, [sp + []]' are not legal.
+    // Hence we are not handling opening [ or { here.
+
+    // Note that 'ADD r1, r2, [sp-#12]' is, in fact, two legal nested lists:
+    // first the operands list itself and then [...] nested inside it.
+    // The statement operands are parsed as 'expression, expression, ...'
+    // so we have to handle
+
+    // () groups are permitted to nest since these are normal math expressions.
     const group = new GroupImpl();
     group.parse(context, undefined);
     this._operands.push(group);
+    return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
+  }
+
+  private handleList(context: ParseContext): ParseResult {
+    // Nesting of braced comma-separated lists is not allowed.
+    // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
+    // but pop {r1, {...}} or 'mov r12, [sp + []]' are not legal.
+   
+    // 'ADD r1, r2, [sp-#12]' is, in fact, two legal nested lists:
+    // first the operands list itself and then [...] nested inside it.
+
+    if (!this._nestedListAllowed) {
+      return { operationType: OperationType.EndOfExpression, errorType: ParseErrorType.UnexpectedToken };
+    }
+    
+    const list = new CommaSeparatedListImpl();
+    list.parse(context, undefined);
+    this._operands.push(list);
     return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
   }
 

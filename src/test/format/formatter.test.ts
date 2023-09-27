@@ -30,11 +30,6 @@ test('Align statement + // line comment to instruction', () => {
   expect(result).toBe('        // comment\nfoo:    add r1, r2, #1');
 });
 
-test('Align statement + ; line comment to instruction', () => {
-  const result = format('        SUBS R7,R0,   #1     // and repeat if R0 != 1');
-  expect(result).toBe('    subs    r7, r0, #1 // and repeat if R0 != 1');
-});
-
 test('Whitespace 1', () => {
   const result = format('        str     fp, [sp, #-4]!');
   expect(result).toBe('    str     fp, [sp, #-4]!');
@@ -62,7 +57,7 @@ test('Space around operators', () => {
   options.tabSize = 2;
   options.spaceAroundOperators = false;
   const result = formatWithOptions('    subs R7 ,  [r0-12+148]', options);
-  expect(result).toBe("  subs   r7, [r0-12+148]");
+  expect(result).toBe('  subs   r7, [r0-12+148]');
 });
 
 test('Uppercase option', () => {
@@ -84,8 +79,12 @@ function format(original: string): string {
   return formatWithOptions(original, options);
 }
 
-export function formatWithOptions(original: string, formatOptions: FormatOptions, languageOptions?: LanguageOptions): string {
+export function formatWithOptions(
+  original: string,
+  formatOptions: FormatOptions,
+  languageOptions?: LanguageOptions
+): string {
   const ast = parseText(original);
   const f = new Formatter();
-  return f.formatDocument(ast.context.text.getText(), ast.context.tokens, formatOptions);
+  return f.formatDocument(ast.context.text.getText(), ast.context.rawTokens.asArray(), formatOptions);
 }

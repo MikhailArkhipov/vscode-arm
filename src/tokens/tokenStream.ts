@@ -82,6 +82,12 @@ export class TokenStream {
     return this._currentToken;
   }
 
+  public moveToEol(): void {
+    while (!this.isEndOfLine()) {
+      this.moveToNextToken();
+    }
+  }
+
   private checkBounds(): void {
     if (this._index < 0) {
       this._index = 0;

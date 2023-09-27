@@ -17,6 +17,12 @@ export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparate
   private _item: Expression | undefined;
   // Optional trailing comma
   private _comma: TokenNode | undefined;
+  private _nestedListAllowed = true;
+
+  constructor(nestedListAllowed?: boolean) {
+    super();
+    this._nestedListAllowed = nestedListAllowed ?? true;
+  }
 
   public get expression(): Expression | undefined {
     return this._item;
@@ -35,7 +41,7 @@ export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparate
 
       default:
         {
-          const expression = new ExpressionImpl();
+          const expression = new ExpressionImpl(this._nestedListAllowed);
           expression.parse(context, this);
           this._item = expression;
           if (context.currentToken.type === TokenType.Comma.valueOf()) {
@@ -81,7 +87,7 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
         this._closeBrace = TokenNodeImpl.create(context, this);
         break;
       }
-      const item = new CommaSeparatedItemImpl();
+      const item = new CommaSeparatedItemImpl(this.openBrace !== undefined);
       item.parse(context, this);
       this._items.push(item);
     }

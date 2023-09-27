@@ -70,15 +70,17 @@ export class Statement extends AstNodeImpl implements Statement {
       this._label = TokenNodeImpl.create(context, this);
     }
 
-    this.parseType(context);
-    // Operands are a comma-separated list
-    this._operands = new CommaSeparatedListImpl();
-    this._operands.parse(context, this);
-
+    if (this.parseType(context)) {
+      // Operands are a comma-separated list
+      this._operands = new CommaSeparatedListImpl();
+      this._operands.parse(context, this);
+    }
+    // Skip anytning unrecognized
+    context.tokens.moveToEol();
     return super.parse(context, parent);
   }
 
-  private parseType(context: ParseContext): void {
+  private parseType(context: ParseContext): boolean {
     switch (context.currentToken.type) {
       case TokenType.EndOfLine:
       case TokenType.EndOfStream:
@@ -108,8 +110,9 @@ export class Statement extends AstNodeImpl implements Statement {
         context.addError(
           new ParseErrorImpl(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
         );
-        break;
+        return false;
     }
+    return true;
   }
 
   private handleDirective(context: ParseContext): void {

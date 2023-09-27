@@ -38,9 +38,9 @@ export class Formatter {
   private _lines: string[] = [];
   private _lineText: string[] = [];
 
-  public formatDocument(text: string, tokens: TokenStream, options: FormatOptions): string {
+  public formatDocument(text: string, tokens: readonly Token[], options: FormatOptions): string {
     this._text = new TextStream(text);
-    this._tokens = tokens;
+    this._tokens = new TokenStream(tokens);
     this._options = options;
     this._lines = [];
 
@@ -77,7 +77,7 @@ export class Formatter {
           break;
 
         case TokenType.Directive:
-          this.appendInstructionOrDirective();
+          this.appendDirective();
           break;
 
         case TokenType.Operator:
@@ -106,8 +106,12 @@ export class Formatter {
           break;
 
         default:
-          this.appendWhitespace();
-          this._lineText.push(this._text.getText(t.start, t.length));
+          if (t.type === TokenType.Symbol && t.subType === TokenSubType.Instruction) {
+            this.appendInstruction();
+          } else {
+            this.appendWhitespace();
+            this._lineText.push(this._text.getText(t.start, t.length));
+          }
           break;
       }
       this._tokens.moveToNextToken();
@@ -117,30 +121,37 @@ export class Formatter {
     return result;
   }
 
-  private getLineTokens(): Token[] {
-    const lineTokens: Token[] = [];
-    while (!this._tokens.isEndOfLine()) {
-      lineTokens.push(this._tokens.currentToken);
-      this._tokens.moveToNextToken();
-    }
-    return lineTokens;
-  }
-
-  private appendInstructionOrDirective(): void {
-    // label:<tab>instruction ...
-    // <tab>      instruction
+  private appendDirective(): void {
     // label:<tab>.directive
     // .directive
     const pt = this._tokens.previousToken;
     const ct = this._tokens.currentToken;
 
     switch (pt.type) {
+      case TokenType.Label:
+        this._lineText.push(makeWhitespace(this._instructionIndent - pt.length));
+        break;
+
+      default:
+        this._lineText.push(makeWhitespace(1));
+        break;
+    }
+
+    let text = this._text.getText(ct.start, ct.length);
+    text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
+    this._lineText.push(text);
+  }
+
+  private appendInstruction(): void {
+    // label:<tab>instruction ...
+    // <tab>      instruction
+    const pt = this._tokens.previousToken;
+    const ct = this._tokens.currentToken;
+
+    switch (pt.type) {
       case TokenType.EndOfLine:
       case TokenType.EndOfStream:
-        // Indent instruction, leave directive as is
-        if (ct.type === TokenType.Symbol) {
-          this._lineText.push(makeWhitespace(this._instructionIndent));
-        }
+        this._lineText.push(makeWhitespace(this._instructionIndent));
         break;
 
       case TokenType.Label:
@@ -151,12 +162,9 @@ export class Formatter {
         this._lineText.push(makeWhitespace(1));
         break;
     }
+
     let text = this._text.getText(ct.start, ct.length);
-    if (ct.type === TokenType.Symbol && ct.subType === TokenSubType.Instruction) {
-      text = this._options.uppercaseInstructions ? text.toUpperCase() : text.toLowerCase();
-    } else {
-      text = this._options.uppercaseDirectives ? text.toUpperCase() : text.toLowerCase();
-    }
+    text = this._options.uppercaseInstructions ? text.toUpperCase() : text.toLowerCase();
     this._lineText.push(text);
   }
 

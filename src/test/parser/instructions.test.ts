@@ -3,7 +3,7 @@
 
 import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, Statement, TokenNode } from "../../AST/definitions";
 import { TokenSubType, TokenType } from "../../tokens/tokens";
-import { makeLanguageOptions, parseText, verifyNodeText, verifyTokenNode } from "../utility/parsing";
+import { makeLanguageOptions, parseText, verifyNodeText, verifyParse, verifyTokenNode } from "../utility/parsing";
 
 test('Simple A32 instruction', () => {
   const root = parseText('add r1, r2, #1', makeLanguageOptions(false, true));
@@ -34,4 +34,9 @@ test('Simple A32 instruction', () => {
   child = e.children.getItemAt(0);
   tn = child as TokenNode;
   verifyTokenNode(tn, root.context, TokenType.Symbol, 'r1', TokenSubType.Register); 
+});
+
+test('str fp, [sp, #-4]!', () => {
+  const expected = String.raw``;
+  verifyParse(expected, 'str fp, [sp, #-4]!');
 });
