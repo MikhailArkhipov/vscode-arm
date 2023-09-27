@@ -2,61 +2,67 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TokenType } from '../../tokens/tokens';
-import { TestUtil } from '../utility';
+import { TokenTest } from '../utility/tokenTest';
 
 test('Empty string', () => {
-  const result = TestUtil.tokenizeToArray('');
+  const result = TokenTest.tokenizeToArray('');
   expect(result.length).toBe(0);
 });
 
 test('Single label', () => {
-  const result = TestUtil.tokenizeToArray('label:');
+  const result = TokenTest.tokenizeToArray('label:');
   expect(result.length).toBe(6);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).type).toBe(TokenType.Label);
 });
 
 test('Single instruction', () => {
-  const result = TestUtil.tokenizeToArray('ADDS5.I8');
+  const result = TokenTest.tokenizeToArray('ADDS5.I8');
   expect(result.length).toBe(8);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).type).toBe(TokenType.Symbol);
 });
 
 test('Label with instruction', () => {
-  const actual = TestUtil.tokenizeToArray('label: B.N');
+  const actual = TokenTest.tokenizeToArray('label: B.N');
   expect(actual.length).toBe(10);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Label, TokenType.Symbol]);
 });
 
 test('Single directive', () => {
-  const result = TestUtil.tokenizeToArray('.ascii');
+  const result = TokenTest.tokenizeToArray('.ascii');
   expect(result.length).toBe(6);
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).type).toBe(TokenType.Directive);
 });
 
 test('Strings', () => {
-  const actual = TestUtil.tokenizeToArray('\'a b c\' "a b c" #\'a\' #"b"');
+  const actual = TokenTest.tokenizeToArray('\'a b c\' "a b c" #\'a\' #"b"');
   expect(actual.count).toBe(4);
-  TestUtil.verifyTokenTypes(actual, [TokenType.String, TokenType.String, TokenType.String, TokenType.String]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.String, TokenType.String, TokenType.String, TokenType.String]);
 });
 
 test('Single number', () => {
-  const result = TestUtil.tokenizeToArray(' #1');
+  const result = TokenTest.tokenizeToArray(' #1');
   expect(result.count).toBe(1);
   expect(result.getItemAt(0).type).toBe(TokenType.Number);
 });
 
 test('Numbers', () => {
-  const actual = TestUtil.tokenizeToArray(' #0xabcD #1 #0x12A');
-  TestUtil.verifyTokenTypes(actual, [TokenType.Number, TokenType.Number, TokenType.Number]);
+  const actual = TokenTest.tokenizeToArray(' #0xabcD, #1, #0x12A');
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.Number,
+    TokenType.Comma,
+    TokenType.Number,
+    TokenType.Comma,
+    TokenType.Number,
+  ]);
 });
 
 test('Malformed numbers', () => {
-  const actual = TestUtil.tokenizeToArray(' #0x #ZA #0xZ');
+  const actual = TokenTest.tokenizeToArray(' #0x #ZA #0xZ');
   expect(actual.count).toBe(6);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Unknown, // #
     TokenType.Unknown, // 0x
     TokenType.Unknown, // #
@@ -67,22 +73,22 @@ test('Malformed numbers', () => {
 });
 
 test('Label with directive', () => {
-  const actual = TestUtil.tokenizeToArray('label: .fill');
+  const actual = TokenTest.tokenizeToArray('label: .fill');
   expect(actual.length).toBe(12);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive]);
 });
 
 test('Label with instruction no space', () => {
-  const actual = TestUtil.tokenizeToArray('label:add');
+  const actual = TokenTest.tokenizeToArray('label:add');
   expect(actual.length).toBe(9);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Label, TokenType.Symbol]);
 });
 
 test('Instruction with operands', () => {
   const text = 'add a, b, c';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Symbol,
     TokenType.Symbol,
     TokenType.Comma,
@@ -94,9 +100,9 @@ test('Instruction with operands', () => {
 
 test('Not a register', () => {
   const text = '2X, R2, R3';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Unknown,
     TokenType.Comma,
     TokenType.Symbol,
@@ -107,9 +113,9 @@ test('Not a register', () => {
 
 test('Label + instruction with operands', () => {
   const text = 'label: ADD r1, r2, r3 ';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length - 1);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Symbol,
     TokenType.Symbol,
@@ -122,16 +128,16 @@ test('Label + instruction with operands', () => {
 
 test('Label + directive + string', () => {
   const text = 'label: .ascii "a b c"';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Label, TokenType.Directive, TokenType.String]);
 });
 
 test('Line breaks', () => {
   const text = 'label: .ascii "a b c"\n  ADDS r1, r2, #1\n';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.Directive,
     TokenType.String,
@@ -148,23 +154,23 @@ test('Line breaks', () => {
 
 test('Hash comments', () => {
   const text = '# comment\nabc';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.LineComment, TokenType.EndOfLine, TokenType.Symbol]);
 });
 
 test('@ comments', () => {
   const text = 'abc @ comment\nabc';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.LineComment, TokenType.EndOfLine, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.LineComment, TokenType.EndOfLine, TokenType.Symbol]);
 });
 
 test('C++ comments', () => {
   const text = 'abc // comment\n// abc';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Symbol,
     TokenType.LineComment,
     TokenType.EndOfLine,
@@ -174,9 +180,9 @@ test('C++ comments', () => {
 
 test('C block comments 1', () => {
   const text = 'abc /* comment */ def\n/* abc\ndef */ klm\n';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Symbol,
     TokenType.BlockComment,
     TokenType.Symbol,
@@ -189,9 +195,9 @@ test('C block comments 1', () => {
 
 test('C block comments 2', () => {
   const text = 'label: /**/ abc /* comment */ def\n/* abc\ndef */ klm\n';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Label,
     TokenType.BlockComment,
     TokenType.Symbol,
@@ -206,76 +212,84 @@ test('C block comments 2', () => {
 
 test('Nested comments 1', () => {
   const text = '// /* comment */ ';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.LineComment]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.LineComment]);
 });
 
 test('Nested comments 2', () => {
   const text = '/* // comment */';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.BlockComment]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 test('Unclosed C comment', () => {
   const text = '/* comment \n\n';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.BlockComment]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.BlockComment]);
 });
 
 test('Not a comment', () => {
   const text = '; not a comment \n\n';
-  const actual = TestUtil.tokenizeToArray(text);
-  TestUtil.verifyTokenTypes(actual, [
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [
     TokenType.Unknown,
     TokenType.Symbol,
     TokenType.Symbol,
     TokenType.Symbol,
+    TokenType.EndOfLine,
     TokenType.EndOfLine,
   ]);
 });
 
 test('EQU directive', () => {
   const text = 'name .equ 1';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Directive, TokenType.Number]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Directive, TokenType.Number]);
 });
 
 test('ASCII directive', () => {
   const text = '.ascii "string"';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Directive, TokenType.String]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Directive, TokenType.String]);
 });
 
 test('Unterminated string', () => {
   const text = '"string @ comment';
-  const actual = TestUtil.tokenizeToArray(text);
-  TestUtil.verifyTokenTypes(actual, [TokenType.String]);
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.String]);
 });
 
-test('Expression 1', () => {
+test('1+2', () => {
+  const text = '1+2';
+  const actual = TokenTest.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Number, TokenType.Operator, TokenType.Number]);
+});
+
+test('a+b', () => {
   const text = 'a+b';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
 });
 
-test('Expression 2', () => {
+test('a +b', () => {
   const text = 'a +b';
-  const actual = TestUtil.tokenizeToArray(text);
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
 });
 
-test('Expression 3', () => {
+test('2*(a +(b*!_c) >> 17 << x2_1', () => {
   const text = '2*(a +(b*!_c) >> 17 << x2_1';
-  const actual = TestUtil.tokenizeToArray(text);  
-  TestUtil.verifyTokenTypes(actual, [
-    TokenType.Number, 
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.Number,
     TokenType.Operator,
     TokenType.OpenBrace,
     TokenType.Symbol,
@@ -293,16 +307,30 @@ test('Expression 3', () => {
   ]);
 });
 
-test('Unknown symbols 1', () => {
-  const text = '2_@foo';
-  const actual = TestUtil.tokenizeToArray(text);
-  expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Number, TokenType.Symbol, TokenType.LineComment]);
+test('((x))+1', () => {
+  const text = '((x))+1';
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.OpenBrace,
+    TokenType.OpenBrace,
+    TokenType.Symbol,
+    TokenType.CloseBrace,
+    TokenType.CloseBrace,
+    TokenType.Operator,
+    TokenType.Number,
+  ]);
 });
 
-test('Unknown symbols 2', () => {
-  const text = ';;`*';
-  const actual = TestUtil.tokenizeToArray(text);
+test('2_@foo', () => {
+  const text = '2_@foo';
+  const actual = TokenTest.tokenizeToArray(text);
   expect(actual.length).toBe(text.length);
-  TestUtil.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Number, TokenType.Symbol, TokenType.LineComment]);
+});
+
+test(';;`*', () => {
+  const text = ';;`*';
+  const actual = TokenTest.tokenizeToArray(text);
+  expect(actual.length).toBe(text.length);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
 });

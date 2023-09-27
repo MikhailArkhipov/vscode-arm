@@ -38,22 +38,22 @@ export interface TokenNode extends AstNode {
 
 // https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_6.html#SEC60
 export const enum OperatorType {
-  Unknown,
-  Add,
-  Subtract,
-  Multiply,
-  Divide,
-  Modulo, // %
-  ShiftLeft, // <<
-  ShiftRight, // >>
-  Not, // !
-  And, // &
-  Or, // |
-  Xor, // ^
-  UnaryMinus,
-  UnaryPlus,
-  Group, // ( ) pseudo-operator
-  Sentinel, // pseudo-type used in expression parsing
+  Unknown = 0,
+  Add = 1,
+  Subtract = 2,
+  Multiply = 3,
+  Divide = 4,
+  Modulo = 5, // %
+  ShiftLeft = 6, // <<
+  ShiftRight = 7, // >>
+  Not = 8, // !
+  And = 9, // &
+  Or = 10, // |
+  Xor = 11, // ^
+  UnaryMinus = 12,
+  UnaryPlus = 13,
+  Group = 14, // ( ) pseudo-operator
+  Sentinel = 15, // pseudo-type used in expression parsing
 }
 
 // https://en.wikipedia.org/wiki/Operator_associativity

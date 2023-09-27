@@ -68,7 +68,7 @@ test('(a+b)*c', () => {
   verifyNodeText(g.content!, context, 'a+b');
 });
 
-test('Precedence 1', () => {
+test('a & !b', () => {
   const expected = 
 String.raw`TokenOperator [0...6)
   TokenNode [0...1)
@@ -78,4 +78,69 @@ String.raw`TokenOperator [0...6)
     TokenNode [5...6)
 `;
   verifyParseExpression(expected, 'a & !b');
+});
+
+test('a*b+c*d', () => {
+  const expected = 
+String.raw`TokenOperator [0...7)
+  TokenOperator [0...3)
+    TokenNode [0...1)
+    TokenNode [1...2)
+    TokenNode [2...3)
+  TokenNode [3...4)
+  TokenOperator [4...7)
+    TokenNode [4...5)
+    TokenNode [5...6)
+    TokenNode [6...7)
+`;
+  verifyParseExpression(expected, 'a*b+c*d');
+});
+
+test('((x))+1', () => {
+  const expected = 
+String.raw`TokenOperator [0...7)
+  Group [0...5)
+    TokenNode [0...1)
+    Expression [1...4)
+      Group [1...4)
+        TokenNode [1...2)
+        Expression [2...3)
+          TokenNode [2...3)
+        TokenNode [3...4)
+    TokenNode [4...5)
+  TokenNode [5...6)
+  TokenNode [6...7)
+`;
+  verifyParseExpression(expected, '((x))+1');
+});
+
+test('-a', () => {
+  const expected = 
+String.raw`TokenOperator [0...2)
+  TokenNode [0...1)
+  TokenNode [1...2)
+`;
+  verifyParseExpression(expected, '-a');
+});
+
+test('-a+b', () => {
+  const expected = 
+String.raw`TokenOperator [0...4)
+  TokenOperator [0...2)
+    TokenNode [0...1)
+    TokenNode [1...2)
+  TokenNode [2...3)
+  TokenNode [3...4)
+`;
+  verifyParseExpression(expected, '-a+b');
+});
+
+test('"a"+\'b\'', () => {
+  const expected = 
+String.raw`TokenOperator [0...7)
+  TokenNode [0...3)
+  TokenNode [3...4)
+  TokenNode [4...7)
+`;
+  verifyParseExpression(expected, '"a"+\'b\'');
 });

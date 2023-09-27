@@ -8,7 +8,7 @@ import { TextStream } from '../../text/textStream';
 import { NumberTokenizer } from '../../tokens/numberTokenizer';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { Token, TokenType } from '../../tokens/tokens';
-import { makeLanguageOptions } from '../parser/parseUtility';
+import { makeLanguageOptions } from './parsing';
 
 export namespace TokenTest {
   export function getTokenName(t: TokenType): string {

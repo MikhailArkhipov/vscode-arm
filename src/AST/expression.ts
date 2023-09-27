@@ -13,7 +13,7 @@ import {
 import { TextRange } from '../text/textRange';
 import { TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
-import {  OperatorImpl, TokenOperatorImpl } from './operator';
+import { OperatorImpl, TokenOperatorImpl } from './operator';
 import { GroupImpl } from './group';
 import { TokenNodeImpl } from './tokenNode';
 import { ParseErrorImpl } from '../parser/parseError';
@@ -32,7 +32,6 @@ const enum OperationType {
   UnaryOperator,
   BinaryOperator,
   Operand,
-  Function,
   EndOfExpression,
 }
 
@@ -82,7 +81,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     // Push sentinel
     this._operators.push(sentinel);
     this._start = context.currentToken.start;
-    
+
     while (!tokens.isEndOfLine() && errorType === ParseErrorType.None && !endOfExpression) {
       const ct = tokens.currentToken;
 
@@ -179,10 +178,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   private isConsistentOperationSequence(context: ParseContext, currentOperationType: OperationType): boolean {
     // Binary operator followed by another binary like 'a +/ b' is an error.
     // Binary operator without anything behind it is an error;
-    if (
-      (this._previousOperationType === OperationType.Function && currentOperationType === OperationType.Operand) ||
-      (this._previousOperationType === currentOperationType && currentOperationType !== OperationType.Function)
-    ) {
+    if (this._previousOperationType === currentOperationType) {
       switch (currentOperationType) {
         case OperationType.Operand:
           // 'operand operand' sequence is an error

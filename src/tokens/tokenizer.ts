@@ -77,7 +77,43 @@ export class Tokenizer {
     this.handleOtherChars();
   }
 
+  private isPossibleNumber(): boolean {
+    if (this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
+      // Next character must be decimal or a dot otherwise
+      // it is not a number. No whitespace is allowed.
+      if (Character.isDecimal(this._cs.nextChar) || this._cs.nextChar === Char.Period) {
+        if (this._tokens.length > 0) {
+          // prevent recognition of 1+2 as 'number number'
+          const previousToken = this._tokens[this._tokens.length - 1];
+          if (
+            previousToken.type !== TokenType.OpenBrace &&
+            previousToken.type !== TokenType.OpenBracket &&
+            previousToken.type !== TokenType.Comma &&
+            previousToken.type !== TokenType.Operator
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   private tryNumber(start: number): boolean {
+    if (this._tokens.length > 0) {
+      // prevent recognition of 1+2 as 'number number'
+      const previousToken = this._tokens[this._tokens.length - 1];
+      if (
+        previousToken.type !== TokenType.OpenBrace &&
+        previousToken.type !== TokenType.OpenBracket &&
+        previousToken.type !== TokenType.Comma &&
+        previousToken.type !== TokenType.Operator &&
+        previousToken.type !== TokenType.Directive
+      ) {
+        return false;
+      }
+    }
+
     const length = this._numberTokenizer.tryNumber();
     if (length > 0) {
       this.addToken(TokenType.Number, start, this._cs.position - start);
@@ -273,9 +309,9 @@ export class Tokenizer {
     if (this._cs.position > start) {
       const token = new Token(TokenType.Symbol, start, this._cs.position - start);
       this._tokens.push(token);
-      
+
       const text = this._cs.text.getText(token.start, token.length);
-      if(isRegisterName(text, this._options.isA64)) {
+      if (isRegisterName(text, this._options.isA64)) {
         token.subType = TokenSubType.Register;
       }
       return;

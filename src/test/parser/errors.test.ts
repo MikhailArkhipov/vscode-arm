@@ -53,6 +53,11 @@ test('a()b', () => {
   verifyError(result.context, ParseErrorType.OperatorExpected, 1, 1);
 });
 
+test('a - ---', () => {
+  const result = parseExpression('a - ---');
+  verifyError(result.context, ParseErrorType.RightOperandExpected, 6, 1);
+});
+
 function verifyError(context: ParseContext, errorType: ParseErrorType, start: number, length: number): void {
   expect(context.errors.count).toBe(1);
   const e = context.errors.getItemAt(0);

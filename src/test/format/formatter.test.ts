@@ -4,7 +4,7 @@
 import { LanguageOptions } from '../../core/languageOptions';
 import { FormatOptions, Formatter } from '../../editor/formatter';
 import { TextStream } from '../../text/textStream';
-import { TestUtil } from '../utility';
+import { makeLanguageOptions } from '../utility/parsing';
 
 test('Empty string', () => {
   const result = format('');
@@ -87,6 +87,6 @@ function format(original: string): string {
 
 export function formatWithOptions(original: string, formatOptions: FormatOptions, languageOptions?: LanguageOptions): string {
   const f = new Formatter();
-  languageOptions = languageOptions ?? TestUtil.makeLanguageOptions(true, true);
+  languageOptions = languageOptions ?? makeLanguageOptions(true, true);
   return f.formatDocument(new TextStream(original), formatOptions, languageOptions);
 }
