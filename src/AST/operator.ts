@@ -4,14 +4,16 @@
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
 import { TokenType } from '../tokens/tokens';
-import { Associativity, AstNode, OperatorType, TokenOperator } from './definitions';
+import { AstNodeImpl } from './astNode';
+import { Associativity, AstNode, Operator, OperatorType, TokenNode, TokenOperator } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 
 // All operators are single-token kind.
-export class OperatorImpl extends TokenNodeImpl implements TokenOperator {
-  private _type = OperatorType.Unknown;
-  private _associativity = Associativity.Left;
-  private _unary = false;
+export abstract class OperatorImpl extends AstNodeImpl implements Operator {
+  protected _type = OperatorType.Unknown;
+  protected _associativity = Associativity.Left;
+  protected _unary = false;
+
   private _leftOperand: AstNode | undefined;
   private _rightOperand: AstNode | undefined;
 
@@ -22,6 +24,7 @@ export class OperatorImpl extends TokenNodeImpl implements TokenOperator {
     this._type = type ?? OperatorType.Unknown;
   }
 
+  // Operator
   public get type(): OperatorType {
     return this._type;
   }
@@ -48,102 +51,33 @@ export class OperatorImpl extends TokenNodeImpl implements TokenOperator {
   public set rightOperand(value: AstNode) {
     this._rightOperand = value;
   }
+}
 
-  public parse(context: ParseContext, parent: AstNode | undefined): boolean {
+export class TokenOperatorImpl extends OperatorImpl implements TokenOperator {
+  private _tokenNode: TokenNode;
+
+  constructor(firstInExpression: boolean, operatorType?: OperatorType) {
+    super(firstInExpression, operatorType);
+  }
+  public get tokenNode(): TokenNode {
+    return this._tokenNode;
+  }
+
+  public parse(context: ParseContext, parent?: AstNode): boolean {
     if (context.currentToken.type !== TokenType.Operator) {
       throw new Error('Parser: expected operator token.');
     }
-    this._type = this.getOperatorType(context.getCurrentTokenText());
+    this._type = getOperatorType(context.getCurrentTokenText());
+    this._tokenNode = TokenNodeImpl.create(context, this);
+    
     // If operator is preceded by an operator, it is then unary
     // Look back two tokens since operator parsing already consumed its token.
-    if (this._unary || this.isUnaryOperator(context.tokens, this._type, -2)) {
-      this._type = this.getUnaryForm();
+    if (this._unary || isUnaryOperator(context.tokens, this._type, -2)) {
+      this._type = getUnaryForm(this._type);
       this._unary = true;
       this._associativity = Associativity.Right;
     }
     return super.parse(context, parent);
-  }
-
-  /// Given token stream and operator type determines if operator is unary
-  private isUnary(tokens: TokenStream, offset: number): boolean {
-    if (!this.isPossiblyUnary()) {
-      return false;
-    }
-
-    // If operator is preceded by an operator, it is then unary
-    const precedingTokenType = tokens.lookAhead(offset).type;
-    switch (precedingTokenType) {
-      case TokenType.Operator:
-      case TokenType.OpenBrace:
-      case TokenType.OpenCurly:
-      case TokenType.OpenBracket:
-        return true;
-    }
-    return false;
-  }
-
-  private getOperatorType(text: string): OperatorType {
-    switch (text) {
-      case '+':
-        return OperatorType.Add;
-      case '-':
-        return OperatorType.Subtract;
-      case '*':
-        return OperatorType.Multiply;
-      case '/':
-        return OperatorType.Divide;
-      case '^':
-        return OperatorType.Xor;
-      case '%':
-        return OperatorType.Modulo;
-      case '>>':
-        return OperatorType.ShiftRight;
-      case '<<':
-        return OperatorType.ShiftLeft;
-      case '!':
-        return OperatorType.Not; // !
-      case '&':
-        return OperatorType.And; // &
-      case '|':
-        return OperatorType.Or; // |
-    }
-    return OperatorType.Unknown;
-  }
-
-  private getUnaryForm(): OperatorType {
-    switch (this._type) {
-      case OperatorType.Subtract:
-        return OperatorType.UnaryMinus;
-      case OperatorType.Add:
-        return OperatorType.UnaryPlus;
-    }
-    return this._type;
-  }
-
-  private isUnaryOperator(tokens: TokenStream, operatorType: OperatorType, offset: number) {
-    if (!this.isPossiblyUnary()) {
-      return false;
-    }
-    // If operator is preceded by an operator, it is then unary
-    const precedingTokenType = tokens.lookAhead(offset).type;
-    switch (precedingTokenType) {
-      case TokenType.Operator:
-      case TokenType.OpenBrace:
-      case TokenType.OpenCurly:
-      case TokenType.OpenBracket:
-        return true;
-    }
-    return false;
-  }
-
-  private isPossiblyUnary(): boolean {
-    switch (this._type) {
-      case OperatorType.Subtract:
-      case OperatorType.Add:
-      case OperatorType.Not:
-        return true;
-    }
-    return false;
   }
 }
 
@@ -188,4 +122,68 @@ export function getOperatorPrecedence(operatorType: OperatorType): number {
       return 300;
   }
   return 1000;
+}
+
+function getOperatorType(text: string): OperatorType {
+  switch (text) {
+    case '+':
+      return OperatorType.Add;
+    case '-':
+      return OperatorType.Subtract;
+    case '*':
+      return OperatorType.Multiply;
+    case '/':
+      return OperatorType.Divide;
+    case '^':
+      return OperatorType.Xor;
+    case '%':
+      return OperatorType.Modulo;
+    case '>>':
+      return OperatorType.ShiftRight;
+    case '<<':
+      return OperatorType.ShiftLeft;
+    case '!':
+      return OperatorType.Not; // !
+    case '&':
+      return OperatorType.And; // &
+    case '|':
+      return OperatorType.Or; // |
+  }
+  return OperatorType.Unknown;
+}
+
+function isUnaryOperator(tokens: TokenStream, type: OperatorType, offset: number) {
+  if (!isPossiblyUnary(type)) {
+    return false;
+  }
+  // If operator is preceded by an operator, it is then unary
+  const precedingTokenType = tokens.lookAhead(offset).type;
+  switch (precedingTokenType) {
+    case TokenType.Operator:
+    case TokenType.OpenBrace:
+    case TokenType.OpenCurly:
+    case TokenType.OpenBracket:
+      return true;
+  }
+  return false;
+}
+
+function isPossiblyUnary(type: OperatorType): boolean {
+  switch (type) {
+    case OperatorType.Subtract:
+    case OperatorType.Add:
+    case OperatorType.Not:
+      return true;
+  }
+  return false;
+}
+
+function getUnaryForm(type: OperatorType): OperatorType {
+  switch (type) {
+    case OperatorType.Subtract:
+      return OperatorType.UnaryMinus;
+    case OperatorType.Add:
+      return OperatorType.UnaryPlus;
+  }
+  return this._type;
 }

@@ -5,10 +5,10 @@ import { ParseContext } from '../parser/parseContext';
 import { MissingItemParseError } from '../parser/parseError';
 import { TokenType } from '../tokens/tokens';
 import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, ParseErrorType, TokenNode } from './definitions';
-import { AstNodeImpl } from './astNodeImpl';
 import { TokenNodeImpl } from './tokenNode';
 import { ExpressionImpl } from './expression';
 import { TextRangeCollection } from '../text/textRangeCollection';
+import { AstNodeImpl } from './astNode';
 
 // An item in a comma-separated sequence, such as {a, b, c}.
 // Normally an expression followed by an optional comma.

@@ -1,9 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TokenNode, isTokenNode } from "../../AST/definitions";
-import { TokenSubType, TokenType } from "../../tokens/tokens";
-import { TestUtil } from "../utility";
+import { TokenNode } from '../../AST/definitions';
+import { TokenSubType, TokenType } from '../../tokens/tokens';
+import { TestUtil } from '../utility';
+import { isTokenNode } from './parseUtility';
 
 test('Get node from position simple', () => {
   const ast = TestUtil.parseText(' ADD r1, r2, #123', TestUtil.makeLanguageOptions(false, true));

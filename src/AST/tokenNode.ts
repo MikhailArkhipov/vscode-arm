@@ -3,8 +3,8 @@
 
 import { ParseContext } from "../parser/parseContext";
 import { Token } from "../tokens/tokens";
+import { AstNodeImpl } from "./astNode";
 import { AstNode, TokenNode } from "./definitions";
-import { AstNodeImpl } from "./astNodeImpl";
 
 // Node that represents a single token item
 export class TokenNodeImpl extends AstNodeImpl implements TokenNode {

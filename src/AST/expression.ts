@@ -13,11 +13,11 @@ import {
 import { TextRange } from '../text/textRange';
 import { TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
-import { AstNodeImpl } from './astNodeImpl';
-import { OperatorImpl } from './operator';
+import {  OperatorImpl, TokenOperatorImpl } from './operator';
 import { GroupImpl } from './group';
 import { TokenNodeImpl } from './tokenNode';
 import { ParseErrorImpl } from '../parser/parseError';
+import { AstNodeImpl } from './astNode';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs
@@ -36,7 +36,7 @@ const enum OperationType {
   EndOfExpression,
 }
 
-const sentinel = new OperatorImpl(false, OperatorType.Sentinel);
+const sentinel = new TokenOperatorImpl(false, OperatorType.Sentinel);
 
 interface ParseResult {
   operationType: OperationType;
@@ -245,7 +245,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   }
 
   private handleOperator(context: ParseContext): ParseResult {
-    const currentOperator = new OperatorImpl(this._operands.length === 0);
+    const currentOperator = new TokenOperatorImpl(this._operands.length === 0);
     currentOperator.parse(context, undefined);
 
     const isUnary = currentOperator.unary;

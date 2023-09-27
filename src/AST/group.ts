@@ -4,7 +4,7 @@
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemParseError } from '../parser/parseError';
 import { TokenType } from '../tokens/tokens';
-import { AstNodeImpl } from './astNodeImpl';
+import { AstNodeImpl } from './astNode';
 import { Associativity, AstNode, Expression, Group, OperatorType, ParseErrorType, TokenNode } from './definitions';
 import { ExpressionImpl } from './expression';
 import { getOperatorPrecedence } from './operator';

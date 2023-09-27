@@ -1,14 +1,14 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { ParseItem, ParseContext } from "../parser/parseContext";
-import { TextRangeImpl, TextRange } from "../text/textRange";
-import { TextRangeCollection } from "../text/textRangeCollection";
-import { AstNode } from "./definitions";
+import { ParseItem, ParseContext } from '../parser/parseContext';
+import { TextRangeImpl, TextRange } from '../text/textRange';
+import { TextRangeCollection } from '../text/textRangeCollection';
+import { AstNode } from './definitions';
 
 export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
   protected _parent: AstNode | undefined;
-  private readonly _children: AstNode[] = [];
+  private readonly _children = new TextRangeCollection<AstNode>();
 
   public get parent(): AstNode | undefined {
     return this._parent;
@@ -28,24 +28,24 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
   }
 
   public get children(): TextRangeCollection<AstNode> {
-    return new TextRangeCollection(this._children);
+    return this._children;
   }
 
   public get start(): number {
-    return this._children.length > 0 ? this._children[0].start : 0;
+    return this._children.count > 0 ? this._children.getItemAt(0).start : 0;
   }
   public get length(): number {
     return this.end - this.start;
   }
   public get end(): number {
-    return this._children.length > 0 ? this._children[this._children.length - 1].end : 0;
+    return this._children.count > 0 ? this._children.getItemAt(this._children.count - 1).end : 0;
   }
 
   public appendChild(node: AstNode): void {
     if (!node.parent) {
       node.parent = this;
     } else {
-      this._children.push(node);
+      this._children.addSorted(node);
     }
   }
 
@@ -54,6 +54,7 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
     this.parent = parent;
     return true;
   }
+  
   // Finds deepest node that contains given position
   public nodeFromPosition(position: number): AstNode | undefined {
     if (!TextRange.contains(this.start, this.length, position)) {
@@ -78,12 +79,12 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
     if (TextRange.containsRange(this, range, inclusiveEnd)) {
       node = this;
       for (let i = 0; i < this.children.count; i++) {
-        const child = this.children[i];
+        const child = this.children.getItemAt(i);
         if (range.end < child.start) {
           break;
         }
         if (TextRange.containsRange(child, range, inclusiveEnd)) {
-          node = child.Children.Count > 0 ? child.NodeFromRange(range, inclusiveEnd) : child;
+          node = child.children.count > 0 ? child.nodeFromRange(range, inclusiveEnd) : child;
           break;
         }
       }

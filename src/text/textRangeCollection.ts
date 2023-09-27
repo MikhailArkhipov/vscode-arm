@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange } from "./textRange";
+import { TextRange } from './textRange';
 
 /**
  * A collection of text ranges or objects that implement TextRange.
@@ -10,7 +10,7 @@ import { TextRange } from "./textRange";
  * that starts at a given position. The search is a binary search.
  */
 export class TextRangeCollection<T extends TextRange> {
-  private _items: T[];
+  private _items: T[] = [];
 
   constructor(items?: T[]) {
     this._items = items ?? [];
@@ -21,8 +21,8 @@ export class TextRangeCollection<T extends TextRange> {
   }
 
   public get end(): number {
-    const lastItem = this._items[this._items.length - 1];
-    return this._items.length > 0 ? lastItem.start + lastItem.length : 0;
+    const lastItem = this._items.length > 0 ? this._items[this._items.length - 1] : undefined;
+    return lastItem ? lastItem.end : 0;
   }
 
   public get length(): number {
@@ -43,7 +43,7 @@ export class TextRangeCollection<T extends TextRange> {
 
   public getItemAt(index: number): T {
     if (index < 0 || index >= this._items.length) {
-      throw new Error("index is out of range");
+      throw new Error('index is out of range');
     }
     return this._items[index];
   }
@@ -112,11 +112,7 @@ export class TextRangeCollection<T extends TextRange> {
         return mid;
       }
 
-      if (
-        mid < this.count - 1 &&
-        item.end <= position &&
-        position < this._items[mid + 1].start
-      ) {
+      if (mid < this.count - 1 && item.end <= position && position < this._items[mid + 1].start) {
         return -1;
       }
 
@@ -151,11 +147,7 @@ export class TextRangeCollection<T extends TextRange> {
         return mid - 1;
       }
 
-      if (
-        mid < lastIndex &&
-        this._items[mid + 1].start >= position &&
-        item.end <= position
-      ) {
+      if (mid < lastIndex && this._items[mid + 1].start >= position && item.end <= position) {
         return mid;
       }
 
@@ -166,5 +158,76 @@ export class TextRangeCollection<T extends TextRange> {
       }
     }
     return -1;
+  }
+
+  // Retrieves first item that is after a given position
+  public getFirstItemAfterOrAtPosition(position: number) {
+    if (this.count === 0 || position > this.getItemAt(this.count - 1).end) {
+      return -1;
+    }
+    if (position < this.getItemAt(0).start) {
+      return 0;
+    }
+
+    let min = 0;
+    let max = this.count - 1;
+
+    while (min <= max) {
+      const mid = Math.floor(min + (max - min) / 2);
+      const item = this.getItemAt(mid);
+
+      if (item.contains(position)) {
+        // Note that there may be multiple items with the same range.
+        // To be sure we do pick the first one, walk back until we include
+        // all elements containing passed position
+        return this.getFirstElementContainingPosition(mid, position);
+      }
+
+      if (mid > 0 && this.getItemAt(mid - 1).end <= position && item.start >= position) {
+        return mid;
+      }
+
+      if (position < item.start) {
+        max = mid - 1;
+      } else {
+        min = mid + 1;
+      }
+    }
+
+    return -1;
+  }
+
+  public addSorted(item: T): void {
+    // Insert sorted! Small optimizations.
+    if (this._items.length === 0) {
+      this._items.push(item);
+      return;
+    }
+    // Collection should be sorted at this point so just check the last item.
+    const lastChild = this._items[this._items.length - 1];
+    if (lastChild.end <= item.start) {
+      this._items.push(item);
+      return;
+    }
+    // Insertions somewhere not at the end.
+    const nextItemIndex = this.getFirstItemAfterOrAtPosition(item.end);
+    if (nextItemIndex < 0) {
+      throw new Error('Unable to find position to insert next item into the range collection.');
+    } else {
+      this._items.splice(nextItemIndex, 0, item);
+    }
+  }
+
+  private getFirstElementContainingPosition(index: number, position: number): number {
+    for (let i = index - 1; i >= 0; i--) {
+      const item = this._items[i];
+      if (!item.contains(position)) {
+        index = i + 1;
+        break;
+      } else if (i === 0) {
+        return 0;
+      }
+    }
+    return index;
   }
 }

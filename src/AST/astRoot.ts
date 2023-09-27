@@ -9,8 +9,8 @@ import { Statement } from './statement';
 import { ParseContext } from '../parser/parseContext';
 import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
-import { AstNodeImpl } from './astNodeImpl';
 import { LanguageOptions } from '../core/languageOptions';
+import { AstNodeImpl } from './astNode';
 
 export class AstRootImpl extends AstNodeImpl implements AstRoot {
   private _context: ParseContext;

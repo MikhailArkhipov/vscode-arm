@@ -17,7 +17,7 @@ export interface AstNode extends TextRange {
   // Finds deepest node that contains given position
   nodeFromPosition(position: number): AstNode | undefined;
   // Finds deepest element node that fully encloses given range
-  nodeFromRange(range: TextRange): AstNode | undefined;
+  nodeFromRange(range: TextRange, inclusiveEnd?: boolean): AstNode | undefined;
 }
 
 export namespace AstNode {
@@ -78,7 +78,7 @@ export interface Operator extends AstNode {
 }
 
 export interface TokenOperator extends Operator {
-  get token(): Token;
+  get tokenNode(): TokenNode;
 }
 
 export interface Expression extends AstNode {
@@ -122,11 +122,6 @@ export interface Statement extends AstNode {
   get name(): TokenNode | undefined;
   get symbolName(): TokenNode | undefined;
   get operands(): CommaSeparatedList;
-}
-
-export function isTokenNode(node: AstNode | undefined): node is TokenNode {
-  const tn = node as TokenNode;
-  return tn && tn.token !== undefined;
 }
 
 export interface AstRoot extends AstNode {

@@ -1,9 +1,9 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Operator } from '../../AST/definitions';
+import { Group, TokenOperator } from '../../AST/definitions';
 import { TokenType } from '../../tokens/tokens';
-import { parseExpression, verifyOperator, verifyTokenNode } from './parseUtility';
+import { isTokenNode, parseExpression, verifyNodeText, verifyOperator, verifyTokenNode } from './parseUtility';
 
 test('a+b', () => {
   const result = parseExpression('a+b');
@@ -11,10 +11,11 @@ test('a+b', () => {
   const context = result.context;
 
   expect(context.errors.count).toBe(0);
-  const op = exp.children.getItemAt(0) as Operator;
-  expect(op.children.count).toBe(2);
+  const op = exp.children.getItemAt(0) as TokenOperator;
+  expect(op.children.count).toBe(3);
 
   verifyTokenNode(op.leftOperand, context, TokenType.Symbol, 'a');
+  verifyTokenNode(op.tokenNode, context, TokenType.Operator, '+');
   verifyTokenNode(op.rightOperand, context, TokenType.Symbol, 'b');
 });
 
@@ -24,20 +25,38 @@ test('a+b*c', () => {
   const context = result.context;
 
   expect(context.errors.count).toBe(0);
-  const op = exp.children.getItemAt(0) as Operator;
+  const op = exp.children.getItemAt(0) as TokenOperator;
   verifyOperator(op, context, '+');
 
-  expect(op.children.count).toBe(2);
-  verifyTokenNode(op.leftOperand, context, TokenType.Symbol, "a")
-  verifyTokenNode(op.rightOperand, context, TokenType.Operator, "*")
+  verifyTokenNode(op.leftOperand, context, TokenType.Symbol, 'a');
+  verifyOperator(op.rightOperand as TokenOperator, context, '*');
 
-  expect(op.rightOperand).toBeDefined();
-  expect(op.rightOperand!.children.count).toBe(2);
-  const multiply = op.rightOperand as Operator;
+  expect(op.rightOperand!.children.count).toBe(3);
+  const multiply = op.rightOperand as TokenOperator;
   verifyOperator(multiply, context, '*');
-  
-  verifyTokenNode(multiply.leftOperand, context, TokenType.Symbol, "b")
-  verifyTokenNode(multiply.rightOperand, context, TokenType.Symbol, "c")
+
+  verifyTokenNode(multiply.leftOperand, context, TokenType.Symbol, 'b');
+  verifyTokenNode(multiply.tokenNode, context, TokenType.Operator, '*');
+  verifyTokenNode(multiply.rightOperand, context, TokenType.Symbol, 'c');
 });
 
+test('(a+b)*c', () => {
+  const result = parseExpression('(a+b)*c');
+  const exp = result.expression;
+  const context = result.context;
 
+  expect(context.errors.count).toBe(0);
+  const op = exp.children.getItemAt(0) as TokenOperator;
+  verifyOperator(op, context, '*');
+
+  expect(op.children.count).toBe(3);
+  verifyNodeText(op.leftOperand!, context, '(a+b)');
+  verifyTokenNode(op.rightOperand, context, TokenType.Symbol, 'c');
+
+  expect(op.leftOperand!.children.count).toBe(3);
+  const g = op.leftOperand as Group;
+  expect(isTokenNode(g.openBrace)).toBe(true);
+  expect(isTokenNode(g.closeBrace)).toBe(true);
+  expect(g.content).toBeDefined();
+  verifyNodeText(g.content!, context, 'a+b');
+});

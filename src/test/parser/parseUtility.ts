@@ -1,15 +1,15 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Operator, AstNode, isTokenNode, TokenNode, Expression } from "../../AST/definitions";
+import { AstNode, TokenNode, Expression, TokenOperator } from "../../AST/definitions";
 import { ExpressionImpl } from "../../AST/expression";
 import { ParseContext } from "../../parser/parseContext";
-import { TokenType, TokenSubType } from "../../tokens/tokens";
+import { TokenType, TokenSubType, Token } from "../../tokens/tokens";
 import { TestUtil } from "../utility";
 
-export function verifyOperator(op: Operator, context: ParseContext, expectedOpText: string): void {
-  expect(op.children.count).toBe(2);
-  verifyTokenNode(op, context, TokenType.Operator, expectedOpText);
+export function verifyOperator(op: TokenOperator, context: ParseContext, expectedOpText: string): void {
+  expect(op.children.count).toBe(3); // left operand, token, right operand
+  verifyTokenNode(op.tokenNode, context, TokenType.Operator, expectedOpText);
 }
 
 export function verifyTokenNode(
@@ -37,4 +37,14 @@ export function parseExpression(text: string): { expression: Expression; context
   const expression = new ExpressionImpl();
   expression.parse(context, context.root);
   return { expression, context };
+}
+
+export function isTokenNode(node: AstNode | undefined): node is TokenNode {
+  const tn = node as TokenNode;
+  return tn && tn.token !== undefined;
+}
+
+export function verifyToken(token: Token, context: ParseContext, expectedType: TokenType, expectedText: string): void{
+  expect(token.type).toBe(expectedType);
+  expect(context.text.getText(token.start, token.length)).toBe(expectedText);
 }
