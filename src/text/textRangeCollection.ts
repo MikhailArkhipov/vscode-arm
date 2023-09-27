@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { TextRangeCollection } from './definitions';
 import { TextRange } from './textRange';
 
 /**
@@ -9,19 +10,17 @@ import { TextRange } from './textRange';
  * Can be searched for a range that contains given position or range
  * that starts at a given position. The search is a binary search.
  */
-export class TextRangeCollection<T extends TextRange> {
-  private _items: T[] = [];
 
-  constructor(items?: T[]) {
-    this._items = items ?? [];
-  }
+export abstract class BaseTextRangeCollectionImpl<T extends TextRange> implements TextRangeCollection<T> {
+  protected abstract items(): readonly T[];
 
+  // TextRange
   public get start(): number {
-    return this._items.length > 0 ? this._items[0].start : 0;
+    return this.items().length > 0 ? this.items()[0].start : 0;
   }
 
   public get end(): number {
-    const lastItem = this._items.length > 0 ? this._items[this._items.length - 1] : undefined;
+    const lastItem = this.items().length > 0 ? this.items()[this.items().length - 1] : undefined;
     return lastItem ? lastItem.end : 0;
   }
 
@@ -30,22 +29,27 @@ export class TextRangeCollection<T extends TextRange> {
   }
 
   public get count(): number {
-    return this._items.length;
+    return this.items().length;
   }
 
-  public get asArray(): readonly T[] {
-    return this._items;
+  public asArray(): readonly T[] {
+    return this.items();
   }
 
   public contains(position: number) {
-    return position >= this.start && position < this.end;
+    return TextRange.contains(this.start, this.length, position);
   }
 
+  public containsRange(range: TextRange) {
+    return TextRange.containsRange(this, range);
+  }
+
+  // TextRangeCollection<T>
   public getItemAt(index: number): T {
-    if (index < 0 || index >= this._items.length) {
+    if (index < 0 || index >= this.items().length) {
       throw new Error('index is out of range');
     }
-    return this._items[index];
+    return this.items()[index];
   }
 
   /**
@@ -69,7 +73,7 @@ export class TextRangeCollection<T extends TextRange> {
 
     while (min <= max) {
       const mid = Math.floor(min + (max - min) / 2);
-      const item = this._items[mid];
+      const item = this.items()[mid];
 
       if (position === item.start) {
         return mid;
@@ -106,13 +110,13 @@ export class TextRangeCollection<T extends TextRange> {
 
     while (min <= max) {
       const mid = Math.floor(min + (max - min) / 2);
-      const item = this._items[mid];
+      const item = this.items()[mid];
 
       if (item.contains(position)) {
         return mid;
       }
 
-      if (mid < this.count - 1 && item.end <= position && position < this._items[mid + 1].start) {
+      if (mid < this.count - 1 && item.end <= position && position < this.items()[mid + 1].start) {
         return -1;
       }
 
@@ -135,19 +139,19 @@ export class TextRangeCollection<T extends TextRange> {
     let min = 0;
     let max = this.count - 1;
 
-    if (position >= this._items[lastIndex].end) {
+    if (position >= this.items()[lastIndex].end) {
       return max;
     }
 
     while (min <= max) {
       const mid = Math.floor(min + (max - min) / 2);
-      const item = this._items[mid];
+      const item = this.items()[mid];
 
       if (item.contains(position)) {
         return mid - 1;
       }
 
-      if (mid < lastIndex && this._items[mid + 1].start >= position && item.end <= position) {
+      if (mid < lastIndex && this.items()[mid + 1].start >= position && item.end <= position) {
         return mid;
       }
 
@@ -197,30 +201,9 @@ export class TextRangeCollection<T extends TextRange> {
     return -1;
   }
 
-  public addSorted(item: T): void {
-    // Insert sorted! Small optimizations.
-    if (this._items.length === 0) {
-      this._items.push(item);
-      return;
-    }
-    // Collection should be sorted at this point so just check the last item.
-    const lastChild = this._items[this._items.length - 1];
-    if (lastChild.end <= item.start) {
-      this._items.push(item);
-      return;
-    }
-    // Insertions somewhere not at the end.
-    const nextItemIndex = this.getFirstItemAfterOrAtPosition(item.end);
-    if (nextItemIndex < 0) {
-      throw new Error('Unable to find position to insert next item into the range collection.');
-    } else {
-      this._items.splice(nextItemIndex, 0, item);
-    }
-  }
-
   private getFirstElementContainingPosition(index: number, position: number): number {
     for (let i = index - 1; i >= 0; i--) {
-      const item = this._items[i];
+      const item = this.items()[i];
       if (!item.contains(position)) {
         index = i + 1;
         break;
@@ -229,5 +212,19 @@ export class TextRangeCollection<T extends TextRange> {
       }
     }
     return index;
+  }
+}
+
+// Read-only collection
+export class TextRangeCollectionImpl<T extends TextRange> extends BaseTextRangeCollectionImpl<T> {
+  private readonly _items: readonly T[] = [];
+
+  constructor(items?: readonly T[]) {
+    super();
+    this._items = items ?? [];
+  }
+
+  protected items(): readonly T[] {
+    return this._items;
   }
 }

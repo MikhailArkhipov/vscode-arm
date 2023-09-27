@@ -13,20 +13,21 @@ import {
 } from 'vscode';
 import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
-import { Token, TokenType } from '../tokens/tokens';
-import { TextRangeCollection } from '../text/textRangeCollection';
+import { Token } from '../tokens/tokens';
 import { AstRoot } from '../AST/definitions';
 import { getLanguageOptions } from './options';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { AstRootImpl } from '../AST/astRoot';
 import { LanguageOptions } from '../core/languageOptions';
 import { getParseErrorMessage } from './messages';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
+import { TextRangeCollection } from '../text/definitions';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _td: TextDocument;
 
-  private _tokens: TextRangeCollection<Token> = new TextRangeCollection([]);
+  // Raw token collection - it including comments
+  private _tokens: TextRangeCollection<Token> = new TextRangeCollectionImpl();
   private _options: LanguageOptions;
   private _ast: AstRoot | undefined;
   private _version = 0;
@@ -51,18 +52,10 @@ export class EditorDocument {
       this._options = getLanguageOptions();
       const t = new Tokenizer(this._options);
       const text = this._td.getText();
-      this._tokens = t.tokenize(new TextStream(text), 0, text.length);
+      const tokenArray = t.tokenize(new TextStream(text), 0, text.length);
+      this._tokens = new TextRangeCollectionImpl(tokenArray);
     }
     return this._tokens;
-  }
-
-  public isComment(tokenIndex: number): boolean {
-    // Locate matching document in RDT
-    if (tokenIndex >= 0) {
-      const t = this._tokens.getItemAt(tokenIndex);
-      return t.type === TokenType.LineComment || t.type === TokenType.BlockComment;
-    }
-    return false;
   }
 
   public getCaretPosition(): Position | undefined {
@@ -109,7 +102,7 @@ export class EditorDocument {
 
     const diagnostics: Diagnostic[] = [];
     if (this._ast) {
-      this._ast.context.errors.asArray.forEach((e) => {
+      this._ast.context.errors.asArray().forEach((e) => {
         const range = new Range(this._td.positionAt(e.start), this._td.positionAt(e.end));
         const d = new Diagnostic(range, getParseErrorMessage(e.errorType), DiagnosticSeverity.Warning);
         diagnostics.push(d);

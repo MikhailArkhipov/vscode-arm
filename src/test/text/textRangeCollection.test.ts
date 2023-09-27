@@ -1,26 +1,27 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange } from "../../text/textRange";
-import { TextRangeCollection } from "../../text/textRangeCollection";
+import { TextRangeCollection } from '../../text/definitions';
+import { TextRange } from '../../text/textRange';
+import { TextRangeCollectionImpl } from '../../text/textRangeCollection';
 
 function makeCollection(): TextRangeCollection<TextRange> {
   const ranges: TextRange[] = [];
   ranges.push(TextRange.fromBounds(1, 2));
   ranges.push(TextRange.fromBounds(3, 5));
   ranges.push(TextRange.fromBounds(5, 7));
-  return new TextRangeCollection<TextRange>(ranges);
+  return new TextRangeCollectionImpl<TextRange>(ranges);
 }
 
-test("TextRangeCollection construction 1", () => {
-  const target = new TextRangeCollection<TextRange>();
+test('TextRangeCollection construction 1', () => {
+  const target = new TextRangeCollectionImpl<TextRange>();
   expect(target.count).toBe(0);
   expect(target.start).toBe(0);
   expect(target.end).toBe(0);
   expect(target.length).toBe(0);
 });
 
-test("TextRangeCollection construction 2", () => {
+test('TextRangeCollection construction 2', () => {
   const target = makeCollection();
 
   expect(target.count).toBe(3);
@@ -33,7 +34,7 @@ test("TextRangeCollection construction 2", () => {
   expect(target.getItemAt(2).start).toBe(5);
 });
 
-test("TextRangeCollection contans", () => {
+test('TextRangeCollection contans', () => {
   const target = makeCollection();
 
   expect(target.contains(1)).toBe(true);
@@ -49,7 +50,7 @@ test("TextRangeCollection contans", () => {
   expect(target.contains(Number.MAX_VALUE)).toBe(false);
 });
 
-test("TextRangeCollection getItemAtPosition", () => {
+test('TextRangeCollection getItemAtPosition', () => {
   const target = makeCollection();
 
   expect(target.getItemAtPosition(0)).toBe(-1);
@@ -66,7 +67,7 @@ test("TextRangeCollection getItemAtPosition", () => {
   expect(target.getItemAtPosition(Number.MAX_VALUE)).toBe(-1);
 });
 
-test("TextRangeCollection getItemContaining", () => {
+test('TextRangeCollection getItemContaining', () => {
   const target = makeCollection();
 
   expect(target.getItemContaining(0)).toBe(-1);

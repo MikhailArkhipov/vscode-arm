@@ -1,7 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from "../text/textRangeCollection";
+import { TextRangeCollection } from "../text/definitions";
+import { TextRangeCollectionImpl } from "../text/textRangeCollection";
 import { Token, TokenType } from "./tokens";
 
 // Generic token stream. Allows fetching tokens safely, returns special end of stream
@@ -14,8 +15,8 @@ export class TokenStream {
   private _isEndOfStream: boolean = false;
   private _currentToken: Token;
 
-  constructor(tokens: TextRangeCollection<Token>) {
-    this._tokens = tokens;
+  constructor(tokens:readonly Token[]) {
+    this._tokens = new TextRangeCollectionImpl(tokens);
     this._endOfStreamToken = new Token(TokenType.EndOfStream, 0, 0);
     this.checkBounds();
   }

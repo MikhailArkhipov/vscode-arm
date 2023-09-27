@@ -12,7 +12,7 @@ export class AstWriter {
     this._chunks = [];
     this._indent = 0;
 
-    node.children.asArray.forEach((e) => {
+    node.children.asArray().forEach((e) => {
       this.writeNode(e);
     });
 
@@ -30,7 +30,7 @@ export class AstWriter {
     this._chunks.push(` [${node.start}...${node.end})\n`);
 
     this._indent++;
-    node.children.asArray.forEach((e) => {
+    node.children.asArray().forEach((e) => {
       this.writeNode(e);
     });
     this._indent--;

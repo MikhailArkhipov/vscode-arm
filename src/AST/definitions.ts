@@ -3,14 +3,16 @@
 
 import { LanguageOptions } from '../core/languageOptions';
 import { ParseContext } from '../parser/parseContext';
+import { TextRangeCollection } from '../text/definitions';
 import { TextProvider } from '../text/text';
 import { TextRange } from '../text/textRange';
-import { TextRangeCollection } from '../text/textRangeCollection';
 import { Token } from '../tokens/tokens';
+
+export interface NodeCollection extends TextRangeCollection<AstNode> {}
 
 export interface AstNode extends TextRange {
   parent: AstNode | undefined;
-  readonly children: TextRangeCollection<AstNode>;
+  readonly children: NodeCollection;
 
   appendChild(node: AstNode): void;
 

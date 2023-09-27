@@ -8,7 +8,6 @@ import { LanguageOptions } from '../core/languageOptions';
 import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
 import { TextProvider } from '../text/text';
-import { TextRangeCollection } from '../text/textRangeCollection';
 import { NumberTokenizer } from './numberTokenizer';
 import { isRegisterName } from './registers';
 import { Token, TokenSubType, TokenType } from './tokens';
@@ -27,7 +26,7 @@ export class Tokenizer {
     this._options = options;
   }
 
-  public tokenize(textProvider: TextProvider, start: number, length: number): TextRangeCollection<Token> {
+  public tokenize(textProvider: TextProvider, start: number, length: number): readonly Token[] {
     this._cs = new CharacterStream(textProvider);
     this._cs.position = start;
 
@@ -45,7 +44,7 @@ export class Tokenizer {
         throw new Error('Tokenizer: infinite loop');
       }
     }
-    return new TextRangeCollection(this._tokens);
+    return this._tokens;
   }
 
   // [label:] [instruction] [sequence[, sequence[, ...]]] [//|@] comment <eol>

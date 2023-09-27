@@ -69,8 +69,7 @@ test('(a+b)*c', () => {
 });
 
 test('a & !b', () => {
-  const expected = 
-String.raw`TokenOperator [0...6)
+  const expected = String.raw`TokenOperator [0...6)
   TokenNode [0...1)
   TokenNode [2...3)
   TokenOperator [4...6)
@@ -81,8 +80,7 @@ String.raw`TokenOperator [0...6)
 });
 
 test('a*b+c*d', () => {
-  const expected = 
-String.raw`TokenOperator [0...7)
+  const expected = String.raw`TokenOperator [0...7)
   TokenOperator [0...3)
     TokenNode [0...1)
     TokenNode [1...2)
@@ -97,8 +95,7 @@ String.raw`TokenOperator [0...7)
 });
 
 test('((x))+1', () => {
-  const expected = 
-String.raw`TokenOperator [0...7)
+  const expected = String.raw`TokenOperator [0...7)
   Group [0...5)
     TokenNode [0...1)
     Expression [1...4)
@@ -115,8 +112,7 @@ String.raw`TokenOperator [0...7)
 });
 
 test('-a', () => {
-  const expected = 
-String.raw`TokenOperator [0...2)
+  const expected = String.raw`TokenOperator [0...2)
   TokenNode [0...1)
   TokenNode [1...2)
 `;
@@ -124,8 +120,7 @@ String.raw`TokenOperator [0...2)
 });
 
 test('-a+b', () => {
-  const expected = 
-String.raw`TokenOperator [0...4)
+  const expected = String.raw`TokenOperator [0...4)
   TokenOperator [0...2)
     TokenNode [0...1)
     TokenNode [1...2)
@@ -136,8 +131,7 @@ String.raw`TokenOperator [0...4)
 });
 
 test('"a"+\'b\'', () => {
-  const expected = 
-String.raw`TokenOperator [0...7)
+  const expected = String.raw`TokenOperator [0...7)
   TokenNode [0...3)
   TokenNode [3...4)
   TokenNode [4...7)

@@ -81,4 +81,8 @@ export namespace Token {
       (t.subType === TokenSubType.SymbolDeclaration || t.subType === TokenSubType.SymbolReference)
     );
   }
+
+  export function isComment(t: Token): boolean {
+    return t.type === TokenType.LineComment || t.type === TokenType.BlockComment;
+  }
 }

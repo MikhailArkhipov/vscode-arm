@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseItem, ParseContext } from '../parser/parseContext';
-import { TextRangeImpl, TextRange } from '../text/textRange';
-import { TextRangeCollection } from '../text/textRangeCollection';
-import { AstNode } from './definitions';
+import { TextRange } from '../text/textRange';
+import { AstNode, NodeCollection } from './definitions';
+import { NodeCollectionImpl } from './nodeCollection';
 
 export class AstNodeImpl implements AstNode, ParseItem {
   protected _parent: AstNode | undefined;
-  private readonly _children = new TextRangeCollection<AstNode>();
+  private readonly _children = new NodeCollectionImpl();
 
   // AstNode
   public get parent(): AstNode | undefined {
@@ -28,7 +28,7 @@ export class AstNodeImpl implements AstNode, ParseItem {
     }
   }
 
-  public get children(): TextRangeCollection<AstNode> {
+  public get children(): NodeCollection {
     return this._children;
   }
 
@@ -68,7 +68,7 @@ export class AstNodeImpl implements AstNode, ParseItem {
     this.parent = parent;
     return true;
   }
-  
+
   // Finds deepest node that contains given position
   public nodeFromPosition(position: number): AstNode | undefined {
     if (!TextRange.contains(this.start, this.length, position)) {

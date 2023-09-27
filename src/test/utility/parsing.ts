@@ -1,13 +1,12 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-import "jest-expect-message";
+import 'jest-expect-message';
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
 import { LanguageOptions } from '../../core/languageOptions';
 import { ParseContext } from '../../parser/parseContext';
 import { TextStream } from '../../text/textStream';
-import { TokenStream } from '../../tokens/tokenStream';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { TokenType, TokenSubType, Token } from '../../tokens/tokens';
 import { AstWriter } from './astWriter';
@@ -91,7 +90,7 @@ export function makeParseContext(text: string, options?: LanguageOptions): Parse
   const ts = new TextStream(text);
   const tokens = t.tokenize(ts, 0, text.length);
   const ast = new AstRootImpl();
-  return new ParseContext(ast, ts, options, new TokenStream(tokens), 0);
+  return new ParseContext(ast, ts, options, tokens, 0);
 }
 export function writeTokens(filePath: string): void {}
 

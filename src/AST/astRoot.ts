@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextProvider } from '../text/text';
-import { TextRangeCollection } from '../text/textRangeCollection';
 import { Token } from '../tokens/tokens';
 import { AstNode, AstRoot, TokenNode } from './definitions';
 import { Statement } from './statement';
@@ -43,15 +42,10 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
     return true;
   }
 
-  public static create(
-    text: string,
-    options: LanguageOptions,
-    tokens: TextRangeCollection<Token>,
-    version = 0
-  ): AstRoot {
+  public static create(text: string, options: LanguageOptions, tokens: readonly Token[], version = 0): AstRoot {
     const ts = new TextStream(text);
     const ast = new AstRootImpl();
-    const context = new ParseContext(ast, ts, options, new TokenStream(tokens), version);
+    const context = new ParseContext(ast, ts, options, tokens, version);
     ast.parse(context);
     return ast;
   }
@@ -78,6 +72,9 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
   }
 
   public get statements(): readonly Statement[] {
-    return this.children.asArray.map((e) => e as Statement).filter((e) => e);
+    return this.children
+      .asArray()
+      .map((e) => e as Statement)
+      .filter((e) => e);
   }
 }

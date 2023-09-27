@@ -3,7 +3,6 @@
 
 import { LanguageOptions } from '../../core/languageOptions';
 import { CharacterStream } from '../../text/characterStream';
-import { TextRangeCollection } from '../../text/textRangeCollection';
 import { TextStream } from '../../text/textStream';
 import { NumberTokenizer } from '../../tokens/numberTokenizer';
 import { Tokenizer } from '../../tokens/tokenizer';
@@ -20,7 +19,7 @@ export namespace TokenTest {
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
-  export function tokenizeToArray(text: string, options?: LanguageOptions): TextRangeCollection<Token> {
+  export function tokenizeToArray(text: string, options?: LanguageOptions): readonly Token[] {
     options = options ?? makeLanguageOptions(true, true);
     const t = new Tokenizer(options);
     return t.tokenize(new TextStream(text), 0, text.length);
@@ -33,10 +32,10 @@ export namespace TokenTest {
     return nt.tryNumber();
   }
 
-  export function verifyTokenTypes(actual: TextRangeCollection<Token>, expected: TokenType[]): void {
-    expect(actual.count).toBe(expected.length);
-    for (let i = 0; i < actual.count; i++) {
-      expect(actual.getItemAt(i).type).toBe(expected[i]);
+  export function verifyTokenTypes(actual: readonly Token[], expected: readonly TokenType[]): void {
+    expect(actual.length).toBe(expected.length);
+    for (let i = 0; i < actual.length; i++) {
+      expect(actual[i].type).toBe(expected[i]);
     }
   }
 }

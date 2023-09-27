@@ -3,30 +3,30 @@
 
 import { AstNode, AstRoot, ParseError } from '../AST/definitions';
 import { LanguageOptions } from '../core/languageOptions';
+import { TextRangeCollection } from '../text/definitions';
 import { TextProvider } from '../text/text';
-import { TextRangeCollection } from '../text/textRangeCollection';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 import { TokenStream } from '../tokens/tokenStream';
 import { Token, TokenType } from '../tokens/tokens';
 
 export class ParseContext {
   public readonly text: TextProvider;
   public readonly options: LanguageOptions;
-  public readonly tokens: TokenStream;
-  public readonly comments: TextRangeCollection<Token>;
+  public readonly tokens: TokenStream; // Removed comments
+  public readonly rawTokens: TextRangeCollection<Token>; // Includes comments
   public readonly version: number;
   public readonly root: AstRoot;
 
   private readonly _errors: ParseError[] = [];
 
-  constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, ts: TokenStream, version: number) {
+  constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, tokens: readonly Token[], version: number) {
     this.root = root;
     this.text = text;
     this.options = options;
     this.version = version;
 
-    const filtered = this.filterOutComments(ts);
-    this.tokens = new TokenStream(filtered.tokens);
-    this.comments = filtered.comments;
+    this.rawTokens = new TextRangeCollectionImpl(tokens);
+    this.tokens = new TokenStream(tokens.filter((t) => !Token.isComment(t)));
   }
 
   public get currentToken(): Token {
@@ -49,7 +49,7 @@ export class ParseContext {
   }
 
   public get errors(): TextRangeCollection<ParseError> {
-    return new TextRangeCollection(this._errors);
+    return new TextRangeCollectionImpl(this._errors);
   }
 
   public addError(error: ParseError): void {
@@ -59,28 +59,6 @@ export class ParseContext {
     if (!found) {
       this._errors.push(error);
     }
-  }
-
-  private filterOutComments(ts: TokenStream): {
-    tokens: TextRangeCollection<Token>;
-    comments: TextRangeCollection<Token>;
-  } {
-    // Separate comments in order to simplify parsing.
-    const filteredTokens: Token[] = [];
-    const commentTokens: Token[] = [];
-    while (!ts.isEndOfStream()) {
-      if (ts.currentToken.type === TokenType.BlockComment || ts.currentToken.type === TokenType.LineComment) {
-        commentTokens.push(ts.currentToken);
-      } else {
-        filteredTokens.push(ts.currentToken);
-      }
-      ts.moveToNextToken();
-    }
-
-    return {
-      tokens: new TextRangeCollection(filteredTokens),
-      comments: new TextRangeCollection(commentTokens),
-    };
   }
 }
 

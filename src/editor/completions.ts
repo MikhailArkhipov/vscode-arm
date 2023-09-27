@@ -7,7 +7,7 @@ import { CancellationToken } from 'vscode-languageclient';
 import { TextDocument, Position, CompletionContext, CompletionItem, CompletionItemKind } from 'vscode';
 import { getDirectiveDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
-import { TokenType } from '../tokens/tokens';
+import { Token, TokenType } from '../tokens/tokens';
 import { EditorDocument } from './document';
 import { Settings, getSetting } from '../core/settings';
 import { getAvailableInstructions, waitForInstructionSetLoadingComplete } from '../instructions/instructionSet';
@@ -25,7 +25,7 @@ export async function provideCompletions(
 
   const offset = td.offsetAt(position);
   const tokenIndex = ed.tokens.getItemContaining(offset);
-  if (ed.isComment(tokenIndex)) {
+  if (tokenIndex >= 0 && Token.isComment(ed.tokens.getItemAt(tokenIndex))) {
     return [];
   }
 

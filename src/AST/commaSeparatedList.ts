@@ -7,8 +7,9 @@ import { TokenType } from '../tokens/tokens';
 import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, ParseErrorType, TokenNode } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 import { ExpressionImpl } from './expression';
-import { TextRangeCollection } from '../text/textRangeCollection';
 import { AstNodeImpl } from './astNode';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
+import { TextRangeCollection } from '../text/definitions';
 
 // An item in a comma-separated sequence, such as {a, b, c}.
 // Normally an expression followed by an optional comma.
@@ -61,7 +62,7 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
     return this._openBrace;
   }
   public get items(): TextRangeCollection<CommaSeparatedItem> {
-    return new TextRangeCollection(this._items);
+    return new TextRangeCollectionImpl(this._items);
   }
 
   // ParseItem

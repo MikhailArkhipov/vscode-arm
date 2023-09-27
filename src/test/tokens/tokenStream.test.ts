@@ -1,12 +1,11 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from "../../text/textRangeCollection";
 import { TokenStream } from "../../tokens/tokenStream";
 import { Token, TokenType } from "../../tokens/tokens";
 
 function createTokenStream(tokens: Token[]): TokenStream {
-  return new TokenStream(new TextRangeCollection<Token>(tokens));
+  return new TokenStream(tokens);
 }
 
 test("TokenStream empty", () => {

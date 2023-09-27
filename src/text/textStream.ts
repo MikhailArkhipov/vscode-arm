@@ -30,8 +30,9 @@ export class TextStream implements TextProvider {
     return this._text.charCodeAt(position);
   }
 
+  public getText(): string;
   public getText(position?: number, length?: number): string {
-    if(!position) {
+    if (position === undefined) {
       return this._text;
     }
     if (!length || length === 0 || position >= this._text.length) {
