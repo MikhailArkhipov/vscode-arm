@@ -3,10 +3,10 @@
 
 import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, Statement, TokenNode } from "../../AST/definitions";
 import { TokenSubType, TokenType } from "../../tokens/tokens";
-import { TestUtil } from "../utility";
+import { makeLanguageOptions, parseText, verifyNodeText, verifyTokenNode } from "../utility/parsing";
 
 test('Simple A32 instruction', () => {
-  const root = TestUtil.parseText('add r1, r2, #1', TestUtil.makeLanguageOptions(false, true));
+  const root = parseText('add r1, r2, #1', makeLanguageOptions(false, true));
   let child: AstNode;
 
   expect(root).toBeDefined();
@@ -19,8 +19,7 @@ test('Simple A32 instruction', () => {
   expect(s.children.count).toBe(2); // name and list of operands
   child = s.children.getItemAt(0);
   let tn = child as TokenNode;
-  TestUtil.verifyNodeText(root.text, tn, "add");
-  TestUtil.verifyNodeTokenType(tn, TokenType.Symbol, TokenSubType.Instruction);
+  verifyTokenNode(tn, root.context, TokenType.Symbol, 'add', TokenSubType.Instruction);
 
   const csl =  s.children.getItemAt(1) as CommaSeparatedList;
   expect(csl.children.count).toBe(3);
@@ -34,6 +33,5 @@ test('Simple A32 instruction', () => {
   expect(e.children.count).toBe(1);
   child = e.children.getItemAt(0);
   tn = child as TokenNode;
-  TestUtil.verifyNodeText(root.text, tn, "r1");
-  TestUtil.verifyNodeTokenType(tn, TokenType.Symbol, TokenSubType.Register); 
+  verifyTokenNode(tn, root.context, TokenType.Symbol, 'r1', TokenSubType.Register); 
 });

@@ -3,7 +3,7 @@
 
 import { LanguageOptions } from '../core/languageOptions';
 import { Character } from '../text/charCodes';
-import { TextProvider } from '../text/text';
+import { TextProvider, makeWhitespace } from '../text/text';
 import { TokenStream } from '../tokens/tokenStream';
 import { Tokenizer } from '../tokens/tokenizer';
 import { Token, TokenSubType, TokenType } from '../tokens/tokens';
@@ -149,16 +149,16 @@ export class Formatter {
       case TokenType.EndOfStream:
         // Indent instruction, leave directive as is
         if (ct.type === TokenType.Symbol) {
-          this._lineText.push(this.getWhitespace(this._instructionIndent));
+          this._lineText.push(makeWhitespace(this._instructionIndent));
         }
         break;
 
       case TokenType.Label:
-        this._lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
+        this._lineText.push(makeWhitespace(this._instructionIndent - pt.length));
         break;
 
       default:
-        this._lineText.push(this.getWhitespace(1));
+        this._lineText.push(makeWhitespace(1));
         break;
     }
     let text = this._text.getText(ct.start, ct.length);
@@ -179,9 +179,9 @@ export class Formatter {
       case TokenType.Directive:
         // Indent instruction, leave directive as is
         if (this._options.alignOperands) {
-          this._lineText.push(this.getWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+          this._lineText.push(makeWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
         } else {
-          this._lineText.push(this.getWhitespace(1));
+          this._lineText.push(makeWhitespace(1));
         }
         this._lineText.push(this._text.getText(ct.start, ct.length));
         break;
@@ -208,12 +208,12 @@ export class Formatter {
       const currentIndentation = ct.start - pt.end;
       if (currentIndentation > this._instructionIndent / 2) {
         // indent to instructions
-        this._lineText.push(this.getWhitespace(this._instructionIndent));
+        this._lineText.push(makeWhitespace(this._instructionIndent));
       }
     } else if (pt.type === TokenType.Label) {
-      this._lineText.push(this.getWhitespace(this._instructionIndent - pt.length));
+      this._lineText.push(makeWhitespace(this._instructionIndent - pt.length));
     } else {
-      this._lineText.push(this.getWhitespace(1));
+      this._lineText.push(makeWhitespace(1));
     }
     this._lineText.push(this._text.getText(ct.start, ct.length));
   }
@@ -256,10 +256,6 @@ export class Formatter {
         return;
     }
     this._lineText.push(' ');
-  }
-
-  private getWhitespace(amount: number): string {
-    return new Array(amount + 1).join(' ');
   }
 
   private getIndents(): { instructions: number; operands: number } {

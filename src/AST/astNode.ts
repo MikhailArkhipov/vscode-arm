@@ -6,10 +6,11 @@ import { TextRangeImpl, TextRange } from '../text/textRange';
 import { TextRangeCollection } from '../text/textRangeCollection';
 import { AstNode } from './definitions';
 
-export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
+export class AstNodeImpl implements AstNode, ParseItem {
   protected _parent: AstNode | undefined;
   private readonly _children = new TextRangeCollection<AstNode>();
 
+  // AstNode
   public get parent(): AstNode | undefined {
     return this._parent;
   }
@@ -31,6 +32,7 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
     return this._children;
   }
 
+  // TextRange
   public get start(): number {
     return this._children.count > 0 ? this._children.getItemAt(0).start : 0;
   }
@@ -41,6 +43,17 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
     return this._children.count > 0 ? this._children.getItemAt(this._children.count - 1).end : 0;
   }
 
+  public contains(position: number): boolean {
+    return TextRange.contains(this.start, this.length, position);
+  }
+
+  public containsRange(other: TextRange, inclusiveEnd?: boolean): boolean {
+    if (inclusiveEnd) {
+      return TextRange.containsInclusiveEnd(this, other);
+    }
+    return this.contains(other.start) && this.contains(other.end);
+  }
+
   public appendChild(node: AstNode): void {
     if (!node.parent) {
       node.parent = this;
@@ -49,6 +62,7 @@ export class AstNodeImpl extends TextRangeImpl implements AstNode, ParseItem {
     }
   }
 
+  // ParseItem
   public parse(context: ParseContext, parent?: AstNode): boolean {
     // Use property so item gets added to the parent collection.
     this.parent = parent;

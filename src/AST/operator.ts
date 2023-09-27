@@ -185,5 +185,5 @@ function getUnaryForm(type: OperatorType): OperatorType {
     case OperatorType.Add:
       return OperatorType.UnaryPlus;
   }
-  return this._type;
+  return type;
 }

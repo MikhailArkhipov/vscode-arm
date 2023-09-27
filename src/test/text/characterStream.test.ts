@@ -152,3 +152,34 @@ test("CharacterStream text", () => {
   expect(cs.prevChar).toBe(Char.LineFeed);
   expect(cs.nextChar).toBe(Char.d);
 });
+
+test("CharacterStream EOL", () => {
+  const text = "a\r\n\r\nb";
+  const cs = new CharacterStream(new TextStream(text));
+  expect(cs.length).toBe(text.length);
+  expect(cs.position).toBe(0);
+  expect(cs.currentChar).toBe(Char.a);
+  
+  cs.moveToEol();
+  expect(cs.position).toBe(1);
+  expect(cs.currentChar).toBe(Char.CarriageReturn);
+  expect(cs.nextChar).toBe(Char.LineFeed);
+
+  cs.skipLineBreak();
+  expect(cs.position).toBe(3);
+  expect(cs.currentChar).toBe(Char.CarriageReturn);
+  expect(cs.nextChar).toBe(Char.LineFeed);
+
+  cs.skipLineBreak();
+  expect(cs.position).toBe(5);
+  expect(cs.currentChar).toBe(Char.b);
+
+  cs.skipLineBreak();
+  expect(cs.position).toBe(5);
+  expect(cs.currentChar).toBe(Char.b);
+
+  cs.moveToNextChar();
+  cs.skipLineBreak();
+  expect(cs.position).toBe(6);
+  expect(cs.currentChar).toBe(Char.Null);
+});

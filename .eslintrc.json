@@ -44,10 +44,20 @@
     },
     "overrides": [
         {
-            "files": ["**/*.js"],
+            "files": [
+                "**/*.js"
+            ],
             "rules": {
                 "@typescript-eslint/no-var-requires": 0
             }
         }
-    ]
+    ],
+    "rule": {
+        "jest/valid-expect": [
+            "error",
+            {
+                "maxArgs": 2
+            }
+        ]
+    }
 }

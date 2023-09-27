@@ -45,10 +45,21 @@ interface ParseResult {
 
 export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
+  private _start: number; // If expression is empty we still need start position.
 
   // Expression
   public get content(): AstNode | undefined {
     return this._content;
+  }
+  // TextRange
+  public get start(): number {
+    return this._content ? this._content.start : this._start;
+  }
+  public get end(): number {
+    return this._content ? this._content.end : this._start;
+  }
+  public get length(): number {
+    return this.end - this.start;
   }
 
   // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
@@ -70,6 +81,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     // Push sentinel
     this._operators.push(sentinel);
+    this._start = context.currentToken.start;
+    
     while (!tokens.isEndOfLine() && errorType === ParseErrorType.None && !endOfExpression) {
       const ct = tokens.currentToken;
 

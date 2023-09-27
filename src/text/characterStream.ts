@@ -1,11 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-"use strict";
 
-import { Char, Character } from "./charCodes";
-import { TextProvider } from "./text";
-import { TextRange } from "./textRange";
-import { TextStream } from "./textStream";
+import { Char, Character } from './charCodes';
+import { TextProvider } from './text';
+import { TextRange } from './textRange';
+import { TextStream } from './textStream';
 
 /**
  * Helper class that represents stream of characters
@@ -122,7 +121,11 @@ export class CharacterStream {
   }
 
   public skipLineBreak(): void {
-    while (this.currentChar === Char.LineFeed || this.currentChar === Char.CarriageReturn) {
+    if (this.currentChar === Char.CarriageReturn && this.nextChar === Char.LineFeed) {
+      this.advance(2);
+    } else if (this.currentChar === Char.LineFeed && this.nextChar === Char.CarriageReturn) {
+      this.advance(2);
+    } else if (this.isAtNewLine()) {
       this.moveToNextChar();
     }
   }

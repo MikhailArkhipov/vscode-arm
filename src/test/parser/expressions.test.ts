@@ -3,7 +3,14 @@
 
 import { Group, TokenOperator } from '../../AST/definitions';
 import { TokenType } from '../../tokens/tokens';
-import { isTokenNode, parseExpression, verifyNodeText, verifyOperator, verifyTokenNode } from './parseUtility';
+import {
+  isTokenNode,
+  parseExpression,
+  verifyNodeText,
+  verifyOperator,
+  verifyParseExpression,
+  verifyTokenNode,
+} from '../utility/parsing';
 
 test('a+b', () => {
   const result = parseExpression('a+b');
@@ -59,4 +66,16 @@ test('(a+b)*c', () => {
   expect(isTokenNode(g.closeBrace)).toBe(true);
   expect(g.content).toBeDefined();
   verifyNodeText(g.content!, context, 'a+b');
+});
+
+test('Precedence 1', () => {
+  const expected = 
+String.raw`TokenOperator [0...6)
+  TokenNode [0...1)
+  TokenNode [2...3)
+  TokenOperator [4...6)
+    TokenNode [4...5)
+    TokenNode [5...6)
+`;
+  verifyParseExpression(expected, 'a & !b');
 });

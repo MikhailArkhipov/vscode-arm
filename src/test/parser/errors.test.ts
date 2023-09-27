@@ -3,7 +3,7 @@
 
 import { ParseErrorType } from '../../AST/definitions';
 import { ParseContext } from '../../parser/parseContext';
-import { parseExpression } from './parseUtility';
+import { parseExpression } from '../utility/parsing';
 
 test('empty', () => {
   const result = parseExpression('');

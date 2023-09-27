@@ -3,11 +3,10 @@
 
 import { TokenNode } from '../../AST/definitions';
 import { TokenSubType, TokenType } from '../../tokens/tokens';
-import { TestUtil } from '../utility';
-import { isTokenNode } from './parseUtility';
+import { isTokenNode, makeLanguageOptions, parseText } from '../utility/parsing';
 
 test('Get node from position simple', () => {
-  const ast = TestUtil.parseText(' ADD r1, r2, #123', TestUtil.makeLanguageOptions(false, true));
+  const ast = parseText(' ADD r1, r2, #123', makeLanguageOptions(false, true));
 
   let node = ast.nodeFromPosition(0);
   expect(node).toBeUndefined();

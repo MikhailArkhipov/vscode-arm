@@ -1,7 +1,6 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-
 // Abstracts character iteraction over text source.
 export interface TextIterator {
   readonly length: number;
@@ -17,3 +16,6 @@ export interface TextProvider extends TextIterator {
   compareTo(position: number, length: number, text: string, ignoreCase: boolean): boolean;
 }
 
+export function makeWhitespace(amount: number): string {
+  return new Array(amount + 1).join(' ');
+}
