@@ -43,7 +43,8 @@ export enum TokenSubType {
   Instruction = 1,
   Register = 2,
   SymbolDeclaration = 3, // label: {\n}.data_directive (.byte, .word, .asciiz, ...)
-  SymbolReference = 4, // Reference to a symbol or variable
+  Reference = 4, // Reference to a symbol or variable
+  Noop = 5, // ! in '[...]!' or 'R4!', = in '=[...]' or ^ in '{...}^'.
 }
 
 /**
@@ -78,7 +79,7 @@ export namespace Token {
   export function isVariable(t: Token): boolean {
     return (
       t.type === TokenType.Symbol &&
-      (t.subType === TokenSubType.SymbolDeclaration || t.subType === TokenSubType.SymbolReference)
+      (t.subType === TokenSubType.SymbolDeclaration || t.subType === TokenSubType.Reference)
     );
   }
 

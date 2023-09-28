@@ -138,15 +138,26 @@ export class Tokenizer {
         }
         break;
 
-      case Char.Equal:
       case Char.Slash:
       case Char.Asterisk:
       case Char.Percent:
-      case Char.ExclamationMark:
+
       case Char.Ampersand:
       case Char.Bar:
       case Char.Caret:
         this.addTokenAndMove(TokenType.Operator, this._cs.position);
+        return true;
+
+      case Char.Equal:
+      case Char.ExclamationMark:
+      case Char.Caret:
+        // We treat = that appears before expressions as well as ! and ^ that may appear 
+        // after expressions as special, no-op operators. Parser will collect them but 
+        // won't handle them as real unary operators since they do not appear inside
+        // expressions (apart from bang that is NOT operator). Colorizer will see them
+        // and colorize as needed, but parser generally doesn't care as this is not
+        // a real assembler with actual code generation.
+        this.addTokenAndMove(TokenType.Operator, this._cs.position, TokenSubType.Noop);
         return true;
 
       case Char.OpenBracket:
@@ -429,6 +440,10 @@ export class Tokenizer {
         this.addToken(TokenType.Symbol, start, this._cs.position - start);
         return true;
       }
+
+      //#symbol, #\symbol
+      if (this._cs.currentChar === Char.Backslash) {
+      }
     }
 
     if (this.tryNumber(start)) {
@@ -439,12 +454,15 @@ export class Tokenizer {
     return true;
   }
 
-  private addToken(type: TokenType, start: number, length: number): void {
+  private addToken(type: TokenType, start: number, length: number, tokenSubType?: TokenSubType): void {
     const token = new Token(type, start, length);
+    if(tokenSubType) {
+      token.subType = tokenSubType;
+    }
     this._tokens.push(token);
   }
 
-  private addTokenAndMove(type: TokenType, start: number): void {
+  private addTokenAndMove(type: TokenType, start: number, tokenSubType?: TokenSubType): void {
     this.addToken(type, start, 1);
     this._cs.moveToNextChar();
   }

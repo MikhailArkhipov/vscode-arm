@@ -308,3 +308,33 @@ test(';;`*', () => {
   const actual = TokenTest.tokenizeToArray(text);
   TokenTest.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
 });
+
+test("#'a'", () => {
+  const text = " #'a'";
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Number]);
+});
+
+test('#0x1', () => {
+  const text = ' #0x1';
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Number]);
+});
+
+test('#foo', () => {
+  const text = ' #foo';
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
+});
+
+test('#\\foo`*', () => {
+  const text = ' #\\foo';
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
+});
+
+test('#(a+1)', () => {
+  const text = ' #(a+1)';
+  const actual = TokenTest.tokenizeToArray(text);
+  TokenTest.verifyTokenTypes(actual, [TokenType.Unknown, TokenType.Operator]);
+});
