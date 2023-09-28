@@ -267,6 +267,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     if (!this._nestedListAllowed) {
       context.addError(new UnexpectedItemError(ParseErrorType.UnexpectedToken, context.currentToken));
       this._operationType = OperationType.EndOfExpression;
+      this._errorType = ParseErrorType.UnexpectedToken;
       return;
     }
     
