@@ -26,7 +26,7 @@ ARM Assembler syntax is not supported. Syntax check is basic, the feature is far
 - Documentation on directives in hover tooltips is fetched online directly from the [GAS Web site](https://sourceware.org/binutils/docs/as/index.html#SEC_Contents).
 
 # Bugs and feedback
-Feel free to file bugs and suggestings at [vscode-arm](https://github.com/MikhailArkhipov/vscode-arm) repo.
+Feel free to file bugs and suggestions at [vscode-arm](https://github.com/MikhailArkhipov/vscode-arm) repo.
 
 
 
