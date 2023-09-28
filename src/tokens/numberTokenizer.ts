@@ -170,7 +170,7 @@ export class NumberTokenizer {
     if (
       this._cs.currentChar === Char.OpenBrace ||
       this._cs.currentChar === Char.OpenBracket ||
-      this._cs.currentChar === Char.OpenParenthesis
+      this._cs.currentChar === Char.OpenCurly
     ) {
       return false;
     }

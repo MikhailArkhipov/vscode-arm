@@ -6,7 +6,7 @@ import { CharacterStream } from '../../text/characterStream';
 import { TextStream } from '../../text/textStream';
 import { NumberTokenizer } from '../../tokens/numberTokenizer';
 import { Tokenizer } from '../../tokens/tokenizer';
-import { Token, TokenType } from '../../tokens/tokens';
+import { Token, TokenSubType, TokenType } from '../../tokens/tokens';
 import { makeLanguageOptions } from './parsing';
 
 export namespace TokenTest {
@@ -36,6 +36,13 @@ export namespace TokenTest {
     expect(actual.length).toBe(expected.length);
     for (let i = 0; i < actual.length; i++) {
       expect(actual[i].type).toBe(expected[i]);
+    }
+  }
+  
+  export function verifyTokenSubTypes(actual: readonly Token[], expected: readonly TokenSubType[]): void {
+    expect(actual.length).toBe(expected.length);
+    for (let i = 0; i < actual.length; i++) {
+      expect(actual[i].subType).toBe(expected[i]);
     }
   }
 }

@@ -45,8 +45,8 @@ export const enum Char {
   Percent = 0x25,
   Ampersand = 0x26,
   SingleQuote = 0x27,
-  OpenParenthesis = 0x28,
-  CloseParenthesis = 0x29,
+  OpenBrace = 0x28, // (
+  CloseBrace = 0x29, // )
   Asterisk = 0x2a,
   Plus = 0x2b,
   Comma = 0x2c,
@@ -128,9 +128,9 @@ export const enum Char {
   x = 0x78,
   y = 0x79,
   z = 0x7a,
-  OpenBrace = 0x7b,
+  OpenCurly = 0x7b,
   Bar = 0x7c,
-  CloseBrace = 0x7d,
+  CloseCurly = 0x7d,
   Tilde = 0x7e,
   Delete = 0x7f,
 

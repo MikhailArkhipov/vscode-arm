@@ -144,15 +144,14 @@ export class Tokenizer {
 
       case Char.Ampersand:
       case Char.Bar:
-      case Char.Caret:
         this.addTokenAndMove(TokenType.Operator, this._cs.position);
         return true;
 
       case Char.Equal:
       case Char.ExclamationMark:
       case Char.Caret:
-        // We treat = that appears before expressions as well as ! and ^ that may appear 
-        // after expressions as special, no-op operators. Parser will collect them but 
+        // We treat = that appears before expressions as well as ! and ^ that may appear
+        // after expressions as special, no-op operators. Parser will collect them but
         // won't handle them as real unary operators since they do not appear inside
         // expressions (apart from bang that is NOT operator). Colorizer will see them
         // and colorize as needed, but parser generally doesn't care as this is not
@@ -166,16 +165,16 @@ export class Tokenizer {
       case Char.CloseBracket:
         this.addTokenAndMove(TokenType.CloseBracket, this._cs.position);
         return true;
-      case Char.OpenBrace:
+      case Char.OpenCurly:
         this.addTokenAndMove(TokenType.OpenCurly, this._cs.position);
         return true;
-      case Char.CloseBrace:
+      case Char.CloseCurly:
         this.addTokenAndMove(TokenType.CloseCurly, this._cs.position);
         return true;
-      case Char.OpenParenthesis:
+      case Char.OpenBrace:
         this.addTokenAndMove(TokenType.OpenBrace, this._cs.position);
         return true;
-      case Char.CloseParenthesis:
+      case Char.CloseBrace:
         this.addTokenAndMove(TokenType.CloseBrace, this._cs.position);
         return true;
       case Char.Comma:
@@ -440,30 +439,38 @@ export class Tokenizer {
         this.addToken(TokenType.Symbol, start, this._cs.position - start);
         return true;
       }
-
-      //#symbol, #\symbol
-      if (this._cs.currentChar === Char.Backslash) {
-      }
     }
 
+    //#symbol, #\symbol
+    if (this.skipSymbol()) {
+      this.addToken(TokenType.Symbol, start, this._cs.position - start);
+      return true;
+    }
+    // #8, #0xABCD
     if (this.tryNumber(start)) {
       return true;
     }
 
-    this.addToken(TokenType.Unknown, start, this._cs.position - start);
+    // Perhaps an expression follows, like #(a+1)?
+    // Rememeber, we are past # at this point, so don't advance.
+    if(this._cs.currentChar === Char.OpenBrace.valueOf()) {
+      this.addToken(TokenType.Operator, start, 1, TokenSubType.Noop);
+    } else {
+      this.addToken(TokenType.Unknown, start, 1);
+    }   
     return true;
   }
 
   private addToken(type: TokenType, start: number, length: number, tokenSubType?: TokenSubType): void {
     const token = new Token(type, start, length);
-    if(tokenSubType) {
+    if (tokenSubType) {
       token.subType = tokenSubType;
     }
     this._tokens.push(token);
   }
 
   private addTokenAndMove(type: TokenType, start: number, tokenSubType?: TokenSubType): void {
-    this.addToken(type, start, 1);
+    this.addToken(type, start, 1, tokenSubType);
     this._cs.moveToNextChar();
   }
 
@@ -477,18 +484,28 @@ export class Tokenizer {
     }
   }
 
-  private skipSymbol(): void {
+  private skipSymbol(): boolean {
     // Allow period since there may be specifier on instructions
     // like .I8 and it should be part of the instruction name.
     // We may end up recognizing '.a.b.c' as directives, but we
     // will let validator deal with it.
-    if (!isLeadingSymbolCharacter(this._cs.currentChar)) {
-      return;
+
+    // \foo is a reference to the macro parameters
+    const start = this._cs.position;
+    if (this._cs.currentChar === Char.Backslash) {
+      this._cs.moveToNextChar();
     }
+
+    if (!isLeadingSymbolCharacter(this._cs.currentChar)) {
+      this._cs.position = start;
+      return false;
+    }
+
     this._cs.moveToNextChar();
     this._cs.skipNonWsSequence((ch: number): boolean => {
       return isSymbolCharacter(ch);
     });
+    return this._cs.position > start;
   }
 
   // Checks if position is first in line OR is preceded by block comments only.
@@ -541,8 +558,8 @@ function isHardStopCharacter(ch: number): boolean {
     case Char.CloseBracket:
     case Char.OpenBrace:
     case Char.CloseBrace:
-    case Char.OpenParenthesis:
-    case Char.CloseParenthesis:
+    case Char.OpenCurly:
+    case Char.CloseCurly:
     case Char.Comma:
     case Char.SingleQuote:
     case Char.DoubleQuote:

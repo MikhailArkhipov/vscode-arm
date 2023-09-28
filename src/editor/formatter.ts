@@ -175,13 +175,20 @@ export class Formatter {
     switch (pt.type) {
       case TokenType.Symbol:
       case TokenType.Directive:
-        // Indent instruction, leave directive as is
-        if (this._options.alignOperands) {
-          this._lineText.push(makeWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
-        } else {
-          this._lineText.push(makeWhitespace(1));
+        {
+          // Indent instruction, leave directive as is
+          if (this._options.alignOperands) {
+            this._lineText.push(makeWhitespace(this._operandsIndent - this._instructionIndent - pt.length));
+          } else {
+            this._lineText.push(makeWhitespace(1));
+          }
+          // Check registers
+          let text = this._text.getText(ct.start, ct.length);
+          if (pt.subType === TokenSubType.Register) {
+            text = this._options.uppercaseRegisters ? text.toUpperCase() : text.toLowerCase();
+          }
+          this._lineText.push(text);
         }
-        this._lineText.push(this._text.getText(ct.start, ct.length));
         break;
 
       case TokenType.Comma:

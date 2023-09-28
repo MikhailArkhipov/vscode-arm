@@ -42,12 +42,27 @@ test('Conditional preprocessor', () => {
 
 test('Directive + label', () => {
   const result = format('input: .byte 212, 228, 188');
-  expect(result).toBe('input: .byte 212, 228, 188');
+  expect(result).toBe('input:  .byte 212, 228, 188');
 });
 
-test('Instruction 1', () => {
-  const result = format("CMP   R1, #'a'-1");
-  expect(result).toBe("cmp   r1, #'a'-1");
+test('U instructions, L registers', () => {
+  const fo = new FormatOptions();
+  fo.spaceAfterComma = true;
+  fo.uppercaseInstructions = true;
+  fo.uppercaseRegisters = false;
+  fo.tabSize = 4;
+  const result = formatWithOptions("cmp   R1, #'a'-1", fo);
+  expect(result).toBe("    CMP r1, #'a' - 1");
+});
+
+test('L instructions U registers', () => {
+  const fo = new FormatOptions();
+  fo.spaceAfterComma = true;
+  fo.uppercaseInstructions = false;
+  fo.uppercaseRegisters = true;
+  fo.tabSize = 4;
+  const result = formatWithOptions("CMP   R1, #'a'-1", fo);
+  expect(result).toBe("    cmp R1, #'a' - 1");
 });
 
 test('Space around operators', () => {
@@ -60,17 +75,6 @@ test('Space around operators', () => {
   expect(result).toBe('  subs   r7, [r0-12+148]');
 });
 
-test('Uppercase option', () => {
-  const options = new FormatOptions();
-  options.ignoreComments = false;
-  options.spaceAfterComma = true;
-  options.uppercaseInstructions = true;
-  options.uppercaseRegisters = true;
-  options.tabSize = 2;
-  const result = formatWithOptions('        subs R7 ,  r0,   #1     // and repeat if R0 != 1', options);
-  expect(result).toBe('  SUBS  R7, R0, #1 // and repeat if R0 != 1');
-});
-
 function format(original: string): string {
   const options = new FormatOptions();
   options.ignoreComments = false;
@@ -81,8 +85,7 @@ function format(original: string): string {
 
 export function formatWithOptions(
   original: string,
-  formatOptions: FormatOptions,
-  languageOptions?: LanguageOptions
+  formatOptions: FormatOptions
 ): string {
   const ast = parseText(original);
   const f = new Formatter();
