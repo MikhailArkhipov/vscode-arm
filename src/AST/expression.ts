@@ -8,6 +8,7 @@ import {
   Expression,
   Operator,
   OperatorType,
+  ParseError,
   ParseErrorType,
 } from './definitions';
 import { TextRange } from '../text/textRange';
@@ -144,7 +145,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
 
     if (this._errorType !== ParseErrorType.None) {
-       // Although there may be errors we still want to include the result into the tree
+      // Although there may be errors we still want to include the result into the tree
       if (this._operands.length === 1) {
         this._content = this._operands.pop()!;
         this.appendChild(this._content);
@@ -171,7 +172,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       switch (this._operationType) {
         case OperationType.Operand:
           // 'operand operand' sequence is an error
-          context.addError(
+          this.addError(
+            context,
             new ParseErrorImpl(ParseErrorType.OperatorExpected, ErrorLocation.Token, this.getOperandErrorRange(context))
           );
           break;
@@ -182,7 +184,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
         default:
           // 'operator operator' sequence is an error
-          context.addError(
+          this.addError(
+            context,
             new ParseErrorImpl(
               ParseErrorType.RightOperandExpected,
               ErrorLocation.Token,
@@ -191,12 +194,12 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
           );
           break;
       }
-
       return false;
     }
+
     if (this._operationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
       // 'operator <EOF>' sequence is an error
-      context.addError(
+      this.addError(context,
         new ParseErrorImpl(
           ParseErrorType.RightOperandExpected,
           ErrorLocation.Token,
@@ -205,22 +208,24 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       );
       return false;
     }
+
     if (
       this._previousOperationType === OperationType.UnaryOperator &&
       this._operationType === OperationType.BinaryOperator
     ) {
       // unary followed by binary doesn't make sense
-      context.addError(
+      this.addError(context,
         new ParseErrorImpl(ParseErrorType.SymbolExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
       );
       return false;
     }
+
     if (
       this._previousOperationType === OperationType.BinaryOperator &&
       this._operationType === OperationType.EndOfExpression
     ) {
       // a +
-      context.addError(
+      this.addError(context,
         new ParseErrorImpl(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
       );
       return false;
@@ -248,7 +253,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     // () groups are permitted to nest since these are normal math expressions.
     const group = new GroupImpl();
-    if(group.parse(context, undefined)) {
+    if (group.parse(context, undefined)) {
       this._operands.push(group);
       this._operationType = OperationType.Operand;
     } else {
@@ -260,19 +265,18 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     // Nesting of braced comma-separated lists is not allowed.
     // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
     // but pop {r1, {...}} or 'mov r12, [sp + []]' are not legal.
-   
+
     // 'ADD r1, r2, [sp-#12]' is, in fact, two legal nested lists:
     // first the operands list itself and then [...] nested inside it.
 
     if (!this._nestedListAllowed) {
-      context.addError(new UnexpectedItemError(ParseErrorType.UnexpectedToken, context.currentToken));
+      this.addError(context, new UnexpectedItemError(ParseErrorType.UnexpectedToken, context.currentToken));
       this._operationType = OperationType.EndOfExpression;
-      this._errorType = ParseErrorType.UnexpectedToken;
       return;
     }
-    
+
     const list = new CommaSeparatedListImpl();
-    if(list.parse(context, undefined)) {
+    if (list.parse(context, undefined)) {
       this._operands.push(list);
       this._operationType = OperationType.Operand;
     } else {
@@ -325,7 +329,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         break;
       }
 
-     this._errorType = this.makeNode(context);
+      this._errorType = this.makeNode(context);
       if (this._errorType === ParseErrorType.None) {
         nextOperatorNode = this._operators[this._operators.length - 1];
 
@@ -364,13 +368,12 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       operatorNode.appendChild(rightOperand);
       operatorNode.rightOperand = rightOperand;
     } else {
-      
       const leftOperand = this.safeGetOperand(operatorNode);
       if (!leftOperand) {
         context.addError(new UnexpectedItemError(ParseErrorType.LeftOperandExpected, operatorNode));
         return ParseErrorType.LeftOperandExpected;
       }
-      
+
       if (leftOperand.end <= operatorNode.start && rightOperand.start >= operatorNode.end) {
         operatorNode.leftOperand = leftOperand;
         operatorNode.rightOperand = rightOperand;
@@ -433,5 +436,10 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
   private getLastOperator(): OperatorImpl {
     return this._operators[this._operators.length - 1];
+  }
+
+  private addError(context: ParseContext, error: ParseError): void {
+    context.addError(error);
+    this._errorType = error.errorType;
   }
 }
