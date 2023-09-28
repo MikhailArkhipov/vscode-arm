@@ -12,7 +12,7 @@ test('empty', () => {
 
 test('+', () => {
   const result = parseExpression('+');
-  verifyError(result.context, ParseErrorType.RightOperandExpected, 0, 1);
+  verifyError(result.context, ParseErrorType.LeftOperandExpected, 0, 1);
 });
 
 test('x+', () => {
@@ -55,7 +55,31 @@ test('a()b', () => {
 
 test('a - ---', () => {
   const result = parseExpression('a - ---');
-  verifyError(result.context, ParseErrorType.RightOperandExpected, 6, 1);
+  verifyError(result.context, ParseErrorType.LeftOperandExpected, 6, 1);
+});
+
+test('{', () => {
+  const result = parseExpression('{');
+  verifyError(result.context, ParseErrorType.CloseBraceExpected, 0, 1);
+});
+
+test('[', () => {
+  const result = parseExpression('[');
+  verifyError(result.context, ParseErrorType.CloseBraceExpected, 0, 1);
+});
+
+test('{}', () => {
+  const result = parseExpression('{}');
+  verifyError(result.context, ParseErrorType.EmptyExpression, 1, 1);
+});
+
+test('[]', () => {
+  const result = parseExpression('[]');
+  verifyError(result.context, ParseErrorType.EmptyExpression, 1, 1);
+});
+test('[sp, [1]]', () => {
+  const result = parseExpression('[sp, [1]]');
+  verifyError(result.context, ParseErrorType.UnexpectedToken, 5, 1);
 });
 
 function verifyError(context: ParseContext, errorType: ParseErrorType, start: number, length: number): void {

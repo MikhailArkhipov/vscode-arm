@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from '../parser/parseContext';
-import { MissingItemParseError } from '../parser/parseError';
+import { MissingItemError } from '../parser/parseError';
 import { TokenType } from '../tokens/tokens';
 import { AstNodeImpl } from './astNode';
 import { Associativity, AstNode, Expression, Group, OperatorType, ParseErrorType, TokenNode } from './definitions';
@@ -51,20 +51,23 @@ export class GroupImpl extends AstNodeImpl implements Group {
   }
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    const tokens = context.tokens;
+    const tokens = context.tokens;    
     if (tokens.currentToken.type !== TokenType.OpenBrace) {
       throw new Error('Parser: expected open brace.');
     }
+
     this._openBrace = TokenNodeImpl.create(context, this);
     const expression = new ExpressionImpl();
-    expression.parse(context, this);
+    let result = expression.parse(context, this);    
     this._content = expression;
 
     if (tokens.currentToken.type === TokenType.CloseBrace.valueOf()) {
       this._closeBrace = TokenNodeImpl.create(context, this);
     } else {
-      context.addError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.previousToken));
+      result = false;
+      context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, tokens.previousToken));
     }
-    return super.parse(context, parent);
+    super.parse(context, parent);
+    return result;
   }
 }

@@ -134,37 +134,39 @@ export interface AstRoot extends AstNode {
 }
 
 export enum ParseErrorType {
-  None,
-  UnexpectedToken,
+  None = 0,
+  UnexpectedToken = 1,
 
   // Assembler expects line to start with label or directive.
-  InstructionOrDirectiveExpected,
+  InstructionOrDirectiveExpected = 2,
   // Instruction is not recognized.
-  UnknownInstruction,
+  UnknownInstruction = 3,
   // Unknown directive
-  UnknownDirective,
+  UnknownDirective = 4,
   // Instruction references label that is not defined.
-  UndefinedLabel,
+  UndefinedLabel = 5,
   // Register is expected at this position.
-  RegisterExpected,
+  RegisterExpected = 6,
   // Variable name, register or other symbol is expected.
-  SymbolExpected,
+  SymbolExpected = 7,
   // Identifier or an expression appears to be missing. For example, two binary
   // operators without anything between them or expression like x + y + '.
-  LeftOperandExpected,
-  RightOperandExpected,
+  LeftOperandExpected = 8,
+  RightOperandExpected = 9,
   // String value is expected
-  StringExpected,
-  OperatorExpected,
+  StringExpected = 10,
+  OperatorExpected = 11,
   // Typically missing item like {a,}
-  ExpressionExpected,
-  CloseBraceExpected,
+  ExpressionExpected = 12,
+  CloseBraceExpected = 13,
+  // Expected non-empty expression inside {} or [].
+  EmptyExpression = 14,
   //DataExpected,
   //NumberExpected,
   //ExpressionExpected,
-  UnexpectedOperand,
-  UnexpectedEndOfLine,
-  UnexpectedEndOfFile,
+  UnexpectedOperand = 15,
+  UnexpectedEndOfLine = 16,
+  UnexpectedEndOfFile = 17,
 }
 
 export enum ErrorLocation {

@@ -16,7 +16,7 @@ import { ParseContext } from '../parser/parseContext';
 import { OperatorImpl, TokenOperatorImpl } from './operator';
 import { GroupImpl } from './group';
 import { TokenNodeImpl } from './tokenNode';
-import { ParseErrorImpl } from '../parser/parseError';
+import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
 
@@ -29,11 +29,11 @@ import { CommaSeparatedListImpl } from './commaSeparatedList';
 // Describes current and previous operation types in the current expression.
 // Helps to detect errors like missing operands or operators.
 const enum OperationType {
-  None,
-  UnaryOperator,
-  BinaryOperator,
-  Operand,
-  EndOfExpression,
+  None = 0,
+  UnaryOperator = 1,
+  BinaryOperator = 2,
+  Operand = 3,
+  EndOfExpression = 4,
 }
 
 const sentinel = new TokenOperatorImpl(false, OperatorType.Sentinel);
@@ -47,6 +47,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
   private _start: number; // If expression is empty we still need start position.
   private _nestedListAllowed = true;
+  private _operationType = OperationType.None;
+  private _errorType = ParseErrorType.None;
 
   constructor(nestedListAllowed?: boolean) {
     super();
@@ -79,9 +81,6 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     // we create tree nodes with operator and its operands.
 
     const tokens = context.tokens;
-    let currentOperationType = OperationType.None;
-    let errorType = ParseErrorType.None;
-    let errorLocation = ErrorLocation.AfterToken;
     let endOfExpression = false;
     let result: ParseResult;
 
@@ -89,7 +88,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     this._operators.push(sentinel);
     this._start = context.currentToken.start;
 
-    while (!tokens.isEndOfLine() && errorType === ParseErrorType.None && !endOfExpression) {
+    while (!tokens.isEndOfLine() && this._errorType === ParseErrorType.None && !endOfExpression) {
       const ct = tokens.currentToken;
 
       switch (ct.type) {
@@ -97,74 +96,55 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         case TokenType.Number:
         case TokenType.String:
         case TokenType.Symbol:
-          currentOperationType = this.handleTokenOperand(context);
+          this.handleTokenOperand(context);
           break;
 
         case TokenType.OpenBracket:
         case TokenType.OpenCurly:
-          result = this.handleList(context);
-          currentOperationType = result.operationType;
-          errorType = result.errorType;
+          this.handleList(context);
           break;
 
         case TokenType.OpenBrace:
-          result = this.handleGroup(context);
-          currentOperationType = result.operationType;
-          errorType = result.errorType;
+          this.handleGroup(context);
           break;
 
         case TokenType.Operator:
-          result = this.handleOperator(context);
-          currentOperationType = result.operationType;
-          errorType = result.errorType;
+          this.handleOperator(context);
           break;
 
         case TokenType.Comma:
         case TokenType.CloseBrace:
         case TokenType.CloseCurly:
         case TokenType.CloseBracket:
-          currentOperationType = OperationType.EndOfExpression;
+          this._operationType = OperationType.EndOfExpression;
           endOfExpression = true;
           break;
 
         default:
-          errorType = ParseErrorType.UnexpectedToken;
-          errorLocation = ErrorLocation.Token;
+          this._errorType = ParseErrorType.UnexpectedToken;
           break;
       }
 
-      if (errorType === ParseErrorType.None && !this.isConsistentOperationSequence(context, currentOperationType)) {
+      if (this._errorType === ParseErrorType.None && !this.isConsistentOperationSequence(context)) {
         return false;
       }
 
-      if (errorType !== ParseErrorType.None || endOfExpression) {
+      if (this._errorType !== ParseErrorType.None || endOfExpression) {
         break;
       }
 
-      this._previousOperationType = currentOperationType;
-    }
-
-    if (errorType !== ParseErrorType.None) {
-      if (errorLocation === ErrorLocation.AfterToken) {
-        context.addError(new ParseErrorImpl(errorType, ErrorLocation.AfterToken, tokens.previousToken));
-      } else {
-        context.addError(new ParseErrorImpl(errorType, ErrorLocation.Token, tokens.currentToken));
-      }
+      this._previousOperationType = this._operationType;
     }
 
     if (this._operators.length > 1) {
       // If there are still operators to process, construct the final subtree.
       // After that only the sentinel operator should be in the operators stack
       // and a single final root node in the operand stack.
-      errorType = this.processHigherPrecendenceOperators(context, sentinel);
+      this.processHigherPrecendenceOperators(context, sentinel);
     }
 
-    if (errorType !== ParseErrorType.None) {
-      if (errorType !== ParseErrorType.LeftOperandExpected) {
-        context.addError(new ParseErrorImpl(errorType, ErrorLocation.Token, this.getErrorRange(context)));
-      }
-
-      // Although there may be errors we still want to include the result into the tree
+    if (this._errorType !== ParseErrorType.None) {
+       // Although there may be errors we still want to include the result into the tree
       if (this._operands.length === 1) {
         this._content = this._operands.pop()!;
         this.appendChild(this._content);
@@ -180,14 +160,15 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         this.appendChild(this._content);
       }
     }
-    return super.parse(context, parent);
+    super.parse(context, parent);
+    return this._errorType === ParseErrorType.None;
   }
 
-  private isConsistentOperationSequence(context: ParseContext, currentOperationType: OperationType): boolean {
+  private isConsistentOperationSequence(context: ParseContext): boolean {
     // Binary operator followed by another binary like 'a +/ b' is an error.
     // Binary operator without anything behind it is an error;
-    if (this._previousOperationType === currentOperationType) {
-      switch (currentOperationType) {
+    if (this._previousOperationType === this._operationType) {
+      switch (this._operationType) {
         case OperationType.Operand:
           // 'operand operand' sequence is an error
           context.addError(
@@ -213,7 +194,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
       return false;
     }
-    if (currentOperationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
+    if (this._operationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
       // 'operator <EOF>' sequence is an error
       context.addError(
         new ParseErrorImpl(
@@ -226,7 +207,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
     if (
       this._previousOperationType === OperationType.UnaryOperator &&
-      currentOperationType === OperationType.BinaryOperator
+      this._operationType === OperationType.BinaryOperator
     ) {
       // unary followed by binary doesn't make sense
       context.addError(
@@ -236,7 +217,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
     if (
       this._previousOperationType === OperationType.BinaryOperator &&
-      currentOperationType === OperationType.EndOfExpression
+      this._operationType === OperationType.EndOfExpression
     ) {
       // a +
       context.addError(
@@ -248,13 +229,13 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     return true;
   }
 
-  private handleTokenOperand(context: ParseContext): OperationType {
+  private handleTokenOperand(context: ParseContext): void {
     const constant = TokenNodeImpl.create(context, undefined);
     this._operands.push(constant);
-    return OperationType.Operand;
+    this._operationType = OperationType.Operand;
   }
 
-  private handleGroup(context: ParseContext): ParseResult {
+  private handleGroup(context: ParseContext): void {
     // Nesting of braced comma-separated lists is not allowed.
     // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
     // but pop {r1, {...}} or 'mov r12, [sp + []]' are not legal.
@@ -267,12 +248,15 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     // () groups are permitted to nest since these are normal math expressions.
     const group = new GroupImpl();
-    group.parse(context, undefined);
-    this._operands.push(group);
-    return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
+    if(group.parse(context, undefined)) {
+      this._operands.push(group);
+      this._operationType = OperationType.Operand;
+    } else {
+      this._operationType = OperationType.EndOfExpression;
+    }
   }
 
-  private handleList(context: ParseContext): ParseResult {
+  private handleList(context: ParseContext): void {
     // Nesting of braced comma-separated lists is not allowed.
     // Assembler allows 'pop {r1, r0}', 'ADR r12, {pc}+8', ldr r0, [pc, #-0],
     // but pop {r1, {...}} or 'mov r12, [sp + []]' are not legal.
@@ -281,28 +265,30 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     // first the operands list itself and then [...] nested inside it.
 
     if (!this._nestedListAllowed) {
-      return { operationType: OperationType.EndOfExpression, errorType: ParseErrorType.UnexpectedToken };
+      context.addError(new UnexpectedItemError(ParseErrorType.UnexpectedToken, context.currentToken));
+      this._operationType = OperationType.EndOfExpression;
+      return;
     }
     
     const list = new CommaSeparatedListImpl();
-    list.parse(context, undefined);
-    this._operands.push(list);
-    return { operationType: OperationType.Operand, errorType: ParseErrorType.None };
+    if(list.parse(context, undefined)) {
+      this._operands.push(list);
+      this._operationType = OperationType.Operand;
+    } else {
+      this._operationType = OperationType.EndOfExpression;
+    }
   }
 
-  private handleOperator(context: ParseContext): ParseResult {
+  private handleOperator(context: ParseContext): void {
     const currentOperator = new TokenOperatorImpl(this._operands.length === 0);
     currentOperator.parse(context, undefined);
 
     const isUnary = currentOperator.unary;
-    const operationType = isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
-    const errorType = this.handleOperatorPrecedence(context, currentOperator);
-
-    return { operationType, errorType };
+    this._operationType = isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
+    this.handleOperatorPrecedence(context, currentOperator);
   }
 
-  private handleOperatorPrecedence(context: ParseContext, currentOperator: OperatorImpl): ParseErrorType {
-    let errorType = ParseErrorType.None;
+  private handleOperatorPrecedence(context: ParseContext, currentOperator: OperatorImpl): void {
     const lastOperator = this.getLastOperator();
 
     if (
@@ -313,21 +299,18 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       // the topmost operator and its operand(s). Example: a*b+c. + has lower priority
       // and a and b should be on the stack along with * on the operator stack.
       // Repeat until there are no more higher precendece operators on the stack.
-      errorType = this.processHigherPrecendenceOperators(context, currentOperator);
+      this.processHigherPrecendenceOperators(context, currentOperator);
     }
 
-    if (errorType === ParseErrorType.None) {
+    if (this._errorType === ParseErrorType.None) {
       this._operators.push(currentOperator);
     }
-
-    return errorType;
   }
 
-  private processHigherPrecendenceOperators(context: ParseContext, currentOperator: Operator): ParseErrorType {
+  private processHigherPrecendenceOperators(context: ParseContext, currentOperator: Operator): void {
     if (this._operators.length < 2) {
       throw new Error('Parser: expects at least two operators on the stack.');
     }
-    let errorType = ParseErrorType.None;
     const associativity = currentOperator.associativity;
     let nextOperatorNode = this._operators[this._operators.length - 1];
 
@@ -341,8 +324,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         break;
       }
 
-      errorType = this.makeNode(context);
-      if (errorType === ParseErrorType.None) {
+     this._errorType = this.makeNode(context);
+      if (this._errorType === ParseErrorType.None) {
         nextOperatorNode = this._operators[this._operators.length - 1];
 
         // If associativity is left, we stop if the next operator
@@ -353,9 +336,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
           break;
         }
       }
-    } while (this._operators.length > 1 && errorType === ParseErrorType.None);
-
-    return errorType;
+    } while (this._operators.length > 1 && this._errorType === ParseErrorType.None);
   }
 
   // Constructs AST node from operator (root) and one or two operands.
@@ -374,20 +355,21 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     const rightOperand = this.safeGetOperand(operatorNode);
     if (!rightOperand) {
       // Oddly, no operands
-      return ParseErrorType.RightOperandExpected;
+      context.addError(new UnexpectedItemError(ParseErrorType.LeftOperandExpected, operatorNode));
+      return ParseErrorType.LeftOperandExpected;
     }
 
     if (operatorNode.unary) {
       operatorNode.appendChild(rightOperand);
       operatorNode.rightOperand = rightOperand;
     } else {
+      
       const leftOperand = this.safeGetOperand(operatorNode);
       if (!leftOperand) {
-        context.addError(
-          new ParseErrorImpl(ParseErrorType.LeftOperandExpected, ErrorLocation.Token, context.currentToken)
-        );
+        context.addError(new UnexpectedItemError(ParseErrorType.LeftOperandExpected, operatorNode));
         return ParseErrorType.LeftOperandExpected;
       }
+      
       if (leftOperand.end <= operatorNode.start && rightOperand.start >= operatorNode.end) {
         operatorNode.leftOperand = leftOperand;
         operatorNode.rightOperand = rightOperand;
@@ -395,6 +377,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         operatorNode.appendChild(leftOperand);
         operatorNode.appendChild(rightOperand);
       } else {
+        context.addError(new UnexpectedItemError(ParseErrorType.UnexpectedToken, context.currentToken));
         return ParseErrorType.UnexpectedToken;
       }
     }

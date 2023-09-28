@@ -16,7 +16,12 @@ export class ParseErrorImpl extends TextRangeImpl {
   }
 }
 
-export class MissingItemParseError extends ParseErrorImpl {
+export class UnexpectedItemError extends ParseErrorImpl {
+  constructor(errorType: ParseErrorType, range: TextRange) {
+    super(errorType, ErrorLocation.Token, range);
+  }
+}
+export class MissingItemError extends ParseErrorImpl {
   constructor(errorType: ParseErrorType, token: Token) {
     super(errorType, ErrorLocation.AfterToken, token);
   }
