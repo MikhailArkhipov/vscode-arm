@@ -69,101 +69,136 @@ test('(a+b)*c', () => {
 });
 
 test('a & !b', () => {
-  const expected = String.raw`TokenOperator [0...6)
-  TokenNode [0...1)
-  TokenNode [2...3)
-  TokenOperator [4...6)
-    TokenNode [4...5)
-    TokenNode [5...6)
+  const expected = String.raw
+`Operator a & !b [0...6)
+  Token a [0...1)
+  Token & [2...3)
+  Operator !b [4...6)
+    Token ! [4...5)
+    Token b [5...6)
 `;
   verifyParseExpression(expected, 'a & !b');
 });
 
 test('a*b+c*d', () => {
-  const expected = String.raw`TokenOperator [0...7)
-  TokenOperator [0...3)
-    TokenNode [0...1)
-    TokenNode [1...2)
-    TokenNode [2...3)
-  TokenNode [3...4)
-  TokenOperator [4...7)
-    TokenNode [4...5)
-    TokenNode [5...6)
-    TokenNode [6...7)
+  const expected = String.raw
+`Operator a*b+c*d [0...7)
+  Operator a*b [0...3)
+    Token a [0...1)
+    Token * [1...2)
+    Token b [2...3)
+  Token + [3...4)
+  Operator c*d [4...7)
+    Token c [4...5)
+    Token * [5...6)
+    Token d [6...7)
 `;
   verifyParseExpression(expected, 'a*b+c*d');
 });
 
 test('((x))+1', () => {
-  const expected = String.raw`TokenOperator [0...7)
+  const expected = String.raw
+`Operator ((x))+1 [0...7)
   Group [0...5)
-    TokenNode [0...1)
+    Token ( [0...1)
     Expression [1...4)
       Group [1...4)
-        TokenNode [1...2)
+        Token ( [1...2)
         Expression [2...3)
-          TokenNode [2...3)
-        TokenNode [3...4)
-    TokenNode [4...5)
-  TokenNode [5...6)
-  TokenNode [6...7)
+          Token x [2...3)
+        Token ) [3...4)
+    Token ) [4...5)
+  Token + [5...6)
+  Token 1 [6...7)
 `;
   verifyParseExpression(expected, '((x))+1');
 });
 
 test('-a', () => {
-  const expected = String.raw`TokenOperator [0...2)
-  TokenNode [0...1)
-  TokenNode [1...2)
+  const expected = String.raw
+`Operator -a [0...2)
+  Token - [0...1)
+  Token a [1...2)
 `;
   verifyParseExpression(expected, '-a');
 });
 
 test('-a+b', () => {
-  const expected = String.raw`TokenOperator [0...4)
-  TokenOperator [0...2)
-    TokenNode [0...1)
-    TokenNode [1...2)
-  TokenNode [2...3)
-  TokenNode [3...4)
+  const expected = String.raw
+`Operator -a+b [0...4)
+  Operator -a [0...2)
+    Token - [0...1)
+    Token a [1...2)
+  Token + [2...3)
+  Token b [3...4)
 `;
   verifyParseExpression(expected, '-a+b');
 });
 
 test('"a"+\'b\'', () => {
-  const expected = String.raw`TokenOperator [0...7)
-  TokenNode [0...3)
-  TokenNode [3...4)
-  TokenNode [4...7)
+  const expected = String.raw
+`Operator "a"+'b' [0...7)
+  Token "a" [0...3)
+  Token + [3...4)
+  Token 'b' [4...7)
 `;
   verifyParseExpression(expected, '"a"+\'b\'');
 });
 
 test('[pc, #-0]', () => {
-  const expected = String.raw`CommaSeparatedList [0...9)
-  TokenNode [0...1)
+  const expected = String.raw
+`CommaSeparatedList [0...9)
+  Token [ [0...1)
   CommaSeparatedItem [1...4)
     Expression [1...3)
-      TokenNode [1...3)
-    TokenNode [3...4)
+      Token pc [1...3)
+    Token , [3...4)
   CommaSeparatedItem [5...8)
     Expression [5...8)
-      TokenNode [5...8)
-  TokenNode [8...9)
+      Token #-0 [5...8)
+  Token ] [8...9)
 `;
   verifyParseExpression(expected, '[pc, #-0]');
 });
 
 test('{pc}+8', () => {
-  const expected = String.raw`TokenOperator [0...6)
+  const expected = String.raw
+`Operator {pc}+8 [0...6)
   CommaSeparatedList [0...4)
-    TokenNode [0...1)
+    Token { [0...1)
     CommaSeparatedItem [1...3)
       Expression [1...3)
-        TokenNode [1...3)
-    TokenNode [3...4)
-  TokenNode [4...5)
-  TokenNode [5...6)
+        Token pc [1...3)
+    Token } [3...4)
+  Token + [4...5)
+  Token 8 [5...6)
 `;
   verifyParseExpression(expected, '{pc}+8');
+});
+
+test('x4!', () => {
+  const expected = String.raw
+`Operator x4! [0...3)
+  Token x4 [0...2)
+  Token ! [2...3)
+`;
+  verifyParseExpression(expected, 'x4!');
+});
+
+test('[x4, 1]!', () => {
+  const expected = String.raw
+`Operator [x4, 1]! [0...8)
+  CommaSeparatedList [0...7)
+    Token [ [0...1)
+    CommaSeparatedItem [1...4)
+      Expression [1...3)
+        Token x4 [1...3)
+      Token , [3...4)
+    CommaSeparatedItem [5...6)
+      Expression [5...6)
+        Token 1 [5...6)
+    Token ] [6...7)
+  Token ! [7...8)
+`;
+  verifyParseExpression(expected, '[x4, 1]!');
 });

@@ -50,14 +50,14 @@ export function verifyToken(token: Token, context: ParseContext, expectedType: T
 export function verifyParse(expectedTree: string, text: string): void {
   const ast = parseText(text);
   const writer = new AstWriter();
-  const actualTree = writer.writeTree(ast);
+  const actualTree = writer.writeTree(ast, text);
   compareTrees(expectedTree, actualTree);
 }
 
 export function verifyParseExpression(expectedTree: string, text: string): void {
   const expression = parseExpression(text).expression;
   const writer = new AstWriter();
-  const actualTree = writer.writeTree(expression);
+  const actualTree = writer.writeTree(expression, text);
   compareTrees(expectedTree, actualTree);
 }
 

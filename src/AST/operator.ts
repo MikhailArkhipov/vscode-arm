@@ -3,7 +3,7 @@
 
 import { ParseContext } from '../parser/parseContext';
 import { TokenStream } from '../tokens/tokenStream';
-import { TokenType } from '../tokens/tokens';
+import { TokenSubType, TokenType } from '../tokens/tokens';
 import { AstNodeImpl } from './astNode';
 import { Associativity, AstNode, Operator, OperatorType, TokenNode, TokenOperator } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
@@ -67,9 +67,9 @@ export class TokenOperatorImpl extends OperatorImpl implements TokenOperator {
     if (context.currentToken.type !== TokenType.Operator) {
       throw new Error('Parser: expected operator token.');
     }
-    this._type = getOperatorType(context.getCurrentTokenText());
+    this._type = getOperatorType(context);
     this._tokenNode = TokenNodeImpl.create(context, this);
-    
+
     // If operator is preceded by an operator, it is then unary
     // Look back two tokens since operator parsing already consumed its token.
     if (this._unary || isUnaryOperator(context.tokens, this._type, -2)) {
@@ -120,11 +120,15 @@ export function getOperatorPrecedence(operatorType: OperatorType): number {
 
     case OperatorType.Group: // ( ) around expression
       return 300;
+
+    case OperatorType.Writeback:
+      return 400;
   }
   return 1000;
 }
 
-function getOperatorType(text: string): OperatorType {
+function getOperatorType(context: ParseContext): OperatorType {
+  const text = context.getCurrentTokenText();
   switch (text) {
     case '+':
       return OperatorType.Add;
@@ -142,17 +146,33 @@ function getOperatorType(text: string): OperatorType {
       return OperatorType.ShiftRight;
     case '<<':
       return OperatorType.ShiftLeft;
-    case '!':
-      return OperatorType.Not; // !
     case '&':
       return OperatorType.And; // &
     case '|':
       return OperatorType.Or; // |
+    case '!': {
+      // Very special. At this point basically heuristics. If bang is followed
+      // by a comma, or preceded by a symbol or by a closing bracket AND is not
+      // followed by a symbol, we consider it writeback. May look into better
+      // solutions in the future.
+      const pt = context.previousToken;
+      const nt = context.nextToken;
+      if (
+        pt.type === TokenType.CloseBracket ||
+        (pt.type === TokenType.Symbol && pt.subType === TokenSubType.Register)
+      ) {
+        return OperatorType.Writeback;
+      }
+      return OperatorType.Not; // !
+    }
   }
   return OperatorType.Unknown;
 }
 
 function isUnaryOperator(tokens: TokenStream, type: OperatorType, offset: number) {
+  if(type === OperatorType.Writeback) {
+    return true;
+  } 
   if (!isPossiblyUnary(type)) {
     return false;
   }

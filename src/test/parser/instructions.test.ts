@@ -40,3 +40,8 @@ test('str fp, [sp, #-4]!', () => {
   const expected = String.raw``;
   verifyParse(expected, 'str fp, [sp, #-4]!');
 });
+
+test('ldm r4!, {r0, r1, r2, r3}', () => {
+  const expected = String.raw``;
+  verifyParse(expected, 'ldm r4!, {r0, r1, r2, r3}');
+});

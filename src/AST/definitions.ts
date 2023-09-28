@@ -54,8 +54,9 @@ export const enum OperatorType {
   Xor = 11, // ^
   UnaryMinus = 12,
   UnaryPlus = 13,
-  Group = 14, // ( ) pseudo-operator
-  Sentinel = 15, // pseudo-type used in expression parsing
+  Writeback = 14, // r4! writeback
+  Group = 15, // ( ) pseudo-operator
+  Sentinel = 16, // pseudo-type used in expression parsing
 }
 
 // https://en.wikipedia.org/wiki/Operator_associativity
@@ -84,7 +85,10 @@ export interface TokenOperator extends Operator {
 }
 
 export interface Expression extends AstNode {
+  // Root of the expression tree
   get content(): AstNode | undefined;
+  // Optional exclamation mark (writeback) at the end of expression.
+  get exclamation(): TokenNode | undefined;
 }
 
 export interface Group extends Operator {

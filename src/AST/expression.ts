@@ -10,6 +10,7 @@ import {
   OperatorType,
   ParseError,
   ParseErrorType,
+  TokenNode,
 } from './definitions';
 import { TextRange } from '../text/textRange';
 import { TokenType } from '../tokens/tokens';
@@ -46,6 +47,8 @@ interface ParseResult {
 
 export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
+  private _exclamation: TokenNode | undefined;
+
   private _start: number; // If expression is empty we still need start position.
   private _nestedListAllowed = true;
   private _operationType = OperationType.None;
@@ -60,11 +63,19 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   public get content(): AstNode | undefined {
     return this._content;
   }
+  // Optional exclamation mark (writeback) at the end of expression.
+  get exclamation(): TokenNode | undefined {
+    return this._exclamation;
+  }
+
   // TextRange
   public get start(): number {
     return this._content ? this._content.start : this._start;
   }
   public get end(): number {
+    if (this._exclamation) {
+      return this._exclamation.end;
+    }
     return this._content ? this._content.end : this._start;
   }
   public get length(): number {
@@ -83,8 +94,6 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     const tokens = context.tokens;
     let endOfExpression = false;
-    let result: ParseResult;
-
     // Push sentinel
     this._operators.push(sentinel);
     this._start = context.currentToken.start;
@@ -199,7 +208,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
 
     if (this._operationType === OperationType.BinaryOperator && context.tokens.isEndOfLine()) {
       // 'operator <EOF>' sequence is an error
-      this.addError(context,
+      this.addError(
+        context,
         new ParseErrorImpl(
           ParseErrorType.RightOperandExpected,
           ErrorLocation.Token,
@@ -214,7 +224,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       this._operationType === OperationType.BinaryOperator
     ) {
       // unary followed by binary doesn't make sense
-      this.addError(context,
+      this.addError(
+        context,
         new ParseErrorImpl(ParseErrorType.SymbolExpected, ErrorLocation.Token, this.getOperatorErrorRange(context))
       );
       return false;
@@ -225,7 +236,8 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       this._operationType === OperationType.EndOfExpression
     ) {
       // a +
-      this.addError(context,
+      this.addError(
+        context,
         new ParseErrorImpl(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
       );
       return false;
@@ -284,7 +296,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
   }
 
-  private handleOperator(context: ParseContext): void {
+  private handleOperator(context: ParseContext): void {   
     const currentOperator = new TokenOperatorImpl(this._operands.length === 0);
     currentOperator.parse(context, undefined);
 
@@ -393,6 +405,12 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   private safeGetOperand(operatorNode: Operator): AstNode | undefined {
     if (!operatorNode.unary) {
       return this._operands.length > 0 ? this._operands.pop() : undefined;
+    }
+    if(operatorNode.type === OperatorType.Writeback) {
+      // ! applied to the left, like indexer or a function call
+      // in high hever languages. I.e. r3! is about the same as
+      // a[] or b() where [] is indexing operator and () is a call.
+      return this.safeGetLeftOperand(operatorNode);
     }
     return this.safeGetRightOperand(operatorNode);
   }

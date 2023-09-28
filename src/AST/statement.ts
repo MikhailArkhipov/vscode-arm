@@ -16,7 +16,7 @@ import {
 import { TokenNodeImpl } from './tokenNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
 import { parseInstruction } from '../instructions/instruction';
-import { ParseErrorImpl } from '../parser/parseError';
+import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
@@ -108,7 +108,7 @@ export class Statement extends AstNodeImpl implements Statement {
         // {label:} ??? => Unknown statement
         this._type = StatementType.Unknown;
         context.addError(
-          new ParseErrorImpl(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
+          new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken)
         );
         return false;
     }
@@ -143,7 +143,7 @@ export class Statement extends AstNodeImpl implements Statement {
     // Comma after symbol most probably means instruction name is missing
     if (context.nextToken.type === TokenType.Comma) {
       context.addError(
-        new ParseErrorImpl(ParseErrorType.InstructionOrDirectiveExpected, ErrorLocation.Token, context.currentToken)
+        new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken)
       );
     } else {
       this._type = StatementType.Instruction;
