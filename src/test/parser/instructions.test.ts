@@ -37,11 +37,59 @@ test('Simple A32 instruction', () => {
 });
 
 test('str fp, [sp, #-4]!', () => {
-  const expected = String.raw``;
+  const expected = String.raw
+ `Statement [0...18)
+  Token str [0...3)
+  CommaSeparatedList [4...18)
+    CommaSeparatedItem [4...7)
+      Expression [4...6)
+        Token fp [4...6)
+      Token , [6...7)
+    CommaSeparatedItem [8...18)
+      Expression [8...18)
+        Operator [sp, #-4]! [8...18)
+          CommaSeparatedList [8...17)
+            Token [ [8...9)
+            CommaSeparatedItem [9...12)
+              Expression [9...11)
+                Token sp [9...11)
+              Token , [11...12)
+            CommaSeparatedItem [13...16)
+              Expression [13...16)
+                Token #-4 [13...16)
+            Token ] [16...17)
+          Token ! [17...18)
+`;
   verifyParse(expected, 'str fp, [sp, #-4]!');
 });
 
 test('ldm r4!, {r0, r1, r2, r3}', () => {
-  const expected = String.raw``;
+  const expected = String.raw
+`Statement [0...25)
+  Token ldm [0...3)
+  CommaSeparatedList [7...25)
+    CommaSeparatedItem [7...8)
+      Token , [7...8)
+    CommaSeparatedItem [9...25)
+      Expression [9...25)
+        CommaSeparatedList [9...25)
+          Token { [9...10)
+          CommaSeparatedItem [10...13)
+            Expression [10...12)
+              Token r0 [10...12)
+            Token , [12...13)
+          CommaSeparatedItem [14...17)
+            Expression [14...16)
+              Token r1 [14...16)
+            Token , [16...17)
+          CommaSeparatedItem [18...21)
+            Expression [18...20)
+              Token r2 [18...20)
+            Token , [20...21)
+          CommaSeparatedItem [22...24)
+            Expression [22...24)
+              Token r3 [22...24)
+          Token } [24...25)
+`;
   verifyParse(expected, 'ldm r4!, {r0, r1, r2, r3}');
 });
