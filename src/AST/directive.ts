@@ -4,7 +4,6 @@
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemError, ParseErrorImpl } from '../parser/parseError';
 import { TokenSubType, TokenType } from '../tokens/definitions';
-import { CommaSeparatedListImpl } from './commaSeparatedList';
 import {
   StatementType,
   StatementSubType,
@@ -14,6 +13,7 @@ import {
   ErrorLocation,
   Statement,
 } from './definitions';
+import { CommaSeparatedListImpl } from './expression';
 import { StatementImpl } from './statement';
 import { TokenNodeImpl } from './tokenNode';
 

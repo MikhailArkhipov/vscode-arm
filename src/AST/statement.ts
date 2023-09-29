@@ -15,11 +15,11 @@ import {
   TokenNode,
 } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
-import { CommaSeparatedListImpl } from './commaSeparatedList';
 import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
 import { TokenSubType, TokenType } from '../tokens/definitions';
 import { parseInstructionName } from './instruction';
+import { CommaSeparatedListImpl } from './expression';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol

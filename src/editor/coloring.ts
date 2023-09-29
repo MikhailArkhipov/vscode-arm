@@ -17,12 +17,12 @@ const tokenTypes = [
   'instruction',
   'register',
   'directive',
-  // 'label',
-  // 'number',
-  // 'string',
-  // 'operator',
-  // 'comment',
-  // 'variable'
+  'label',
+  'number',
+  'string',
+  'operator',
+  'comment',
+  'variable'
 ];
 const tokenModifiers = ['definition', 'declaration'];
 export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
@@ -33,7 +33,7 @@ export async function provideSemanticTokens(
   ct: CancellationToken
 ): Promise<SemanticTokens | undefined> {
   const ed = RDT.getEditorDocument(td);
-  if (!ed || options.showColors) {
+  if (!ed || !options.showColors) {
     return;
   }
 

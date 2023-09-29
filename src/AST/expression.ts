@@ -4,22 +4,25 @@
 import {
   Associativity,
   AstNode,
+  CommaSeparatedItem,
+  CommaSeparatedList,
   ErrorLocation,
   Expression,
+  Group,
   Operator,
   OperatorType,
   ParseError,
   ParseErrorType,
+  TokenNode,
 } from './definitions';
 import { ParseContext } from '../parser/parseContext';
-import { OperatorImpl, TokenOperatorImpl } from './operator';
-import { GroupImpl } from './group';
+import { OperatorImpl, TokenOperatorImpl, getOperatorPrecedence } from './operator';
 import { TokenNodeImpl } from './tokenNode';
-import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
+import { MissingItemError, ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
-import { CommaSeparatedListImpl } from './commaSeparatedList';
-import { TextRange } from '../text/definitions';
+import { TextRange, TextRangeCollection } from '../text/definitions';
 import { TokenSubType, TokenType } from '../tokens/definitions';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs
@@ -492,5 +495,179 @@ function skipAddressOperator(context: ParseContext): void {
     if (text === '=') {
       context.tokens.moveToNextToken();
     }
+  }
+}
+
+//////// 
+// An item in a comma-separated sequence, such as {a, b, c}.
+// Normally an expression followed by an optional comma.
+export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparatedItem {
+  private _item: Expression | undefined;
+  // Optional trailing comma
+  private _comma: TokenNode | undefined;
+  private _nestedListAllowed = true;
+
+  constructor(nestedListAllowed?: boolean) {
+    super();
+    this._nestedListAllowed = nestedListAllowed ?? true;
+  }
+
+  public get expression(): Expression | undefined {
+    return this._item;
+  }
+  public get comma(): TokenNode | undefined {
+    return this._comma;
+  }
+
+  public parse(context: ParseContext, parent: AstNode | undefined): boolean {
+    let result = true;
+    switch (context.currentToken.type) {
+      case TokenType.Comma:
+        // Missing item
+        this._comma = TokenNodeImpl.create(context, this);
+        context.addError(new MissingItemError(ParseErrorType.ExpressionExpected, context.currentToken));
+        // continue parsing since we may be able to recover in 'a,,b'
+        break;
+
+      default:
+        {
+          const expression = new ExpressionImpl(this._nestedListAllowed);
+          result = expression.parse(context, this);
+          this._item = expression;
+          if (context.currentToken.type === TokenType.Comma.valueOf()) {
+            this._comma = TokenNodeImpl.create(context, this);
+            result = true; // We may be able to recover
+          }
+        }
+        break;
+    }
+    super.parse(context, parent);
+    return result;
+  }
+}
+
+export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparatedList {
+  // Type of the token to parse up to. For example, } in {a, b, c}
+  private _openBrace: TokenNode | undefined;
+  private _closeBrace: TokenNode | undefined;
+  private readonly _items: CommaSeparatedItem[] = [];
+
+  // CommaSeparatedList
+  public get closeBrace(): TokenNode | undefined {
+    return this._closeBrace;
+  }
+  public get openBrace(): TokenNode | undefined {
+    return this._openBrace;
+  }
+  public get items(): TextRangeCollection<CommaSeparatedItem> {
+    return new TextRangeCollectionImpl(this._items);
+  }
+
+  // ParseItem
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // Check if list is surroinded by braces
+    const ct = context.currentToken;
+    let closeBraceType: TokenType | undefined;
+
+    if (ct.type === TokenType.OpenCurly || ct.type === TokenType.OpenBracket) {
+      this._openBrace = TokenNodeImpl.create(context, this);
+      closeBraceType = ParseContext.getMatchingBraceToken(this._openBrace.token.type);
+    }
+
+    let itemParsed = true;
+    while (!context.tokens.isEndOfLine() && itemParsed) {
+      if (closeBraceType && context.currentToken.type === closeBraceType) {
+        this._closeBrace = TokenNodeImpl.create(context, this);
+        break;
+      }
+      const item = new CommaSeparatedItemImpl(this.openBrace === undefined);
+      itemParsed = item.parse(context, this);
+      if (itemParsed) {
+        this._items.push(item);
+      }
+    }
+    // Do not include empty list in the tree since it has no positioning information.
+    if (!this._openBrace && !this._closeBrace && this._items.length === 0) {
+      return false;
+    }
+
+    // Check for a brace mismatch
+    if (this._openBrace) {
+      if (!this._closeBrace && itemParsed) {
+        // Inner expression was successfully parsed, but there is no closing brace.
+        context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, context.tokens.previousToken));
+        // Recoverable
+      }
+      if (this._closeBrace && this._items.length === 0) {
+        context.addError(
+          new ParseErrorImpl(ParseErrorType.EmptyExpression, ErrorLocation.Token, context.tokens.previousToken)
+        );
+        // Recoverable, don't stop expression parsing.
+      }
+    }
+    super.parse(context, parent);
+    return itemParsed;
+  }
+}
+
+// Braces (grouping) operator. Applies to an expression as in (a+b).
+// Operator is effectively a no-op and returns value of the expression
+// inside braces. It just makes parsing expressions like (b) easier.
+export class GroupImpl extends AstNodeImpl implements Group {
+  // Group
+  private _openBrace: TokenNode;
+  private _content: Expression | undefined;
+  private _closeBrace: TokenNode | undefined;
+
+  // Operator
+  public get type(): OperatorType {
+    return OperatorType.Group;
+  }
+  public get precedence(): number {
+    return getOperatorPrecedence(OperatorType.Group);
+  }
+  public get associativity(): Associativity {
+    return Associativity.Right;
+  }
+  public get unary(): boolean {
+    return false;
+  }
+  public get leftOperand(): AstNode | undefined {
+    return;
+  }
+  public get rightOperand(): AstNode | undefined {
+    return;
+  }
+
+  // Group
+  public get openBrace(): TokenNode {
+    return this._openBrace;
+  }
+  public get content(): Expression | undefined {
+    return this._content;
+  }
+  public get closeBrace(): TokenNode | undefined {
+    return this._closeBrace;
+  }
+
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    const tokens = context.tokens;
+    if (tokens.currentToken.type !== TokenType.OpenBrace) {
+      throw new Error('Parser: expected open brace.');
+    }
+
+    this._openBrace = TokenNodeImpl.create(context, this);
+    const expression = new ExpressionImpl();
+    let result = expression.parse(context, this);
+    this._content = expression;
+
+    if (tokens.currentToken.type === TokenType.CloseBrace.valueOf()) {
+      this._closeBrace = TokenNodeImpl.create(context, this);
+    } else {
+      result = false;
+      context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, tokens.previousToken));
+    }
+    super.parse(context, parent);
+    return result;
   }
 }
