@@ -8,10 +8,12 @@ import {
   Range,
   CancellationToken,
   SemanticTokensLegend,
+  Position,
 } from 'vscode';
 import { RDT } from './rdt';
 import { ColorOptions } from './options';
 import { TokenSubType, TokenType } from '../tokens/definitions';
+import { TextRange } from '../text/definitions';
 
 const tokenTypes = [
   'instruction',
@@ -44,7 +46,7 @@ export async function provideSemanticTokens(
   ed.getAst();
 
   for (let i = 0; i < ed.tokens.count && !ct.isCancellationRequested; i++) {
-    let itemType: string | undefined;
+    let itemType = '';
 
     const t = ed.tokens.getItemAt(i);
     switch (t.type) {
@@ -98,10 +100,33 @@ export async function provideSemanticTokens(
         break;
     }
 
-    if (itemType) {
-      const range = new Range(td.positionAt(t.start), td.positionAt(t.end));
-      tokensBuilder.push(range, itemType, []);
+    if (itemType.length > 0) {
+      // Apparently, VS Code is unable to handle colorable ranges
+      // longer than a single line. We need to split token into multiple
+      // before feeding the token builder.
+      const ranges = splitRange(td, t);
+      ranges.forEach((r) => {
+        tokensBuilder.push(r, itemType, []);
+      });
     }
   }
   return tokensBuilder.build();
+}
+
+function splitRange(td: TextDocument, t: TextRange): readonly Range[] {
+  const startPos = td.positionAt(t.start);
+  const endPos = td.positionAt(t.end);
+  if (startPos.line === endPos.line) {
+    return [new Range(startPos, endPos)];
+  }
+  const ranges: Range[] = [];
+  // Push first range
+  ranges.push(new Range(startPos, new Position(startPos.line, td.lineAt(startPos.line).range.end.character)));
+  // Push complete ranges that are in the middle
+  for (let i = startPos.line + 1; i < endPos.line; i++) {
+    ranges.push(td.lineAt(i).range);
+  }
+  // Push final range
+  ranges.push(new Range(new Position(endPos.line, 0), endPos));
+  return ranges;
 }
