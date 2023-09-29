@@ -1,13 +1,12 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, AstRoot, ParseError, TokenNode } from '../AST/definitions';
+import { AstRoot, ParseError, TokenNode } from '../AST/definitions';
 import { LanguageOptions } from '../core/languageOptions';
-import { TextRangeCollection } from '../text/definitions';
-import { TextProvider } from '../text/text';
+import { TextProvider, TextRangeCollection } from '../text/definitions';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
+import { Token, TokenType } from '../tokens/definitions';
 import { TokenStream } from '../tokens/tokenStream';
-import { Token, TokenType } from '../tokens/tokens';
 
 export class ParseContext {
   public readonly text: TextProvider;
@@ -19,10 +18,10 @@ export class ParseContext {
 
   private readonly _errors: ParseError[] = [];
   // Tokens that define a symbol, i.e. .equ, .set and similar.
-  private readonly _defines: TokenNode[] = [];
+  private readonly _definitions: TokenNode[] = [];
   // Tokens that declare variable (data) like 'name: .word 1'.
   private readonly _declarations: TokenNode[] = [];
-  // Tokens that reference variable or symbol, i.e. something 
+  // Tokens that reference variable or symbol, i.e. something
   // that may appear in the instruction operands.
   private readonly _references: TokenNode[] = [];
 
@@ -36,6 +35,39 @@ export class ParseContext {
     this.tokens = new TokenStream(tokens.filter((t) => !Token.isComment(t)));
   }
 
+  public get errors(): readonly ParseError[] {
+    return this._errors;
+  }
+  public get definitions(): readonly TokenNode[] {
+    return this._definitions;
+  }
+  public get declarations(): readonly TokenNode[] {
+    return this._declarations;
+  }
+
+  public addError(error: ParseError): void {
+    const found = this._errors.find(
+      (e) => e.start === error.start && e.length === error.length && e.errorType === error.errorType
+    );
+    if (!found) {
+      this._errors.push(error);
+    }
+  }
+
+  // Variable and defines collection.
+  public addDefinition(tokenNode: TokenNode): void {
+    // Duplicates are OK and are detected later.
+    this._definitions.push(tokenNode);
+  }
+  public addDeclaration(tokenNode: TokenNode): void {
+    // Duplicates are OK and are detected later.
+    this._declarations.push(tokenNode);
+  }
+  public addReference(tokenNode: TokenNode): void {
+    this._references.push(tokenNode);
+  }
+
+  // Utility
   public get currentToken(): Token {
     return this.tokens.currentToken;
   }
@@ -53,32 +85,6 @@ export class ParseContext {
   }
   public getCurrentTokenText(): string {
     return this.getTokenText(this.currentToken);
-  }
-
-  public get errors(): TextRangeCollection<ParseError> {
-    return new TextRangeCollectionImpl(this._errors);
-  }
-
-  public addError(error: ParseError): void {
-    const found = this._errors.find(
-      (e) => e.start === error.start && e.length === error.length && e.errorType === error.errorType
-    );
-    if (!found) {
-      this._errors.push(error);
-    }
-  }
-
-  // Variable and defines collection.
-  public addDefinition(tokenNode: TokenNode): void {
-    // Duplicates are OK and are detected later.
-    this._defines.push(tokenNode);
-  }
-  public addDeclaration(tokenNode: TokenNode): void {
-    // Duplicates are OK and are detected later.
-    this._declarations.push(tokenNode);
-  }
-  public addReference(tokenNode: TokenNode): void {
-    this._references.push(tokenNode);
   }
 }
 
@@ -103,8 +109,4 @@ export namespace ParseContext {
 
     throw new Error('Parser: unknown brace type');
   }
-}
-
-export interface ParseItem {
-  parse(context: ParseContext, parent?: AstNode): boolean;
 }

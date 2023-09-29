@@ -10,8 +10,8 @@ import {
   SemanticTokensLegend,
 } from 'vscode';
 import { RDT } from './rdt';
-import { TokenSubType, TokenType } from '../tokens/tokens';
 import { ColorOptions } from './options';
+import { TokenSubType, TokenType } from '../tokens/definitions';
 
 const tokenTypes = [
   'instruction',
@@ -56,7 +56,7 @@ export async function provideSemanticTokens(
         itemType = 'directive';
         switch (t.subType) {
           case TokenSubType.Definition:
-            modifiers.push('definition')
+            modifiers.push('definition');
             break;
           case TokenSubType.Declaration:
             modifiers.push('declaration');

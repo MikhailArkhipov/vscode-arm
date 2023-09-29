@@ -21,7 +21,7 @@ The extension is all TypeScript. It does not employ language server and language
 Nothing special, standard TypeScript conventions. For formatting - tab size is 2, spaces only. Test runner is [Jest](https://jestjs.io/).
 
 ### Circular dependencies
-After adding new files do run `madge --circular .` from the root to detect any circular dependencies and avoid headaches at runtime. Alternatively, install [dpdm](https://github.com/acrazing/dpdm).
+After adding new files do run `madge --circular .` from the root to detect any circular dependencies and avoid headaches at runtime such as *caught* exceptions like `TypeError: Class extends value undefined is not a constructor or null`. Alternatively, install [dpdm](https://github.com/acrazing/dpdm), although [`madge`](https://www.npmjs.com/package/madge) seems to detect more and better.
 - `npm i -g dpdm`
 - `dpdm ./src/extension.ts`
 

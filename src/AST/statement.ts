@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from '../parser/parseContext';
-import { TokenType } from '../tokens/tokens';
 import {
   AstNode,
   CommaSeparatedList,
+  ErrorLocation,
+  Instruction,
+  InstructionStatement,
   ParseErrorType,
   Statement,
   StatementSubType,
@@ -14,10 +16,10 @@ import {
 } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
-import { UnexpectedItemError } from '../parser/parseError';
+import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
-import { createDirectiveStatement } from './directive';
-import { InstructionStatementImpl } from './instruction';
+import { TokenSubType, TokenType } from '../tokens/definitions';
+import { parseInstructionName } from './instruction';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -59,7 +61,7 @@ export abstract class StatementImpl extends AstNodeImpl implements Statement {
   }
 }
 
-class EmptyStatementImpl extends StatementImpl {
+export class EmptyStatementImpl extends StatementImpl {
   constructor(label: TokenNode | undefined) {
     super(label);
   }
@@ -71,7 +73,7 @@ class EmptyStatementImpl extends StatementImpl {
   }
 }
 
-class UnknownStatement extends StatementImpl {
+export class UnknownStatementImpl extends StatementImpl {
   get type(): StatementType {
     return StatementType.Unknown;
   }
@@ -80,27 +82,41 @@ class UnknownStatement extends StatementImpl {
   }
 }
 
-export function createStatement(context: ParseContext): Statement {
-  let label: TokenNode | undefined;
-  if (context.currentToken.type === TokenType.Label) {
-    label = TokenNodeImpl.create(context, this);
+export class InstructionStatementImpl extends StatementImpl implements InstructionStatement {
+  private _instruction: Instruction;
+
+  get type(): StatementType {
+    return StatementType.Instruction;
+  }
+  public get subType(): StatementSubType {
+    return StatementSubType.None;
+  }
+  public get instruction(): Instruction | undefined {
+    return this._instruction;
   }
 
-  switch (context.currentToken.type) {
-    case TokenType.EndOfLine:
-    case TokenType.EndOfStream:
-      // {label:} => empty statement
-      return new EmptyStatementImpl(label);
-
-    case TokenType.Symbol:
-      return new InstructionStatementImpl(label);
-
-    case TokenType.Directive:
-      return createDirectiveStatement(context, label);
-
-    default:
-      // {label:} ??? => Unknown statement
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // {label:} symbol => instruction statement
+    // Comma after symbol most probably means instruction name is missing
+    if (context.nextToken.type === TokenType.Comma) {
       context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
-      return new UnknownStatement(label);
+    } else {
+      this._name = TokenNodeImpl.create(context, this); // directive name
+      this._name.token.subType = TokenSubType.Instruction;
+    }
+
+    this.checkInstructionName(context);
+    this._operands = new CommaSeparatedListImpl();
+    this._operands.parse(context, this);
+
+    return super.parse(context, parent);
+  }
+
+  private checkInstructionName(context: ParseContext): void {
+    const nameText = context.getTokenText(this._name!.token).toUpperCase();
+    const instruction = parseInstructionName(nameText);
+    if (!instruction.isValid) {
+      context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
+    }
   }
 }

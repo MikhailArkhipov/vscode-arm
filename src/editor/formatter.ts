@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { Character } from '../text/charCodes';
-import { TextProvider, makeWhitespace } from '../text/text';
+import { TextProvider } from '../text/definitions';
 import { TextStream } from '../text/textStream';
+import { makeWhitespace } from '../text/utility';
+import { Token, TokenType, TokenSubType } from '../tokens/definitions';
 import { TokenStream } from '../tokens/tokenStream';
-import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { FormatOptions } from './options';
 
 // Common assumptions

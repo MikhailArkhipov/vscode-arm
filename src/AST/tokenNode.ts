@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from "../parser/parseContext";
-import { Token } from "../tokens/tokens";
+import { Token } from "../tokens/definitions";
 import { AstNodeImpl } from "./astNode";
 import { AstNode, TokenNode } from "./definitions";
 

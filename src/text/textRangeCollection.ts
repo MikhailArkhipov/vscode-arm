@@ -1,8 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from './definitions';
-import { TextRange } from './textRange';
+import { TextRange, TextRangeCollection } from './definitions';
 
 /**
  * A collection of text ranges or objects that implement TextRange.

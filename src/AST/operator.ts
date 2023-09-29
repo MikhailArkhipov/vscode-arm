@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseContext } from '../parser/parseContext';
+import { TokenType } from '../tokens/definitions';
 import { TokenStream } from '../tokens/tokenStream';
-import { TokenSubType, TokenType } from '../tokens/tokens';
 import { AstNodeImpl } from './astNode';
 import { Associativity, AstNode, Operator, OperatorType, TokenNode, TokenOperator } from './definitions';
 import { TokenNodeImpl } from './tokenNode';

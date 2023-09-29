@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TokenNode } from '../../AST/definitions';
-import { TokenSubType, TokenType } from '../../tokens/tokens';
+import { TokenType, TokenSubType } from '../../tokens/definitions';
 import { isTokenNode, makeLanguageOptions, parseText } from '../utility/parsing';
 
 test('Get node from position simple', () => {

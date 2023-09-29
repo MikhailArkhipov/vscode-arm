@@ -1,8 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from '../../text/definitions';
-import { TextRange } from '../../text/textRange';
+import { TextRange, TextRangeCollection } from '../../text/definitions';
 import { TextRangeCollectionImpl } from '../../text/textRangeCollection';
 
 function makeCollection(): TextRangeCollection<TextRange> {

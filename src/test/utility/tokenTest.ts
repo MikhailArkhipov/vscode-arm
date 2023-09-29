@@ -4,9 +4,9 @@
 import { LanguageOptions } from '../../core/languageOptions';
 import { CharacterStream } from '../../text/characterStream';
 import { TextStream } from '../../text/textStream';
+import { TokenType, Token, TokenSubType } from '../../tokens/definitions';
 import { NumberTokenizer } from '../../tokens/numberTokenizer';
 import { Tokenizer } from '../../tokens/tokenizer';
-import { Token, TokenSubType, TokenType } from '../../tokens/tokens';
 import { makeLanguageOptions } from './parsing';
 
 export namespace TokenTest {

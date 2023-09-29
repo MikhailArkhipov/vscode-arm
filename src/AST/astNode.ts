@@ -1,12 +1,12 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { ParseItem, ParseContext } from '../parser/parseContext';
-import { TextRange } from '../text/textRange';
+import { ParseContext } from '../parser/parseContext';
+import { TextRange } from '../text/definitions';
 import { AstNode, NodeCollection } from './definitions';
 import { NodeCollectionImpl } from './nodeCollection';
 
-export class AstNodeImpl implements AstNode, ParseItem {
+export class AstNodeImpl implements AstNode {
   protected _parent: AstNode | undefined;
   private readonly _children = new NodeCollectionImpl();
 

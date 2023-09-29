@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { Group, TokenOperator } from '../../AST/definitions';
-import { TokenType } from '../../tokens/tokens';
+import { TokenType } from '../../tokens/definitions';
 import {
   isTokenNode,
   parseExpression,
@@ -17,13 +17,13 @@ test('a+b', () => {
   const exp = result.expression;
   const context = result.context;
 
-  expect(context.errors.count).toBe(0);
+  expect(context.errors.length).toBe(0);
   const op = exp.children.getItemAt(0) as TokenOperator;
   expect(op.children.count).toBe(3);
 
-  verifyTokenNode(op.leftOperand, context, TokenType.Symbol, 'a');
-  verifyTokenNode(op.tokenNode, context, TokenType.Operator, '+');
-  verifyTokenNode(op.rightOperand, context, TokenType.Symbol, 'b');
+  verifyTokenNode(op.leftOperand, context.text, TokenType.Symbol, 'a');
+  verifyTokenNode(op.tokenNode, context.text, TokenType.Operator, '+');
+  verifyTokenNode(op.rightOperand, context.text, TokenType.Symbol, 'b');
 });
 
 test('a+b*c', () => {
@@ -31,20 +31,20 @@ test('a+b*c', () => {
   const exp = result.expression;
   const context = result.context;
 
-  expect(context.errors.count).toBe(0);
+  expect(context.errors.length).toBe(0);
   const op = exp.children.getItemAt(0) as TokenOperator;
-  verifyOperator(op, context, '+');
+  verifyOperator(op, context.text, '+');
 
-  verifyTokenNode(op.leftOperand, context, TokenType.Symbol, 'a');
-  verifyOperator(op.rightOperand as TokenOperator, context, '*');
+  verifyTokenNode(op.leftOperand, context.text, TokenType.Symbol, 'a');
+  verifyOperator(op.rightOperand as TokenOperator, context.text, '*');
 
   expect(op.rightOperand!.children.count).toBe(3);
   const multiply = op.rightOperand as TokenOperator;
-  verifyOperator(multiply, context, '*');
+  verifyOperator(multiply, context.text, '*');
 
-  verifyTokenNode(multiply.leftOperand, context, TokenType.Symbol, 'b');
-  verifyTokenNode(multiply.tokenNode, context, TokenType.Operator, '*');
-  verifyTokenNode(multiply.rightOperand, context, TokenType.Symbol, 'c');
+  verifyTokenNode(multiply.leftOperand, context.text, TokenType.Symbol, 'b');
+  verifyTokenNode(multiply.tokenNode, context.text, TokenType.Operator, '*');
+  verifyTokenNode(multiply.rightOperand, context.text, TokenType.Symbol, 'c');
 });
 
 test('(a+b)*c', () => {
@@ -52,20 +52,20 @@ test('(a+b)*c', () => {
   const exp = result.expression;
   const context = result.context;
 
-  expect(context.errors.count).toBe(0);
+  expect(context.errors.length).toBe(0);
   const op = exp.children.getItemAt(0) as TokenOperator;
-  verifyOperator(op, context, '*');
+  verifyOperator(op, context.text, '*');
 
   expect(op.children.count).toBe(3);
-  verifyNodeText(op.leftOperand!, context, '(a+b)');
-  verifyTokenNode(op.rightOperand, context, TokenType.Symbol, 'c');
+  verifyNodeText(op.leftOperand!, context.text, '(a+b)');
+  verifyTokenNode(op.rightOperand, context.text, TokenType.Symbol, 'c');
 
   expect(op.leftOperand!.children.count).toBe(3);
   const g = op.leftOperand as Group;
   expect(isTokenNode(g.openBrace)).toBe(true);
   expect(isTokenNode(g.closeBrace)).toBe(true);
   expect(g.content).toBeDefined();
-  verifyNodeText(g.content!, context, 'a+b');
+  verifyNodeText(g.content!, context.text, 'a+b');
 });
 
 test('a & !b', () => {

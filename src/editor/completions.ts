@@ -7,10 +7,10 @@ import { CancellationToken } from 'vscode-languageclient';
 import { TextDocument, Position, CompletionContext, CompletionItem, CompletionItemKind } from 'vscode';
 import { getDirectiveDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
-import { Token, TokenType } from '../tokens/tokens';
 import { EditorDocument } from './document';
 import { Settings, getSetting } from '../core/settings';
 import { getAvailableInstructions, waitForInstructionSetLoadingComplete } from '../instructions/instructionSet';
+import { Token, TokenType } from '../tokens/definitions';
 
 export async function provideCompletions(
   td: TextDocument,

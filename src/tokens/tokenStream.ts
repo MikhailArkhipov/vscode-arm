@@ -3,7 +3,8 @@
 
 import { TextRangeCollection } from "../text/definitions";
 import { TextRangeCollectionImpl } from "../text/textRangeCollection";
-import { Token, TokenType } from "./tokens";
+import { Token, TokenType } from "./definitions";
+import { TokenImpl } from "./tokens";
 
 // Generic token stream. Allows fetching tokens safely, returns special end of stream
 // tokens even before start  or beyond end of stream. Allows looking beyound end of
@@ -17,7 +18,7 @@ export class TokenStream {
 
   constructor(tokens:readonly Token[]) {
     this._tokens = new TextRangeCollectionImpl(tokens);
-    this._endOfStreamToken = new Token(TokenType.EndOfStream, 0, 0);
+    this._endOfStreamToken = new TokenImpl(TokenType.EndOfStream, 0, 0);
     this.checkBounds();
   }
 

@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ErrorLocation, ParseErrorType } from '../AST/definitions';
-import { TextRange, TextRangeImpl } from '../text/textRange';
-import { Token } from '../tokens/tokens';
+import { TextRange, TextRangeImpl } from '../text/definitions';
+import { Token } from '../tokens/definitions';
 
 export class ParseErrorImpl extends TextRangeImpl {
   public readonly errorType: ParseErrorType;
@@ -31,5 +31,3 @@ export class InstructionError extends ParseErrorImpl {
     super(errorType, ErrorLocation.Token, range);
   }
 }
-
-

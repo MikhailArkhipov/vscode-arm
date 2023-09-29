@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { AstNode, TokenNode, TokenOperator } from '../../AST/definitions';
-import { makeWhitespace } from '../../text/text';
+import { makeWhitespace } from '../../text/utility';
 
 export class AstWriter {
   private _chunks: string[] = [];

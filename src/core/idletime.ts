@@ -10,7 +10,7 @@ export namespace IdleTime {
   export function notifyEditorTextChanged(): void {
     cts.cancel();
     cts = new CancellationTokenSource();
-    setTimeout((e) => {
+    setTimeout(() => {
       doIdle(cts.token);
     }, 500);
   }

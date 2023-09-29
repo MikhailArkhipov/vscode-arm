@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextDocument, Position, Hover, Range, MarkdownString, CancellationToken } from 'vscode';
-import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { getDirectiveDocumentation, getInstructionDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
 import { Settings, getSetting } from '../core/settings';
+import { Token, TokenSubType, TokenType } from '../tokens/definitions';
 
 export async function provideHover(
   td: TextDocument,

@@ -2,61 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { findInstructionInfo } from '../instructions/instructionSet';
-import { ParseContext } from '../parser/parseContext';
-import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
-import { TokenType, TokenSubType } from '../tokens/tokens';
-import { CommaSeparatedListImpl } from './commaSeparatedList';
-import {
-  StatementSubType,
-  StatementType,
-  AstNode,
-  ParseErrorType,
-  ErrorLocation,
-  InstructionStatement,
-  Instruction,
-} from './definitions';
-import { StatementImpl } from './statement';
-import { TokenNodeImpl } from './tokenNode';
-
-export class InstructionStatementImpl extends StatementImpl implements InstructionStatement {
-  private _instruction: Instruction;
-
-  get type(): StatementType {
-    return StatementType.Instruction;
-  }
-  public get subType(): StatementSubType {
-    return StatementSubType.None;
-  }
-  public get instruction(): Instruction | undefined {
-    return this._instruction;
-  }
-
-  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    // {label:} symbol => instruction statement
-    // Comma after symbol most probably means instruction name is missing
-    if (context.nextToken.type === TokenType.Comma) {
-      context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
-    } else {
-      this._name = TokenNodeImpl.create(context, this); // directive name
-      this._name.token.subType = TokenSubType.Instruction;
-    }
-
-    this.checkInstructionName(context);
-    this._operands = new CommaSeparatedListImpl();
-    this._operands.parse(context, this);
-
-    return super.parse(context, parent);
-  }
-
-  private checkInstructionName(context: ParseContext): void {
-    const nameText = context.getTokenText(this._name!.token).toUpperCase();
-    const instruction = new InstructionImpl(nameText);
-    instruction.parse();
-    if (!instruction.isValid) {
-      context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
-    }
-  }
-}
+import { Instruction } from './definitions';
 
 class InstructionImpl implements Instruction {
   public readonly fullName: string; // LDMIANE.W

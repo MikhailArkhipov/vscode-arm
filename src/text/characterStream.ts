@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { Char, Character } from './charCodes';
-import { TextProvider } from './text';
-import { TextRange } from './textRange';
+import { TextProvider, TextRange } from './definitions';
 import { TextStream } from './textStream';
 
 /**

@@ -3,7 +3,7 @@
 
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemError, ParseErrorImpl } from '../parser/parseError';
-import { TokenType, TokenSubType } from '../tokens/tokens';
+import { TokenSubType, TokenType } from '../tokens/definitions';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
 import {
   StatementType,
@@ -28,7 +28,7 @@ abstract class DirectiveStatementImpl extends StatementImpl {
 }
 
 // General directive
-class GeneralDirectiveStatementImpl extends DirectiveStatementImpl {
+export class GeneralDirectiveStatementImpl extends DirectiveStatementImpl {
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._name = TokenNodeImpl.create(context, this);
     this._operands = new CommaSeparatedListImpl();
@@ -38,15 +38,15 @@ class GeneralDirectiveStatementImpl extends DirectiveStatementImpl {
 }
 
 // .equ name, value, aka #define in C
-class DefinitionStatementImpl extends DirectiveStatementImpl {
+export class DefinitionStatementImpl extends DirectiveStatementImpl {
   public get subType(): StatementSubType {
     return StatementSubType.Definition;
   }
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     // Directive name (.equ, .set, ...)
     this._name = TokenNodeImpl.create(context, this);
-    if (context.currentToken.type !== TokenType.Symbol) {
-      context.addError(new MissingItemError(ParseErrorType.SymbolExpected, context.previousToken));
+    if (context.tokens.currentToken.type !== TokenType.Symbol) {
+      context.addError(new MissingItemError(ParseErrorType.SymbolExpected, context.tokens.previousToken));
     }
 
     this._operands = new CommaSeparatedListImpl();
@@ -68,7 +68,7 @@ class DefinitionStatementImpl extends DirectiveStatementImpl {
 }
 
 // name: .word 0, aka int name = 0 in C
-class DeclarationStatementImpl extends DirectiveStatementImpl {
+export class DeclarationStatementImpl extends DirectiveStatementImpl {
   public get subType(): StatementSubType {
     return StatementSubType.Declaration;
   }
@@ -102,20 +102,5 @@ class DeclarationStatementImpl extends DirectiveStatementImpl {
         return s;
       }
     }
-  }
-}
-
-export function createDirectiveStatement(context: ParseContext, label: TokenNode | undefined): Statement {
-  const ct = context.currentToken;
-  if (ct.type !== TokenType.Directive) {
-    throw new Error('Parser: must be at directive token.');
-  }
-  switch (ct.subType) {
-    case TokenSubType.Definition:
-      return new DefinitionStatementImpl(label);
-    case TokenSubType.Declaration:
-      return new DeclarationStatementImpl(label);
-    default:
-      return new GeneralDirectiveStatementImpl(label);
   }
 }

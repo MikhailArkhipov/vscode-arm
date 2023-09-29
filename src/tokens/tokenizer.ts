@@ -4,15 +4,15 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
-import { text } from 'node:stream/consumers';
 import { LanguageOptions } from '../core/languageOptions';
 import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
-import { TextProvider } from '../text/text';
 import { NumberTokenizer } from './numberTokenizer';
 import { isRegisterName } from './registers';
-import { Token, TokenSubType, TokenType } from './tokens';
 import { Directive } from './directive';
+import { TextProvider } from '../text/definitions';
+import { Token, TokenSubType, TokenType } from './definitions';
+import { TokenImpl } from './tokens';
 
 // NOTE: use of .valueof() with enums is b/c of https://github.com/microsoft/TypeScript/issues/9998.
 // I am not inclined to change currentToken property to a function to work around the TS issue.
@@ -326,7 +326,7 @@ export class Tokenizer {
     this.skipSymbol();
 
     if (this._cs.position > start) {
-      const token = new Token(TokenType.Symbol, start, this._cs.position - start);
+      const token = new TokenImpl(TokenType.Symbol, start, this._cs.position - start);
       this._tokens.push(token);
 
       const text = this._cs.text.getText(token.start, token.length);
@@ -472,7 +472,7 @@ export class Tokenizer {
   }
 
   private addToken(type: TokenType, start: number, length: number, tokenSubType?: TokenSubType): Token {
-    const token = new Token(type, start, length);
+    const token = new TokenImpl(type, start, length);
     if (tokenSubType) {
       token.subType = tokenSubType;
     }

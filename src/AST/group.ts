@@ -3,7 +3,7 @@
 
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemError } from '../parser/parseError';
-import { TokenType } from '../tokens/tokens';
+import { TokenType } from '../tokens/definitions';
 import { AstNodeImpl } from './astNode';
 import { Associativity, AstNode, Expression, Group, OperatorType, ParseErrorType, TokenNode } from './definitions';
 import { ExpressionImpl } from './expression';
@@ -51,14 +51,14 @@ export class GroupImpl extends AstNodeImpl implements Group {
   }
 
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    const tokens = context.tokens;    
+    const tokens = context.tokens;
     if (tokens.currentToken.type !== TokenType.OpenBrace) {
       throw new Error('Parser: expected open brace.');
     }
 
     this._openBrace = TokenNodeImpl.create(context, this);
     const expression = new ExpressionImpl();
-    let result = expression.parse(context, this);    
+    let result = expression.parse(context, this);
     this._content = expression;
 
     if (tokens.currentToken.type === TokenType.CloseBrace.valueOf()) {

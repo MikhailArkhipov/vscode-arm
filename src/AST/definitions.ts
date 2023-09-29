@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { LanguageOptions } from '../core/languageOptions';
-import { ParseContext, ParseItem } from '../parser/parseContext';
-import { TextRangeCollection } from '../text/definitions';
-import { TextRange } from '../text/textRange';
-import { Token } from '../tokens/tokens';
+import { TextProvider, TextRange, TextRangeCollection } from '../text/definitions';
+import { Token } from '../tokens/definitions';
+import { TokenStream } from '../tokens/tokenStream';
 
 export interface NodeCollection extends TextRangeCollection<AstNode> {}
 
@@ -59,7 +58,7 @@ export const enum OperatorType {
   // Thefollowing operators are not important in this parser
   // as it is only for coloring and completion/tooltips.
   // No need to parse them and include in the AST.
-  
+
   // Writeback = 14, // r4! writeback
   // Address = 15,  // = as in LDR r2,=place
   // Caret = 16,    // {pc}^
@@ -136,7 +135,7 @@ export enum StatementSubType {
   Declaration = 2, // name: .word 0
 }
 
-export interface Statement extends AstNode, ParseItem {
+export interface Statement extends AstNode {
   get type(): StatementType;
   get subType(): StatementSubType;
   get label(): TokenNode | undefined;
@@ -149,10 +148,16 @@ export interface InstructionStatement extends Statement {
 }
 
 export interface AstRoot extends AstNode {
-  get context(): ParseContext;
-  get options(): LanguageOptions;
-  get labels(): readonly Token[];
-  get statements(): readonly Statement[];
+  readonly text: TextProvider;
+  readonly version: number;
+  readonly options: LanguageOptions;
+  readonly tokens: TokenStream; // Removed comments
+  readonly rawTokens: TextRangeCollection<Token>; // Includes comments
+  readonly errors: readonly ParseError[];
+  readonly definitions: readonly TokenNode[];
+  readonly declarations: readonly TokenNode[];
+  readonly statements: readonly Statement[];
+  readonly labels: readonly Token[];
 }
 
 export enum ParseErrorType {

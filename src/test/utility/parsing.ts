@@ -1,24 +1,27 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import 'jest-expect-message';
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
 import { LanguageOptions } from '../../core/languageOptions';
 import { ParseContext } from '../../parser/parseContext';
+import { TextProvider } from '../../text/definitions';
 import { TextStream } from '../../text/textStream';
+import { TokenType, TokenSubType, Token } from '../../tokens/definitions';
 import { Tokenizer } from '../../tokens/tokenizer';
-import { TokenType, TokenSubType, Token } from '../../tokens/tokens';
 import { AstWriter } from './astWriter';
 import { compareLines } from './textCompare';
 
-export function verifyOperator(op: TokenOperator, context: ParseContext, expectedOpText: string): void {
+export function verifyOperator(op: TokenOperator, docText: TextProvider, expectedOpText: string): void {
   expect(op.children.count).toBe(3); // left operand, token, right operand
-  verifyTokenNode(op.tokenNode, context, TokenType.Operator, expectedOpText);
+  verifyTokenNode(op.tokenNode, docText, TokenType.Operator, expectedOpText);
 }
 
 export function verifyTokenNode(
   n: AstNode | undefined,
-  context: ParseContext,
+  docText: TextProvider,
   tokenType: TokenType,
   expectedText: string,
   tokenSubType?: TokenSubType
@@ -29,11 +32,11 @@ export function verifyTokenNode(
   if (tokenSubType) {
     expect(tn.token.subType).toBe(tokenSubType);
   }
-  verifyNodeText(tn, context, expectedText);
+  verifyNodeText(tn, docText, expectedText);
 }
 
-export function verifyNodeText(n: AstNode, context: ParseContext, expectedText: string): void {
-  expect(context.text.getText(n.start, n.length)).toBe(expectedText);
+export function verifyNodeText(n: AstNode, docText: TextProvider, expectedText: string): void {
+  expect(docText.getText(n.start, n.length)).toBe(expectedText);
 }
 
 export function isTokenNode(node: AstNode | undefined): node is TokenNode {
@@ -41,9 +44,9 @@ export function isTokenNode(node: AstNode | undefined): node is TokenNode {
   return tn && tn.token !== undefined;
 }
 
-export function verifyToken(token: Token, context: ParseContext, expectedType: TokenType, expectedText: string): void {
+export function verifyToken(token: Token, docText: TextProvider, expectedType: TokenType, expectedText: string): void {
   expect(token.type).toBe(expectedType);
-  expect(context.text.getText(token.start, token.length)).toBe(expectedText);
+  expect(docText.getText(token.start, token.length)).toBe(expectedText);
 }
 
 export function verifyParse(expectedTree: string, text: string): void {
@@ -62,9 +65,11 @@ export function verifyParseExpression(expectedTree: string, text: string): void 
 
 function compareTrees(expectedTree: string, actualTree: string): void {
   const result = compareLines(expectedTree, actualTree);
-  if(result.lineNumber >= 0) {
-      expect(`Line at ${result.lineNumber} should be ${result.expectedLine}, but found ${result.actualLine}, different at position ${result.index}`).toBe('');
-  }
+  const message =
+    result.lineNumber >= 0
+      ? `Line at ${result.lineNumber} should be ${result.expectedLine}, but found ${result.actualLine}, different at position ${result.index}`
+      : '';
+  expect(result.lineNumber, message).toBe(-1);
 }
 
 export function parseExpression(text: string): { expression: Expression; context: ParseContext } {

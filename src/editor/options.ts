@@ -67,7 +67,7 @@ export function getColorOptions(): ColorOptions {
   return {
     showColors: getSetting<boolean>(Settings.showColors, true),
     registers: getSetting<boolean>(Settings.colorRegisters, true),
-     variables: getSetting<boolean>(Settings.colorVariables, true),
+    variables: getSetting<boolean>(Settings.colorVariables, true),
   };
 }
 

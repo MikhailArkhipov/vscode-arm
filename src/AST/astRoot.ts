@@ -1,14 +1,18 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextProvider } from '../text/text';
-import { Token } from '../tokens/tokens';
-import { AstNode, AstRoot, Statement, TokenNode } from './definitions';
-import { createStatement } from './statement';
+import { AstNode, AstRoot, ParseError, ParseErrorType, Statement, TokenNode } from './definitions';
 import { ParseContext } from '../parser/parseContext';
 import { TextStream } from '../text/textStream';
 import { LanguageOptions } from '../core/languageOptions';
 import { AstNodeImpl } from './astNode';
+import { TextProvider, TextRangeCollection } from '../text/definitions';
+import { TokenStream } from '../tokens/tokenStream';
+import { Token, TokenSubType, TokenType } from '../tokens/definitions';
+import { EmptyStatementImpl, InstructionStatementImpl, StatementImpl, UnknownStatementImpl } from './statement';
+import { TokenNodeImpl } from './tokenNode';
+import { UnexpectedItemError } from '../parser/parseError';
+import { DeclarationStatementImpl, DefinitionStatementImpl, GeneralDirectiveStatementImpl } from './directive';
 
 export class AstRootImpl extends AstNodeImpl implements AstRoot {
   private _context: ParseContext;
@@ -37,7 +41,7 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
       context.moveToNextToken();
     }
     // Rewind back as a courtesy to potential users downstream.
-    this.context.tokens.position = 0;
+    this._context.tokens.position = 0;
     return true;
   }
 
@@ -49,16 +53,30 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
     return ast;
   }
 
-  public get context(): ParseContext {
-    return this._context;
+  // AstRoot
+  public get version(): number {
+    return this._context.version;
   }
-
   public get text(): TextProvider {
     return this._context.text;
   }
-
   public get options(): LanguageOptions {
     return this._context.options;
+  }
+  public get tokens(): TokenStream {
+    return this._context.tokens;
+  }
+  public get rawTokens(): TextRangeCollection<Token> {
+    return this._context.rawTokens;
+  }
+  public get errors(): readonly ParseError[] {
+    return this._context.errors;
+  }
+  public get definitions(): readonly TokenNode[] {
+    return this._context.definitions;
+  }
+  public get declarations(): readonly TokenNode[] {
+    return this._context.declarations;
   }
 
   public get labels(): readonly Token[] {
@@ -75,5 +93,45 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
       .asArray()
       .map((e) => e as Statement)
       .filter((e) => e);
+  }
+}
+
+function createStatement(context: ParseContext): StatementImpl {
+  let label: TokenNode | undefined;
+  if (context.currentToken.type === TokenType.Label) {
+    label = TokenNodeImpl.create(context, this);
+  }
+
+  switch (context.currentToken.type) {
+    case TokenType.EndOfLine:
+    case TokenType.EndOfStream:
+      // {label:} => empty statement
+      return new EmptyStatementImpl(label);
+
+    case TokenType.Symbol:
+      return new InstructionStatementImpl(label);
+
+    case TokenType.Directive:
+      return createDirectiveStatement(context, label);
+
+    default:
+      // {label:} ??? => Unknown statement
+      context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
+      return new UnknownStatementImpl(label);
+  }
+}
+
+function createDirectiveStatement(context: ParseContext, label: TokenNode | undefined): StatementImpl {
+  const ct = context.tokens.currentToken;
+  if (ct.type !== TokenType.Directive) {
+    throw new Error('Parser: must be at directive token.');
+  }
+  switch (ct.subType) {
+    case TokenSubType.Definition:
+      return new DefinitionStatementImpl(label);
+    case TokenSubType.Declaration:
+      return new DeclarationStatementImpl(label);
+    default:
+      return new GeneralDirectiveStatementImpl(label);
   }
 }

@@ -10,10 +10,7 @@ import {
   OperatorType,
   ParseError,
   ParseErrorType,
-  TokenNode,
 } from './definitions';
-import { TextRange } from '../text/textRange';
-import { TokenSubType, TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
 import { OperatorImpl, TokenOperatorImpl } from './operator';
 import { GroupImpl } from './group';
@@ -21,6 +18,8 @@ import { TokenNodeImpl } from './tokenNode';
 import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
+import { TextRange } from '../text/definitions';
+import { TokenSubType, TokenType } from '../tokens/definitions';
 
 // Heavily based on code in Microsoft RTVS, see
 // https://github.com/microsoft/RTVS/blob/master/src/R/Core/Impl/AST/Expressions/ExpressionParser.cs

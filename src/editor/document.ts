@@ -13,7 +13,6 @@ import {
 } from 'vscode';
 import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
-import { Token } from '../tokens/tokens';
 import { AstRoot } from '../AST/definitions';
 import { getLanguageOptions } from './options';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,6 +20,7 @@ import { LanguageOptions } from '../core/languageOptions';
 import { getParseErrorMessage } from './messages';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 import { TextRangeCollection } from '../text/definitions';
+import { Token } from '../tokens/definitions';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
@@ -41,7 +41,7 @@ export class EditorDocument {
   }
 
   public getAst(): AstRoot | undefined {
-    if (!this._ast || this._ast.context.version < this._td.version) {
+    if (!this._ast || this._ast.version < this._td.version) {
       // this._ast = AstRootImpl.create(this._td.getText(), this._options, this.tokens, this._td.version);
     }
     return this._ast;
@@ -90,7 +90,7 @@ export class EditorDocument {
     return this._td.getText(range);
   }
 
-  public onIdle(ct: CancellationToken):void {
+  public onIdle(ct: CancellationToken): void {
     this.updateDiagnostics(ct);
   }
 
@@ -102,7 +102,7 @@ export class EditorDocument {
 
     const diagnostics: Diagnostic[] = [];
     if (this._ast) {
-      this._ast.context.errors.asArray().forEach((e) => {
+      this._ast.errors.forEach((e) => {
         const range = new Range(this._td.positionAt(e.start), this._td.positionAt(e.end));
         const d = new Diagnostic(range, getParseErrorMessage(e.errorType), DiagnosticSeverity.Warning);
         diagnostics.push(d);

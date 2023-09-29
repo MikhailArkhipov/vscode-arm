@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextProvider } from './text';
+import { TextProvider } from "./definitions";
 
 export class TextStream implements TextProvider {
   private readonly _text: string;

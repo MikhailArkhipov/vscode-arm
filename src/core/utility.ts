@@ -3,7 +3,7 @@
 
 import { window } from 'vscode';
 
-const outputChannel = window.createOutputChannel("ARM");
+const outputChannel = window.createOutputChannel('ARM');
 let extensionPath: string;
 
 export function setExtensionPath(extPath: string) {

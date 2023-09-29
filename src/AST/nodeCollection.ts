@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { BaseTextRangeCollectionImpl } from "../text/textRangeCollection";
-import { AstNode, NodeCollection } from "./definitions";
+import { BaseTextRangeCollectionImpl } from '../text/textRangeCollection';
+import { AstNode, NodeCollection } from './definitions';
 
 // Volatile collection since children can be added during parse pass.
 export class NodeCollectionImpl extends BaseTextRangeCollectionImpl<AstNode> implements NodeCollection {

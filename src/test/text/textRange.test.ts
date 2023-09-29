@@ -1,9 +1,9 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRange } from "../../text/textRange";
+import { TextRange } from '../../text/definitions';
 
-test("TextRange union", () => {
+test('TextRange union', () => {
   const range1 = TextRange.create(10, 2);
   const range2 = TextRange.create(12, 2);
 
@@ -20,7 +20,7 @@ test("TextRange union", () => {
   expect(range2.length).toBe(2);
 });
 
-test("TextRange intersectRange 1", () => {
+test('TextRange intersectRange 1', () => {
   const r1 = TextRange.fromBounds(1, 5);
   const r2 = TextRange.fromBounds(5, 10);
 
@@ -55,7 +55,7 @@ test("TextRange intersectRange 1", () => {
   expect(TextRange.intersectRange(r8, r1)).toBe(false);
 });
 
-test("TextRange intersectRange 2", () => {
+test('TextRange intersectRange 2', () => {
   const r1 = TextRange.fromBounds(1, 5);
   const r2 = TextRange.fromBounds(5, 10);
 
@@ -90,7 +90,7 @@ test("TextRange intersectRange 2", () => {
   expect(TextRange.intersectRange(r8, r1)).toBe(false);
 });
 
-test("TextRange isValid", () => {
+test('TextRange isValid', () => {
   expect(TextRange.isValid(TextRange.emptyRange())).toBe(false);
 
   const r1 = TextRange.fromBounds(1, 1);
@@ -103,7 +103,7 @@ test("TextRange isValid", () => {
   expect(TextRange.isValid(r4)).toBe(true);
 });
 
-test("TextRange construction", () => {
+test('TextRange construction', () => {
   let r = TextRange.fromBounds(0, 1);
   expect(r.start).toBe(0);
   expect(r.length).toBe(1);
@@ -120,7 +120,7 @@ test("TextRange construction", () => {
   expect(r.end).toBe(Number.MAX_VALUE);
 });
 
-test("TextRange contains 1", () => {
+test('TextRange contains 1', () => {
   const r = TextRange.fromBounds(1, 3);
 
   expect(r.contains(Number.MIN_VALUE)).toBe(false);
@@ -133,7 +133,7 @@ test("TextRange contains 1", () => {
   expect(r.contains(Number.MAX_VALUE)).toBe(false);
 });
 
-test("TextRange contains 2", () => {
+test('TextRange contains 2', () => {
   const r1 = TextRange.fromBounds(1, 5);
 
   let r2 = TextRange.fromBounds(Number.MIN_VALUE / 2, 0);
@@ -155,7 +155,7 @@ test("TextRange contains 2", () => {
   expect(r1.containsRange(r2)).toBe(false);
 });
 
-test("TextRange empty", () => {
+test('TextRange empty', () => {
   const r = TextRange.emptyRange();
 
   expect(TextRange.isValid(r)).toBe(false);

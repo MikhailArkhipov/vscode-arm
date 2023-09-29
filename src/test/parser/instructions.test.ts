@@ -1,9 +1,16 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, CommaSeparatedItem, CommaSeparatedList, Expression, Statement, TokenNode } from "../../AST/definitions";
-import { TokenSubType, TokenType } from "../../tokens/tokens";
-import { makeLanguageOptions, parseText, verifyNodeText, verifyParse, verifyTokenNode } from "../utility/parsing";
+import {
+  AstNode,
+  CommaSeparatedItem,
+  CommaSeparatedList,
+  Expression,
+  Statement,
+  TokenNode,
+} from '../../AST/definitions';
+import { TokenSubType, TokenType } from '../../tokens/definitions';
+import { makeLanguageOptions, parseText, verifyParse, verifyTokenNode } from '../utility/parsing';
 
 test('Simple A32 instruction', () => {
   const root = parseText('add r1, r2, #1', makeLanguageOptions(false, true));
@@ -12,16 +19,16 @@ test('Simple A32 instruction', () => {
   expect(root).toBeDefined();
   expect(root.children.count).toBe(1);
 
-  expect(root.context.errors.count).toBe(0);
+  expect(root.errors.length).toBe(0);
   const c1 = root.children.getItemAt(0);
 
   const s = c1 as Statement;
   expect(s.children.count).toBe(2); // name and list of operands
   child = s.children.getItemAt(0);
   let tn = child as TokenNode;
-  verifyTokenNode(tn, root.context, TokenType.Symbol, 'add', TokenSubType.Instruction);
+  verifyTokenNode(tn, root.text, TokenType.Symbol, 'add', TokenSubType.Instruction);
 
-  const csl =  s.children.getItemAt(1) as CommaSeparatedList;
+  const csl = s.children.getItemAt(1) as CommaSeparatedList;
   expect(csl.children.count).toBe(3);
   child = csl.children.getItemAt(0);
 
@@ -33,12 +40,11 @@ test('Simple A32 instruction', () => {
   expect(e.children.count).toBe(1);
   child = e.children.getItemAt(0);
   tn = child as TokenNode;
-  verifyTokenNode(tn, root.context, TokenType.Symbol, 'r1', TokenSubType.Register); 
+  verifyTokenNode(tn, root.text, TokenType.Symbol, 'r1', TokenSubType.Register);
 });
 
 test('str fp, [sp, #-4]!', () => {
-  const expected = String.raw
- `Statement [0...17)
+  const expected = String.raw`Statement [0...17)
   Token str [0...3)
   CommaSeparatedList [4...17)
     CommaSeparatedItem [4...7)
@@ -57,13 +63,12 @@ test('str fp, [sp, #-4]!', () => {
             Expression [13...16)
               Token #-4 [13...16)
           Token ] [16...17)
-`            
+`;
   verifyParse(expected, 'str fp, [sp, #-4]!');
 });
 
 test('ldm r4!, {r0, r1, r2, r3}', () => {
-  const expected = String.raw
-`Statement [0...25)
+  const expected = String.raw`Statement [0...25)
   Token ldm [0...3)
   CommaSeparatedList [7...25)
     CommaSeparatedItem [7...8)

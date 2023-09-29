@@ -7,7 +7,7 @@ import { parseExpression } from '../utility/parsing';
 
 test('empty', () => {
   const result = parseExpression('');
-  expect(result.context.errors.count).toBe(0);
+  expect(result.context.errors.length).toBe(0);
 });
 
 test('+', () => {
@@ -83,8 +83,8 @@ test('[sp, [1]]', () => {
 });
 
 function verifyError(context: ParseContext, errorType: ParseErrorType, start: number, length: number): void {
-  expect(context.errors.count).toBe(1);
-  const e = context.errors.getItemAt(0);
+  expect(context.errors.length).toBe(1);
+  const e = context.errors[0];
   expect(e.errorType).toBe(errorType);
   expect(e.start).toBe(start);
   expect(e.length).toBe(length);
@@ -94,9 +94,9 @@ function verifyErrors(
   context: ParseContext,
   expectedErrors: { errorType: ParseErrorType; start: number; length: number }[]
 ): void {
-  expect(context.errors.count).toBe(expectedErrors.length);
+  expect(context.errors.length).toBe(expectedErrors.length);
   for (let i = 0; i < expectedErrors.length; i++) {
-    const e = context.errors.getItemAt(i);
+    const e = context.errors[i];
     expect(e.errorType).toBe(expectedErrors[i].errorType);
     expect(e.start).toBe(expectedErrors[i].start);
     expect(e.length).toBe(expectedErrors[i].length);

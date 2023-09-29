@@ -3,13 +3,21 @@
 
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemError, ParseErrorImpl } from '../parser/parseError';
-import { TokenType } from '../tokens/tokens';
-import { AstNode, CommaSeparatedItem, CommaSeparatedList, ErrorLocation, Expression, ParseErrorType, TokenNode } from './definitions';
+import {
+  AstNode,
+  CommaSeparatedItem,
+  CommaSeparatedList,
+  ErrorLocation,
+  Expression,
+  ParseErrorType,
+  TokenNode,
+} from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 import { ExpressionImpl } from './expression';
 import { AstNodeImpl } from './astNode';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 import { TextRangeCollection } from '../text/definitions';
+import { TokenType } from '../tokens/definitions';
 
 // An item in a comma-separated sequence, such as {a, b, c}.
 // Normally an expression followed by an optional comma.
@@ -47,8 +55,8 @@ export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparate
           result = expression.parse(context, this);
           this._item = expression;
           if (context.currentToken.type === TokenType.Comma.valueOf()) {
-            this._comma = TokenNodeImpl.create(context, this);            
-            result = true; // We may be able to recover 
+            this._comma = TokenNodeImpl.create(context, this);
+            result = true; // We may be able to recover
           }
         }
         break;
@@ -94,7 +102,7 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
       }
       const item = new CommaSeparatedItemImpl(this.openBrace === undefined);
       itemParsed = item.parse(context, this);
-      if(itemParsed) {
+      if (itemParsed) {
         this._items.push(item);
       }
     }
@@ -105,13 +113,15 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
 
     // Check for a brace mismatch
     if (this._openBrace) {
-      if(!this._closeBrace && itemParsed) {
+      if (!this._closeBrace && itemParsed) {
         // Inner expression was successfully parsed, but there is no closing brace.
         context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, context.tokens.previousToken));
         // Recoverable
       }
-      if(this._closeBrace && this._items.length === 0) {
-        context.addError(new ParseErrorImpl(ParseErrorType.EmptyExpression, ErrorLocation.Token, context.tokens.previousToken));
+      if (this._closeBrace && this._items.length === 0) {
+        context.addError(
+          new ParseErrorImpl(ParseErrorType.EmptyExpression, ErrorLocation.Token, context.tokens.previousToken)
+        );
         // Recoverable, don't stop expression parsing.
       }
     }

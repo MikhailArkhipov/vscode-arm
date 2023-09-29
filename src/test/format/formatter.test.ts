@@ -75,7 +75,7 @@ function format(original: string): string {
 export function formatWithOptions(original: string, formatOptions: FormatOptions): string {
   const ast = parseText(original);
   const f = new Formatter();
-  return f.formatDocument(ast.context.text.getText(), ast.context.rawTokens.asArray(), formatOptions);
+  return f.formatDocument(ast.text.getText(), ast.rawTokens.asArray(), formatOptions);
 }
 
 class FormatOptionsImpl implements FormatOptions {
