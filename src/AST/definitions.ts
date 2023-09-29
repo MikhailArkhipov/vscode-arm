@@ -54,9 +54,16 @@ export const enum OperatorType {
   Xor = 11, // ^
   UnaryMinus = 12,
   UnaryPlus = 13,
-  Writeback = 14, // r4! writeback
   Group = 15, // ( ) pseudo-operator
   Sentinel = 16, // pseudo-type used in expression parsing
+
+  // Thefollowing operators are not important in this parser
+  // as it is only for coloring and completion/tooltips.
+  // No need to parse them and include in the AST.
+  
+  // Writeback = 14, // r4! writeback
+  // Address = 15,  // = as in LDR r2,=place
+  // Caret = 16,    // {pc}^
 }
 
 // https://en.wikipedia.org/wiki/Operator_associativity
@@ -88,7 +95,7 @@ export interface Expression extends AstNode {
   // Root of the expression tree
   get content(): AstNode | undefined;
   // Optional exclamation mark (writeback) at the end of expression.
-  get exclamation(): TokenNode | undefined;
+  // get exclamation(): TokenNode | undefined;
 }
 
 export interface Group extends Operator {

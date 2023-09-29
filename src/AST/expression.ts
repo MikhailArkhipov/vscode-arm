@@ -13,7 +13,7 @@ import {
   TokenNode,
 } from './definitions';
 import { TextRange } from '../text/textRange';
-import { TokenType } from '../tokens/tokens';
+import { TokenSubType, TokenType } from '../tokens/tokens';
 import { ParseContext } from '../parser/parseContext';
 import { OperatorImpl, TokenOperatorImpl } from './operator';
 import { GroupImpl } from './group';
@@ -47,8 +47,6 @@ interface ParseResult {
 
 export class ExpressionImpl extends AstNodeImpl implements Expression {
   private _content: AstNode | undefined;
-  private _exclamation: TokenNode | undefined;
-
   private _start: number; // If expression is empty we still need start position.
   private _nestedListAllowed = true;
   private _operationType = OperationType.None;
@@ -63,19 +61,12 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   public get content(): AstNode | undefined {
     return this._content;
   }
-  // Optional exclamation mark (writeback) at the end of expression.
-  get exclamation(): TokenNode | undefined {
-    return this._exclamation;
-  }
 
   // TextRange
   public get start(): number {
     return this._content ? this._content.start : this._start;
   }
   public get end(): number {
-    if (this._exclamation) {
-      return this._exclamation.end;
-    }
     return this._content ? this._content.end : this._start;
   }
   public get length(): number {
@@ -91,12 +82,13 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     // http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
     // Instead of evaluating expressions like calculator would do,
     // we create tree nodes with operator and its operands.
-
     const tokens = context.tokens;
     let endOfExpression = false;
     // Push sentinel
     this._operators.push(sentinel);
     this._start = context.currentToken.start;
+
+    skipAddressOperator(context); // Skip over =, if any.
 
     while (!tokens.isEndOfLine() && this._errorType === ParseErrorType.None && !endOfExpression) {
       const ct = tokens.currentToken;
@@ -170,6 +162,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
         this.appendChild(this._content);
       }
     }
+
     super.parse(context, parent);
     return this._errorType === ParseErrorType.None;
   }
@@ -238,7 +231,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
       // a +
       this.addError(
         context,
-        new ParseErrorImpl(ParseErrorType.RightOperandExpected, ErrorLocation.Token, this.getErrorRange(context))
+        new ParseErrorImpl(ParseErrorType.RightOperandExpected, ErrorLocation.Token, getErrorRange(context))
       );
       return false;
     }
@@ -296,7 +289,15 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
   }
 
-  private handleOperator(context: ParseContext): void {   
+  private handleOperator(context: ParseContext): void {
+    if (isWriteBackOrCaretOperator(context)) {
+      // Skip any = that precedes the expression, there is no need
+      // to include = in the AST, it is not important for the editor.
+      context.tokens.moveToNextToken();
+      this._operationType = OperationType.EndOfExpression;
+      return;
+    }
+
     const currentOperator = new TokenOperatorImpl(this._operands.length === 0);
     currentOperator.parse(context, undefined);
 
@@ -406,24 +407,24 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     if (!operatorNode.unary) {
       return this._operands.length > 0 ? this._operands.pop() : undefined;
     }
-    if(operatorNode.type === OperatorType.Writeback) {
-      // ! applied to the left, like indexer or a function call
-      // in high hever languages. I.e. r3! is about the same as
-      // a[] or b() where [] is indexing operator and () is a call.
-      return this.safeGetLeftOperand(operatorNode);
-    }
+    // if(operatorNode.type === OperatorType.Writeback) {
+    // ! applied to the left, like indexer or a function call
+    // in high hever languages. I.e. r3! is about the same as
+    // a[] or b() where [] is indexing operator and () is a call.
+    // return this.safeGetLeftOperand(operatorNode);
+    // }
     return this.safeGetRightOperand(operatorNode);
   }
 
-  private safeGetLeftOperand(operatorNode: Operator): AstNode | undefined {
-    // Operand is on top the stack and must be to the left of the operator
-    if (this._operands.length > 0) {
-      if (this._operands[this._operands.length - 1].end <= operatorNode.start) {
-        return this._operands.pop();
-      }
-    }
-    return;
-  }
+  // private safeGetLeftOperand(operatorNode: Operator): AstNode | undefined {
+  //   // Operand is on top the stack and must be to the left of the operator
+  //   if (this._operands.length > 0) {
+  //     if (this._operands[this._operands.length - 1].end <= operatorNode.start) {
+  //       return this._operands.pop();
+  //     }
+  //   }
+  //   return;
+  // }
 
   private safeGetRightOperand(operatorNode: Operator): AstNode | undefined {
     // Operand is on top the stack and must be to the right of the operator
@@ -435,21 +436,17 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     return;
   }
 
-  private getErrorRange(context: ParseContext): TextRange {
-    return context.tokens.isEndOfLine() ? context.tokens.previousToken : context.tokens.currentToken;
-  }
-
   private getOperandErrorRange(context: ParseContext): TextRange {
     if (this._operands.length > 0) {
       const node = this._operands[this._operands.length - 1];
       return node.children.count > 0 ? node.children.getItemAt(0) : node;
     }
-    return this.getErrorRange(context);
+    return getErrorRange(context);
   }
 
   private getOperatorErrorRange(context: ParseContext): TextRange {
     const lastOperator = this.getLastOperator();
-    return lastOperator.type !== OperatorType.Sentinel ? lastOperator : this.getErrorRange(context);
+    return lastOperator.type !== OperatorType.Sentinel ? lastOperator : getErrorRange(context);
   }
 
   private getLastOperator(): OperatorImpl {
@@ -459,5 +456,42 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
   private addError(context: ParseContext, error: ParseError): void {
     context.addError(error);
     this._errorType = error.errorType;
+  }
+}
+
+function getErrorRange(context: ParseContext): TextRange {
+  return context.tokens.isEndOfLine() ? context.tokens.previousToken : context.tokens.currentToken;
+}
+
+function isWriteBackOrCaretOperator(context: ParseContext): boolean {
+  // Very special, basically heuristics. If bang is followed
+  // by a comma, or preceded by a symbol or by a closing bracket AND is not
+  // followed by a symbol, we consider it writeback. Same for caret,
+  // except it is preceded by }. May look into better solutions in the future.
+  const text = context.getCurrentTokenText();
+  const pt = context.previousToken;
+  switch (text) {
+    case '!':
+      if (
+        pt.type === TokenType.CloseBracket ||
+        (pt.type === TokenType.Symbol && pt.subType === TokenSubType.Register)
+      ) {
+        return true;
+      }
+      break;
+
+    case '^':
+      return pt.type === TokenType.CloseCurly;
+  }
+  return false;
+}
+
+function skipAddressOperator(context: ParseContext): void {
+  const ct = context.tokens.currentToken;
+  if (ct.type === TokenType.Operator && ct.subType === TokenSubType.Noop) {
+    const text = context.getCurrentTokenText();
+    if (text === '=') {
+      context.tokens.moveToNextToken();
+    }
   }
 }

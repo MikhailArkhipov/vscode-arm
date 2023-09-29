@@ -38,28 +38,26 @@ test('Simple A32 instruction', () => {
 
 test('str fp, [sp, #-4]!', () => {
   const expected = String.raw
- `Statement [0...18)
+ `Statement [0...17)
   Token str [0...3)
-  CommaSeparatedList [4...18)
+  CommaSeparatedList [4...17)
     CommaSeparatedItem [4...7)
       Expression [4...6)
         Token fp [4...6)
       Token , [6...7)
-    CommaSeparatedItem [8...18)
-      Expression [8...18)
-        Operator [sp, #-4]! [8...18)
-          CommaSeparatedList [8...17)
-            Token [ [8...9)
-            CommaSeparatedItem [9...12)
-              Expression [9...11)
-                Token sp [9...11)
-              Token , [11...12)
-            CommaSeparatedItem [13...16)
-              Expression [13...16)
-                Token #-4 [13...16)
-            Token ] [16...17)
-          Token ! [17...18)
-`;
+    CommaSeparatedItem [8...17)
+      Expression [8...17)
+        CommaSeparatedList [8...17)
+          Token [ [8...9)
+          CommaSeparatedItem [9...12)
+            Expression [9...11)
+              Token sp [9...11)
+            Token , [11...12)
+          CommaSeparatedItem [13...16)
+            Expression [13...16)
+              Token #-4 [13...16)
+          Token ] [16...17)
+`            
   verifyParse(expected, 'str fp, [sp, #-4]!');
 });
 

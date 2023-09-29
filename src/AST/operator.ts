@@ -121,8 +121,14 @@ export function getOperatorPrecedence(operatorType: OperatorType): number {
     case OperatorType.Group: // ( ) around expression
       return 300;
 
-    case OperatorType.Writeback:
-      return 400;
+    // These operators are not important in this parser
+    // as it is only for coloring and completion/tooltips.
+    // No need to parse them and include in the AST.
+
+    // case OperatorType.Caret: // {pc}^
+    // case OperatorType.Address: // = as in LDR r2,=place
+    // case OperatorType.Writeback:
+    //  return 400;
   }
   return 1000;
 }
@@ -150,29 +156,16 @@ function getOperatorType(context: ParseContext): OperatorType {
       return OperatorType.And; // &
     case '|':
       return OperatorType.Or; // |
-    case '!': {
-      // Very special. At this point basically heuristics. If bang is followed
-      // by a comma, or preceded by a symbol or by a closing bracket AND is not
-      // followed by a symbol, we consider it writeback. May look into better
-      // solutions in the future.
-      const pt = context.previousToken;
-      const nt = context.nextToken;
-      if (
-        pt.type === TokenType.CloseBracket ||
-        (pt.type === TokenType.Symbol && pt.subType === TokenSubType.Register)
-      ) {
-        return OperatorType.Writeback;
-      }
-      return OperatorType.Not; // !
-    }
+    case '!':
+      return OperatorType.Not;
   }
   return OperatorType.Unknown;
 }
 
 function isUnaryOperator(tokens: TokenStream, type: OperatorType, offset: number) {
-  if(type === OperatorType.Writeback) {
-    return true;
-  } 
+  // if (type === OperatorType.Writeback) {
+  //   return true;
+  // }
   if (!isPossiblyUnary(type)) {
     return false;
   }

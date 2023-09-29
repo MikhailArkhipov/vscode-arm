@@ -178,27 +178,51 @@ test('{pc}+8', () => {
 
 test('x4!', () => {
   const expected = String.raw
-`Operator x4! [0...3)
-  Token x4 [0...2)
-  Token ! [2...3)
+`Token x4 [0...2)
 `;
   verifyParseExpression(expected, 'x4!');
 });
 
 test('[x4, 1]!', () => {
   const expected = String.raw
-`Operator [x4, 1]! [0...8)
-  CommaSeparatedList [0...7)
-    Token [ [0...1)
-    CommaSeparatedItem [1...4)
-      Expression [1...3)
-        Token x4 [1...3)
-      Token , [3...4)
-    CommaSeparatedItem [5...6)
-      Expression [5...6)
-        Token 1 [5...6)
-    Token ] [6...7)
-  Token ! [7...8)
+`CommaSeparatedList [0...7)
+  Token [ [0...1)
+  CommaSeparatedItem [1...4)
+    Expression [1...3)
+      Token x4 [1...3)
+    Token , [3...4)
+  CommaSeparatedItem [5...6)
+    Expression [5...6)
+      Token 1 [5...6)
+  Token ] [6...7)
 `;
   verifyParseExpression(expected, '[x4, 1]!');
 });
+
+test('=[x4, 1]', () => {
+  const expected = String.raw
+`CommaSeparatedList [0...7)
+  Token [ [0...1)
+  CommaSeparatedItem [1...4)
+    Expression [1...3)
+      Token x4 [1...3)
+    Token , [3...4)
+  CommaSeparatedItem [5...6)
+    Expression [5...6)
+      Token 1 [5...6)
+  Token ] [6...7)
+`;
+  verifyParseExpression(expected, '[x4, 1]!');
+})
+
+test('{pc}caret', () => {
+  const expected = String.raw
+`CommaSeparatedList [0...4)
+  Token { [0...1)
+  CommaSeparatedItem [1...3)
+    Expression [1...3)
+      Token pc [1...3)
+  Token } [3...4)
+`;
+  verifyParseExpression(expected, '{pc}^');
+})
