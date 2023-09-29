@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { LanguageOptions } from '../../core/languageOptions';
-import { FormatOptions, Formatter } from '../../editor/formatter';
+import { Formatter } from '../../editor/formatter';
+import { FormatOptions } from '../../editor/options';
 import { parseText } from '../utility/parsing';
 
 test('Empty string', () => {
@@ -46,48 +46,50 @@ test('Directive + label', () => {
 });
 
 test('U instructions, L registers', () => {
-  const fo = new FormatOptions();
-  fo.spaceAfterComma = true;
+  const fo = new FormatOptionsImpl();
   fo.uppercaseInstructions = true;
   fo.uppercaseRegisters = false;
-  fo.tabSize = 4;
   const result = formatWithOptions("cmp   R1, #'a'-1", fo);
   expect(result).toBe("    CMP r1, #'a' - 1");
 });
 
 test('L instructions U registers', () => {
-  const fo = new FormatOptions();
-  fo.spaceAfterComma = true;
-  fo.uppercaseInstructions = false;
+  const fo = new FormatOptionsImpl();
   fo.uppercaseRegisters = true;
-  fo.tabSize = 4;
   const result = formatWithOptions("CMP   R1, #'a'-1", fo);
   expect(result).toBe("    cmp R1, #'a' - 1");
 });
 
 test('Space around operators', () => {
-  const options = new FormatOptions();
-  options.ignoreComments = false;
-  options.spaceAfterComma = true;
+  const options = new FormatOptionsImpl();
   options.tabSize = 2;
-  options.spaceAroundOperators = false;
   const result = formatWithOptions('    subs R7 ,  [r0-12+148]', options);
   expect(result).toBe('  subs   r7, [r0-12+148]');
 });
 
 function format(original: string): string {
-  const options = new FormatOptions();
-  options.ignoreComments = false;
-  options.spaceAfterComma = true;
-  options.tabSize = 4;
+  const options = new FormatOptionsImpl();
   return formatWithOptions(original, options);
 }
 
-export function formatWithOptions(
-  original: string,
-  formatOptions: FormatOptions
-): string {
+export function formatWithOptions(original: string, formatOptions: FormatOptions): string {
   const ast = parseText(original);
   const f = new Formatter();
   return f.formatDocument(ast.context.text.getText(), ast.context.rawTokens.asArray(), formatOptions);
+}
+
+class FormatOptionsImpl implements FormatOptions {
+  tabSize = 4;
+  spaceAfterComma = true;
+  spaceAroundOperators = true;
+  uppercaseLabels = false;
+  uppercaseDirectives = false;
+  uppercaseInstructions = false;
+  uppercaseRegisters = false;
+  alignInstructions = true;
+  alignOperands = true;
+  alignInstructionsPosition = 0;
+  alignOperandsPosition = 0;
+  alignDirectivesToInstructions = true;
+  alignBlockDirectivesToInstructions = false;
 }

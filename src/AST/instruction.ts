@@ -145,3 +145,9 @@ class InstructionImpl implements Instruction {
     }
   }
 }
+
+export function parseInstructionName(nameText: string): Instruction {
+  const instruction = new InstructionImpl(nameText);
+  instruction.parse();
+  return instruction;
+}

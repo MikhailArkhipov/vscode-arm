@@ -105,7 +105,7 @@ class DeclarationStatementImpl extends DirectiveStatementImpl {
   }
 }
 
-export function createDirectiveStatement(context: ParseContext, label: TokenNode | undefined): Statement | undefined {
+export function createDirectiveStatement(context: ParseContext, label: TokenNode | undefined): Statement {
   const ct = context.currentToken;
   if (ct.type !== TokenType.Directive) {
     throw new Error('Parser: must be at directive token.');

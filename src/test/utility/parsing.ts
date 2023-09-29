@@ -1,6 +1,5 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-import 'jest-expect-message';
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
@@ -63,11 +62,9 @@ export function verifyParseExpression(expectedTree: string, text: string): void 
 
 function compareTrees(expectedTree: string, actualTree: string): void {
   const result = compareLines(expectedTree, actualTree);
-  const message =
-    result.lineNumber >= 0
-      ? `Line at ${result.lineNumber} should be ${result.expectedLine}, but found ${result.actualLine}, different at position ${result.index}`
-      : '';
-  expect(result.lineNumber, message).toBe(-1);
+  if(result.lineNumber >= 0) {
+      expect(`Line at ${result.lineNumber} should be ${result.expectedLine}, but found ${result.actualLine}, different at position ${result.index}`).toBe('');
+  }
 }
 
 export function parseExpression(text: string): { expression: Expression; context: ParseContext } {

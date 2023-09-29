@@ -3,11 +3,10 @@
 
 import { TextProvider } from '../text/text';
 import { Token } from '../tokens/tokens';
-import { AstNode, AstRoot, TokenNode } from './definitions';
-import { Statement } from './statement';
+import { AstNode, AstRoot, Statement, TokenNode } from './definitions';
+import { createStatement } from './statement';
 import { ParseContext } from '../parser/parseContext';
 import { TextStream } from '../text/textStream';
-import { TokenStream } from '../tokens/tokenStream';
 import { LanguageOptions } from '../core/languageOptions';
 import { AstNodeImpl } from './astNode';
 
@@ -28,7 +27,7 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
     // since it helps formatter to preserve blank lines as needed. Anything that is
     // not recognized is recorded as an 'unknown statement'.
     while (!context.tokens.isEndOfStream()) {
-      const statement = new Statement();
+      const statement = createStatement(context);
       statement.parse(context, this);
 
       if (!context.tokens.isEndOfLine()) {

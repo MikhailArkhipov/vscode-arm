@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { LanguageOptions } from '../core/languageOptions';
-import { ParseContext } from '../parser/parseContext';
+import { ParseContext, ParseItem } from '../parser/parseContext';
 import { TextRangeCollection } from '../text/definitions';
-import { TextProvider } from '../text/text';
 import { TextRange } from '../text/textRange';
 import { Token } from '../tokens/tokens';
 
@@ -137,7 +136,7 @@ export enum StatementSubType {
   Declaration = 2, // name: .word 0
 }
 
-export interface Statement extends AstNode {
+export interface Statement extends AstNode, ParseItem {
   get type(): StatementType;
   get subType(): StatementSubType;
   get label(): TokenNode | undefined;

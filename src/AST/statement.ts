@@ -71,7 +71,16 @@ class EmptyStatementImpl extends StatementImpl {
   }
 }
 
-export function createStatement(context: ParseContext): Statement | undefined {
+class UnknownStatement extends StatementImpl {
+  get type(): StatementType {
+    return StatementType.Unknown;
+  }
+  public get subType(): StatementSubType {
+    return StatementSubType.None;
+  }
+}
+
+export function createStatement(context: ParseContext): Statement {
   let label: TokenNode | undefined;
   if (context.currentToken.type === TokenType.Label) {
     label = TokenNodeImpl.create(context, this);
@@ -91,8 +100,7 @@ export function createStatement(context: ParseContext): Statement | undefined {
 
     default:
       // {label:} ??? => Unknown statement
-      this._type = StatementType.Unknown;
       context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
-      return;
+      return new UnknownStatement(label);
   }
 }

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextDocument, Position, Hover, Range, MarkdownString, CancellationToken } from 'vscode';
-import { TokenSubType, TokenType } from '../tokens/tokens';
+import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 import { getDirectiveDocumentation, getInstructionDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
 import { Settings, getSetting } from '../core/settings';
@@ -19,7 +19,7 @@ export async function provideHover(
 
   const offset = td.offsetAt(position);
   const tokenIndex = ed.tokens.getItemContaining(offset);
-  if (tokenIndex < 0 || ed.isComment(tokenIndex)) {
+  if (tokenIndex < 0 || Token.isComment(ed.tokens.getItemAt(tokenIndex))) {
     return;
   }
 
