@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseErrorType } from '../AST/definitions';
+import { getCurrentInstructionSetName } from '../instructions/instructionSet';
 
 export function getParseErrorMessage(errorType: ParseErrorType): string {
   switch (errorType) {
     case ParseErrorType.UnknownInstruction:
-      return 'Unknown instruction.';
+      return `Unknown instruction (${getCurrentInstructionSetName()} set).`;
     case ParseErrorType.InstructionOrDirectiveExpected:
       return 'Instruction or directive expected.';
     case ParseErrorType.UndefinedLabel:
@@ -28,7 +29,7 @@ export function getParseErrorMessage(errorType: ParseErrorType): string {
     case ParseErrorType.CloseBraceExpected:
       return 'Closing brace expected.';
     case ParseErrorType.UnexpectedOperand:
-      return 'Operand not expected.';
+      return 'Unexpected operand.';
     case ParseErrorType.UnexpectedEndOfLine:
       return 'Unexpected end of line.';
     case ParseErrorType.UnexpectedEndOfFile:

@@ -15,18 +15,17 @@ import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
 import { AstRoot } from '../AST/definitions';
 import { getLanguageOptions } from './options';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LanguageOptions } from '../core/languageOptions';
 import { getParseErrorMessage } from './messages';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 import { TextRangeCollection } from '../text/definitions';
 import { Token } from '../tokens/definitions';
+import { AstRootImpl } from '../AST/astRoot';
 
 export class EditorDocument {
   private readonly _diagnosticsCollection = languages.createDiagnosticCollection('vscode-arm');
   private readonly _td: TextDocument;
 
-  // Raw token collection - it including comments
   private _tokens: TextRangeCollection<Token> = new TextRangeCollectionImpl();
   private _options: LanguageOptions;
   private _ast: AstRoot | undefined;
@@ -35,27 +34,22 @@ export class EditorDocument {
   constructor(td: TextDocument) {
     this._td = td;
   }
-
   public get textDocument(): TextDocument {
     return this._td;
+  }
+  public get tokens(): TextRangeCollection<Token> {
+    return this._ast ? this._ast.tokens : new TextRangeCollectionImpl<Token>();
   }
 
   public getAst(): AstRoot | undefined {
     if (!this._ast || this._ast.version < this._td.version) {
-      // this._ast = AstRootImpl.create(this._td.getText(), this._options, this.tokens, this._td.version);
-    }
-    return this._ast;
-  }
-
-  public get tokens(): TextRangeCollection<Token> {
-    if (!this._tokens || this._version !== this._td.version) {
       this._options = getLanguageOptions();
       const t = new Tokenizer(this._options);
       const text = this._td.getText();
-      const tokenArray = t.tokenize(new TextStream(text), 0, text.length);
-      this._tokens = new TextRangeCollectionImpl(tokenArray);
+      const tokens = t.tokenize(new TextStream(text), 0, text.length);
+      this._ast = AstRootImpl.create(this._td.getText(), this._options, tokens, this._td.version);
     }
-    return this._tokens;
+    return this._ast;
   }
 
   public getCaretPosition(): Position | undefined {
@@ -94,7 +88,7 @@ export class EditorDocument {
     this.updateDiagnostics(ct);
   }
 
-  private async updateDiagnostics(ct: CancellationToken): Promise<void> {
+  private updateDiagnostics(ct: CancellationToken): void {
     this._diagnosticsCollection.clear();
     if (ct.isCancellationRequested) {
       return;

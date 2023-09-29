@@ -25,7 +25,7 @@ export async function provideHover(
 
   const token = ed.tokens.getItemAt(tokenIndex);
   const range = new Range(td.positionAt(token.start), td.positionAt(token.end));
-  const tokenText = td.getText(range);
+  const tokenText = td.getText(range).toUpperCase();
 
   let doc: MarkdownString | undefined;
   switch (token.type) {

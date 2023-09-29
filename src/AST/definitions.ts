@@ -151,8 +151,7 @@ export interface AstRoot extends AstNode {
   readonly text: TextProvider;
   readonly version: number;
   readonly options: LanguageOptions;
-  readonly tokens: TokenStream; // Removed comments
-  readonly rawTokens: TextRangeCollection<Token>; // Includes comments
+  readonly tokens: TextRangeCollection<Token>; // Includes comments
   readonly errors: readonly ParseError[];
   readonly definitions: readonly TokenNode[];
   readonly declarations: readonly TokenNode[];

@@ -101,8 +101,7 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
     if (context.nextToken.type === TokenType.Comma) {
       context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
     } else {
-      this._name = TokenNodeImpl.create(context, this); // directive name
-      this._name.token.subType = TokenSubType.Instruction;
+      this._name = TokenNodeImpl.create(context, this); // instruction name
     }
 
     this.checkInstructionName(context);
@@ -113,10 +112,15 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
   }
 
   private checkInstructionName(context: ParseContext): void {
-    const nameText = context.getTokenText(this._name!.token).toUpperCase();
+    if (!this._name) {
+      return;
+    }
+    const nameText = context.getTokenText(this._name.token).toUpperCase();
     const instruction = parseInstructionName(nameText);
     if (!instruction.isValid) {
       context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
+    } else {
+      this._name.token.subType = TokenSubType.Instruction;
     }
   }
 }

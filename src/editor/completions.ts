@@ -9,7 +9,7 @@ import { getDirectiveDocumentation } from '../documentation/documentation';
 import { RDT } from './rdt';
 import { EditorDocument } from './document';
 import { Settings, getSetting } from '../core/settings';
-import { getAvailableInstructions, waitForInstructionSetLoadingComplete } from '../instructions/instructionSet';
+import { getAvailableInstructions } from '../instructions/instructionSet';
 import { Token, TokenType } from '../tokens/definitions';
 
 export async function provideCompletions(
@@ -52,21 +52,26 @@ function handleDirectivesCompletion(
   context: CompletionContext
 ): CompletionItem[] {
   let comps: CompletionItem[] = [];
+  
+  const ast = ed.getAst();
+  if(!ast) {
+    return [];
+  }
 
   // Explicit trigger always invokes
   let directiveCompletion = context.triggerCharacter === '.';
   if (!directiveCompletion) {
     if (tokenIndex >= 0) {
       // Explicit invoke like Ctrl+Space? Are we on an existing directive?
-      directiveCompletion = ed.tokens.getItemAt(tokenIndex).type === TokenType.Directive;
+      directiveCompletion = ast.tokens.getItemAt(tokenIndex).type === TokenType.Directive;
     }
   }
 
   if (!directiveCompletion) {
     // Are we past directive, full or partial like '.alig|'?
-    const prevTokenIndex = ed.tokens.getFirstItemBeforePosition(offset);
+    const prevTokenIndex = ast.tokens.getFirstItemBeforePosition(offset);
     if (prevTokenIndex >= 0) {
-      const prevToken = ed.tokens.getItemAt(prevTokenIndex);
+      const prevToken = ast.tokens.getItemAt(prevTokenIndex);
       directiveCompletion = prevToken.type === TokenType.Directive && prevToken.end === offset;
     }
   }
@@ -95,7 +100,6 @@ async function handleInstructionsCompletion(
 ): Promise<CompletionItem[]> {
   const comps: CompletionItem[] = [];
 
-  await waitForInstructionSetLoadingComplete();
   const instructions = await getAvailableInstructions();
   if (ct.isCancellationRequested) {
     return [];

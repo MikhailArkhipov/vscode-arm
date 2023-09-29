@@ -1,7 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, TokenNode, TokenOperator } from '../../AST/definitions';
+import { AstNode, AstRoot } from '../../AST/definitions';
+import { getParseErrorMessage } from '../../editor/messages';
 import { makeWhitespace } from '../../text/utility';
 
 export class AstWriter {
@@ -9,7 +10,24 @@ export class AstWriter {
   private _indent: number;
   private _text: string;
 
+  public writeAst(ast: AstRoot, text: string): string {
+    this.writeChunks(ast, text);
+    
+    if(ast.errors.length > 0) {
+      this._chunks.push('\n');
+      ast.errors.forEach(e => {
+        this._chunks.push(`Error: ${getParseErrorMessage(e.errorType)}, range [${e.start}...${e.end})`);
+      });
+    }
+    return this._chunks.join('');
+  }
+
   public writeTree(node: AstNode, text: string): string {
+    this.writeChunks(node, text);
+    return this._chunks.join('');
+  }
+
+  private writeChunks(node: AstNode, text: string): void {
     this._chunks = [];
     this._indent = 0;
     this._text = text;
@@ -17,8 +35,6 @@ export class AstWriter {
     node.children.asArray().forEach((e) => {
       this.writeNode(e);
     });
-
-    return this._chunks.join('');
   }
 
   private writeNode(node: AstNode): void {

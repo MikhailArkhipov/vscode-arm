@@ -95,8 +95,8 @@ function makeParseContext(text: string, options?: LanguageOptions): ParseContext
   const t = new Tokenizer(options);
   const ts = new TextStream(text);
   const tokens = t.tokenize(ts, 0, text.length);
-  const ast = new AstRootImpl();
-  return new ParseContext(ast, ts, options, tokens, 0);
+  const ast = new AstRootImpl(tokens, 0);
+  return new ParseContext(ast, ts, options, tokens);
 }
 export function writeTokens(filePath: string): void {}
 

@@ -94,5 +94,5 @@ test('ldm r4!, {r0, r1, r2, r3}', async () => {
               Token r3 [22...24)
           Token } [24...25)
 `;
-  await verifyAstAsync(expected, 'ldm r4!, {r0, r1, r2, r3}');
+  await verifyAstAsync(expected, 'ldm r4!, {r0, r1, r2, r3}', false);
 });

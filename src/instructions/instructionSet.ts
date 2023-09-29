@@ -27,14 +27,14 @@ class InstructionSetImpl implements InstructionSet {
     // Transfer to map for faster lookup.
     this._map = new Map();
     instructions.forEach((e) => {
-      this._map.set(e.name, e);
+      this._map.set(e.name.toUpperCase(), e);
     });
   }
 
   // Match the longest case since instructions may vary by type.
   // Ex PKHBT, PKHTB - instruction core is PKH and DT/TB are actually types.
   public findInstruction(candidateName: string): InstructionJson | undefined {
-    return this._map.get(candidateName);
+    return this._map.get(candidateName.toUpperCase());
   }
 
   public get instructions(): readonly InstructionJson[] {
@@ -42,41 +42,45 @@ class InstructionSetImpl implements InstructionSet {
   }
 }
 
-let _currentInstructionSetName: string;
-let _currentInstructionSet: InstructionSetImpl;
-let _runningLoader: Deferred<void>;
+let currentInstructionSetName = 'A64';
+const instructionSets: Map<string, InstructionSetImpl> = new Map();
+let runningLoader: Deferred<void>;
 
-export async function waitForInstructionSetLoadingComplete(): Promise<void> {
-  return await _runningLoader.promise;
+export function getCurrentInstructionSetName(): string {
+  return currentInstructionSetName;
 }
 
-export function currentInstructionSetName(): string {
-  return _currentInstructionSetName;
-}
-
-export function getAvailableInstructions(): readonly InstructionJson[] {
-  return _currentInstructionSet ? _currentInstructionSet.instructions : [];
+export async function getAvailableInstructions(): Promise<readonly InstructionJson[]> {
+  await runningLoader.promise;
+  const set = instructionSets.get(currentInstructionSetName);
+  return set ? set.instructions : [];
 }
 
 export function findInstructionInfo(candidateName: string): InstructionJson | undefined {
-  return _currentInstructionSet?.findInstruction(candidateName);
+  const set = instructionSets.get(currentInstructionSetName);
+  return set?.findInstruction(candidateName);
 }
 
 export async function findInstructionInfoAsync(candidateName: string): Promise<InstructionJson | undefined> {
-  if(_runningLoader) {
-    await _runningLoader.promise;
-    return _currentInstructionSet?.findInstruction(candidateName);
+  if(runningLoader) {
+    await runningLoader.promise;
+    return findInstructionInfo(candidateName);
   }
+}
+
+export function waitForInstructionSetLoadingComplete(): Promise<void> {
+  return runningLoader.promise;
 }
 
 // Load single instruction set.
 export function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
-  _runningLoader = createDeferred<void>();
+  runningLoader = createDeferred<void>();
 
   // Is the set already loaded?
-  if (_currentInstructionSetName === setName) {
-    _runningLoader.resolve();
-    return _runningLoader.promise;
+  if (instructionSets.has(setName)) {
+    currentInstructionSetName = setName;
+    runningLoader.resolve();
+    return runningLoader.promise;
   }
 
   // Load instruction set data from JSON file.
@@ -89,14 +93,14 @@ export function loadInstructionSet(setFolder: string, setName: string): Promise<
         const iset = JSON.parse(jsonString) as InstructionJson[];
         // Transfer instructions to a map for faster lookup.
         const set = new InstructionSetImpl(iset);
-        _currentInstructionSet = set;
-        _currentInstructionSetName = setName;
+        instructionSets.set(setName, set);
+        currentInstructionSetName = setName;
       }
-      _runningLoader.resolve();
+      runningLoader.resolve();
     });
   } catch (e) {
     //outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
-    _runningLoader.resolve();
+    runningLoader.resolve();
   }
-  return _runningLoader.promise;
+  return runningLoader.promise;
 }

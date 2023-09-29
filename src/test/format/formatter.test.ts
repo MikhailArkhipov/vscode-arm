@@ -71,7 +71,7 @@ export async function formatAsync(original: string, formatOptions?: FormatOption
   formatOptions = formatOptions ?? new FormatOptionsImpl();
   const ast = await createAstAsync(original);
   const f = new Formatter();
-  return f.formatDocument(ast.text.getText(), ast.rawTokens.asArray(), formatOptions);
+  return f.formatDocument(ast.text.getText(), ast.tokens.asArray(), formatOptions);
 }
 
 class FormatOptionsImpl implements FormatOptions {

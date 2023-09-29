@@ -7,19 +7,25 @@ import { TextStream } from '../text/textStream';
 import { LanguageOptions } from '../core/languageOptions';
 import { AstNodeImpl } from './astNode';
 import { TextProvider, TextRangeCollection } from '../text/definitions';
-import { TokenStream } from '../tokens/tokenStream';
 import { Token, TokenSubType, TokenType } from '../tokens/definitions';
 import { EmptyStatementImpl, InstructionStatementImpl, StatementImpl, UnknownStatementImpl } from './statement';
 import { TokenNodeImpl } from './tokenNode';
 import { UnexpectedItemError } from '../parser/parseError';
 import { DeclarationStatementImpl, DefinitionStatementImpl, GeneralDirectiveStatementImpl } from './directive';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 
 export class AstRootImpl extends AstNodeImpl implements AstRoot {
+  // Includes comments, as opposed to the filtered set in ParseContext.
+  private readonly _tokens: readonly Token[];
   private _context: ParseContext;
 
-  constructor() {
+  public readonly version: number;
+
+  constructor(tokens: readonly Token[], version = 0) {
     super();
     this._parent = this;
+    this._tokens = tokens;
+    this.version = version;
   }
 
   // Recursice descent parser
@@ -42,32 +48,26 @@ export class AstRootImpl extends AstNodeImpl implements AstRoot {
     }
     // Rewind back as a courtesy to potential users downstream.
     this._context.tokens.position = 0;
+    transferTokenSubtypes(this._context.tokens.asArray(), this.tokens.asArray());
     return true;
   }
 
   public static create(text: string, options: LanguageOptions, tokens: readonly Token[], version = 0): AstRoot {
-    const ts = new TextStream(text);
-    const ast = new AstRootImpl();
-    const context = new ParseContext(ast, ts, options, tokens, version);
+    const ast = new AstRootImpl(tokens, version);
+    const context = new ParseContext(ast, new TextStream(text), options, tokens);
     ast.parse(context);
     return ast;
   }
 
   // AstRoot
-  public get version(): number {
-    return this._context.version;
-  }
   public get text(): TextProvider {
     return this._context.text;
   }
   public get options(): LanguageOptions {
     return this._context.options;
   }
-  public get tokens(): TokenStream {
-    return this._context.tokens;
-  }
-  public get rawTokens(): TextRangeCollection<Token> {
-    return this._context.rawTokens;
+  public get tokens(): TextRangeCollection<Token> {
+    return new TextRangeCollectionImpl(this._tokens);
   }
   public get errors(): readonly ParseError[] {
     return this._context.errors;
@@ -133,5 +133,20 @@ function createDirectiveStatement(context: ParseContext, label: TokenNode | unde
       return new DeclarationStatementImpl(label);
     default:
       return new GeneralDirectiveStatementImpl(label);
+  }
+}
+
+function transferTokenSubtypes(updatedTokens: readonly Token[], rawTokens: readonly Token[]): void {
+  for (let i = 0, j = 0; i < updatedTokens.length && j < rawTokens.length; j++) {
+    const rt = rawTokens[j];
+    if (Token.isComment(rt)) {
+      continue;
+    }
+    const ut = updatedTokens[i];
+    if (rt.type !== ut.type || rt.start !== ut.start || rt.length !== ut.length) {
+      throw new Error('Inconsistent token types between AST and parse context sets.');
+    }
+    rt.subType = ut.subType;
+    i++;
   }
 }

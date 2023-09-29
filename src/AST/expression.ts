@@ -186,7 +186,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
           // 'unary unary' and 'binary unary' are OK
           return true;
 
-        default:
+        case OperationType.BinaryOperator:
           // 'operator operator' sequence is an error
           this.addError(
             context,
@@ -595,7 +595,7 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
     if (this._openBrace) {
       if (!this._closeBrace && itemParsed) {
         // Inner expression was successfully parsed, but there is no closing brace.
-        context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, context.tokens.previousToken));
+        context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, context.currentToken));
         // Recoverable
       }
       if (this._closeBrace && this._items.length === 0) {
@@ -665,7 +665,7 @@ export class GroupImpl extends AstNodeImpl implements Group {
       this._closeBrace = TokenNodeImpl.create(context, this);
     } else {
       result = false;
-      context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, tokens.previousToken));
+      context.addError(new MissingItemError(ParseErrorType.CloseBraceExpected, tokens.currentToken));
     }
     super.parse(context, parent);
     return result;

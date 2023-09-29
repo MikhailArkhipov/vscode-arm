@@ -1,10 +1,10 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeCollection } from "../text/definitions";
-import { TextRangeCollectionImpl } from "../text/textRangeCollection";
-import { Token, TokenType } from "./definitions";
-import { TokenImpl } from "./tokens";
+import { TextRangeCollection } from '../text/definitions';
+import { TextRangeCollectionImpl } from '../text/textRangeCollection';
+import { Token, TokenType } from './definitions';
+import { TokenImpl } from './tokens';
 
 // Generic token stream. Allows fetching tokens safely, returns special end of stream
 // tokens even before start  or beyond end of stream. Allows looking beyound end of
@@ -16,10 +16,14 @@ export class TokenStream {
   private _isEndOfStream: boolean = false;
   private _currentToken: Token;
 
-  constructor(tokens:readonly Token[]) {
+  constructor(tokens: readonly Token[]) {
     this._tokens = new TextRangeCollectionImpl(tokens);
     this._endOfStreamToken = new TokenImpl(TokenType.EndOfStream, 0, 0);
     this.checkBounds();
+  }
+
+  public asArray(): readonly Token[] {
+    return this._tokens.asArray();
   }
 
   public get length(): number {
@@ -97,8 +101,6 @@ export class TokenStream {
     }
 
     this._isEndOfStream = this._index >= this._tokens.count;
-    this._currentToken = this._isEndOfStream
-      ? this._endOfStreamToken
-      : this._tokens.getItemAt(this._index);
+    this._currentToken = this._isEndOfStream ? this._endOfStreamToken : this._tokens.getItemAt(this._index);
   }
 }

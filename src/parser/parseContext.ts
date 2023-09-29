@@ -3,8 +3,7 @@
 
 import { AstRoot, ParseError, TokenNode } from '../AST/definitions';
 import { LanguageOptions } from '../core/languageOptions';
-import { TextProvider, TextRangeCollection } from '../text/definitions';
-import { TextRangeCollectionImpl } from '../text/textRangeCollection';
+import { TextProvider } from '../text/definitions';
 import { Token, TokenType } from '../tokens/definitions';
 import { TokenStream } from '../tokens/tokenStream';
 
@@ -12,8 +11,6 @@ export class ParseContext {
   public readonly text: TextProvider;
   public readonly options: LanguageOptions;
   public readonly tokens: TokenStream; // Removed comments
-  public readonly rawTokens: TextRangeCollection<Token>; // Includes comments
-  public readonly version: number;
   public readonly root: AstRoot;
 
   private readonly _errors: ParseError[] = [];
@@ -25,13 +22,10 @@ export class ParseContext {
   // that may appear in the instruction operands.
   private readonly _references: TokenNode[] = [];
 
-  constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, tokens: readonly Token[], version: number) {
+  constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, tokens: readonly Token[]) {
     this.root = root;
     this.text = text;
     this.options = options;
-    this.version = version;
-
-    this.rawTokens = new TextRangeCollectionImpl(tokens);
     this.tokens = new TokenStream(tokens.filter((t) => !Token.isComment(t)));
   }
 
