@@ -115,6 +115,15 @@ export interface CommaSeparatedList extends AstNode {
   get closeBrace(): TokenNode | undefined;
 }
 
+// Fully parsed intruction with attached information
+// that came from the instruction set JSON file.
+export interface Instruction {
+  readonly fullName: string; // LDMIANE.W
+  readonly name: string; // 'LDM' - core name
+  readonly description: string | undefined;
+  readonly isValid: boolean;
+}
+
 export enum StatementType {
   Unknown = 0,
   Empty = 1,
@@ -124,8 +133,8 @@ export enum StatementType {
 
 export enum StatementSubType {
   None = 0,
-  SymbolDefinition = 1, // name .equ expression
-  VariableDeclaration = 2, // name: .word 0
+  Definition = 1, // name .equ expression
+  Declaration = 2, // name: .word 0
 }
 
 export interface Statement extends AstNode {
@@ -133,8 +142,11 @@ export interface Statement extends AstNode {
   get subType(): StatementSubType;
   get label(): TokenNode | undefined;
   get name(): TokenNode | undefined;
-  get symbolName(): TokenNode | undefined;
   get operands(): CommaSeparatedList;
+}
+
+export interface InstructionStatement extends Statement {
+  get instruction(): Instruction | undefined;
 }
 
 export interface AstRoot extends AstNode {

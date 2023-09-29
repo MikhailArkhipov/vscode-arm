@@ -22,13 +22,14 @@ const variableDeclarations = new Set<string>([
   '.zero',
 ]);
 
-const symbolDefinitions = new Set<string>(['.equ', '.eqv', '.equiv']);
+// Similar to #define in C
+const symbolDefinitions = new Set<string>(['.equ', '.eqv', '.equiv', '.set']);
 
 export namespace Directive {
-  export function isVariableDeclaration(text: string): boolean {
+  export function isDeclaration(text: string): boolean {
     return variableDeclarations.has(text);
   }  
-  export function isSymbolDefinition(text: string): boolean {
+  export function isDefinition(text: string): boolean {
     return symbolDefinitions.has(text);
   }
 }

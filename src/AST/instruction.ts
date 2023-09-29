@@ -1,22 +1,58 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { findInstructionInfo } from "./instructionSet";
+import { findInstructionInfo } from '../instructions/instructionSet';
+import { ParseContext } from '../parser/parseContext';
+import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
+import { TokenType, TokenSubType } from '../tokens/tokens';
+import { CommaSeparatedListImpl } from './commaSeparatedList';
+import {
+  StatementSubType,
+  StatementType,
+  AstNode,
+  ParseErrorType,
+  ErrorLocation,
+  InstructionStatement,
+  Instruction,
+} from './definitions';
+import { StatementImpl } from './statement';
+import { TokenNodeImpl } from './tokenNode';
 
-// Fully parsed intruction with attached information
-// that came from the instruction set JSON file.
-export interface Instruction {
-  readonly fullName: string; // LDMIANE.W
-  readonly name: string; // 'LDM' - core name
-  readonly description: string | undefined;
-  readonly isValid: boolean;
-}
+export class InstructionStatementImpl extends StatementImpl implements InstructionStatement {
+  private _instruction: Instruction;
 
-export function parseInstruction(text: string): Instruction {
-  text = text.toUpperCase();
-  const instruction = new InstructionImpl(text);
-  instruction.parse(text);
-  return instruction;
+  get type(): StatementType {
+    return StatementType.Instruction;
+  }
+  public get subType(): StatementSubType {
+    return StatementSubType.None;
+  }
+  public get instruction(): Instruction | undefined {
+    return this._instruction;
+  }
+
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // {label:} symbol => instruction statement
+    // Comma after symbol most probably means instruction name is missing
+    if (context.nextToken.type === TokenType.Comma) {
+      context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
+    } else {
+      this._name = TokenNodeImpl.create(context, this); // directive name
+      this._name.token.subType = TokenSubType.Instruction;
+
+      const nameText = context.getTokenText(this._name!.token).toUpperCase();
+      const instruction = new InstructionImpl(nameText);
+      instruction.parse();
+      if (!instruction.isValid) {
+        context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
+      }
+    }
+
+    this._operands = new CommaSeparatedListImpl();
+    this._operands.parse(context, this);
+
+    return super.parse(context, parent);
+  }
 }
 
 class InstructionImpl implements Instruction {
@@ -45,9 +81,10 @@ class InstructionImpl implements Instruction {
   // all start with V. Therefore if candidate name begins with V, we use
   // 3 letters since there are no FP instruction with just 2 letters.
 
-  public parse(text: string): void {
+  public parse(): void {
     // Get width specifier first (the part after period, like B.W
     // or, with FP, .I8 or .F32.F64)
+    let text = this.fullName;
     this.parseSpecifier(text);
     text = text.substring(0, text.length - this.specifier.length);
 

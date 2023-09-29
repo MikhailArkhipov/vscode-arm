@@ -1,23 +1,23 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Directive } from '../instructions/directive';
 import { ParseContext } from '../parser/parseContext';
-import { Token, TokenSubType, TokenType } from '../tokens/tokens';
+import { TokenType } from '../tokens/tokens';
 import {
   AstNode,
   CommaSeparatedList,
-  ErrorLocation,
   ParseErrorType,
+  Statement,
   StatementSubType,
   StatementType,
   TokenNode,
 } from './definitions';
 import { TokenNodeImpl } from './tokenNode';
 import { CommaSeparatedListImpl } from './commaSeparatedList';
-import { parseInstruction } from '../instructions/instruction';
-import { ParseErrorImpl, UnexpectedItemError } from '../parser/parseError';
+import { UnexpectedItemError } from '../parser/parseError';
 import { AstNodeImpl } from './astNode';
+import { createDirectiveStatement } from './directive';
+import { InstructionStatementImpl } from './instruction';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -26,34 +26,26 @@ import { AstNodeImpl } from './astNode';
 // is an assembler directive. If the symbol begins with a letter the statement is
 // an assembly language instruction.
 
-export class Statement extends AstNodeImpl implements Statement {
-  private _type: StatementType = StatementType.Unknown;
-  private _subType: StatementSubType = StatementSubType.None;
-  private _label: TokenNode | undefined;
-  private _name: TokenNode | undefined;
+export abstract class StatementImpl extends AstNodeImpl implements Statement {
+  protected _label: TokenNode | undefined;
+  protected _name: TokenNode | undefined;
   // https://sourceware.org/binutils/docs/as/Int.html
   // Directive arguments are comma-separated expressons and so are the instruction arguments.
-  private _operands: CommaSeparatedListImpl;
+  protected _operands: CommaSeparatedListImpl;
 
-  // If statement declares a variable, this is the token. It may or may not be a child
-  // of this node since name of the  variable/data may be provided by a preceding label.
-  // Consider 'varName:\n\n\n.asciiz "string"'.
-  private _symbolName: TokenNode | undefined;
+  constructor(label: TokenNode | undefined) {
+    super();
+    this._label = label;
+  }
 
-  public get type(): StatementType {
-    return this._type;
-  }
-  public get subType(): StatementSubType {
-    return this._subType;
-  }
+  public abstract get type(): StatementType;
+  public abstract get subType(): StatementSubType;
+
   public get label(): TokenNode | undefined {
     return this._label;
   }
   public get name(): TokenNode | undefined {
     return this._name;
-  }
-  public get symbolName(): TokenNode | undefined {
-    return this._symbolName;
   }
   public get operands(): CommaSeparatedList {
     return this._operands;
@@ -61,143 +53,46 @@ export class Statement extends AstNodeImpl implements Statement {
 
   // {label:}{instruction}{operands}
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
-    // Verify statement starts at the beginning of a line.
-    if (context.previousToken.type !== TokenType.EndOfLine && context.previousToken.type !== TokenType.EndOfStream) {
-      throw new Error('Parser: statement must begin at the start of the line.');
-    }
-
-    if (context.currentToken.type === TokenType.Label) {
-      this._label = TokenNodeImpl.create(context, this);
-    }
-
-    if (this.parseType(context)) {
-      // Operands are a comma-separated list
-      this._operands = new CommaSeparatedListImpl();
-      this._operands.parse(context, this);
-    }
     // Skip anytning unrecognized
     context.tokens.moveToEol();
     return super.parse(context, parent);
   }
+}
 
-  private parseType(context: ParseContext): boolean {
-    switch (context.currentToken.type) {
-      case TokenType.EndOfLine:
-      case TokenType.EndOfStream:
-        // {label:} => empty statement
-        this._type = StatementType.Empty;
-        break;
+class EmptyStatementImpl extends StatementImpl {
+  constructor(label: TokenNode | undefined) {
+    super(label);
+  }
+  get type(): StatementType {
+    return StatementType.Empty;
+  }
+  public get subType(): StatementSubType {
+    return StatementSubType.None;
+  }
+}
 
-      case TokenType.Directive:
-        this.handleDirective(context);
-        break;
-
-      case TokenType.Symbol:
-        if (this.isSymbolDefinition(context, context.nextToken)) {
-          // {label:} symbol .directive => .equ statement
-          // name .equ value, like #define in C
-          this.handleSymbolDefinitionDirective(context);
-        } else {
-          // {label:} symbol => instruction statement
-          // Comma after symbol most probably means instruction name is missing
-          this.handleInstruction(context);
-        }
-        break;
-
-      default:
-        // {label:} ??? => Unknown statement
-        this._type = StatementType.Unknown;
-        context.addError(
-          new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken)
-        );
-        return false;
-    }
-    return true;
+export function createStatement(context: ParseContext): Statement | undefined {
+  let label: TokenNode | undefined;
+  if (context.currentToken.type === TokenType.Label) {
+    label = TokenNodeImpl.create(context, this);
   }
 
-  private handleDirective(context: ParseContext): void {
-    this._type = StatementType.Directive;
-    // Check if this is a data declaration like 'label: .word 0'
-    const variableName = this.isVariableDeclaration(context, context.currentToken);
-    if (variableName) {
-      this._subType = StatementSubType.VariableDeclaration;
-      this._symbolName = variableName;
-    } else {
-      this._subType = StatementSubType.None;
-    }
-    this._name = TokenNodeImpl.create(context, this);
-  }
+  switch (context.currentToken.type) {
+    case TokenType.EndOfLine:
+    case TokenType.EndOfStream:
+      // {label:} => empty statement
+      return new EmptyStatementImpl(label);
 
-  private handleSymbolDefinitionDirective(context: ParseContext): void {
-    // {label:} symbol .directive => .equ statement
-    // name .equ value, like #define in C
-    this._type = StatementType.Directive;
-    this._subType = StatementSubType.SymbolDefinition;
-    this._symbolName = TokenNodeImpl.create(context, this); // label name
-    this._name = TokenNodeImpl.create(context, this); // directive name
-    this._symbolName.token.subType = TokenSubType.SymbolDeclaration;
-  }
+    case TokenType.Symbol:
+      return new InstructionStatementImpl(label);
 
-  private handleInstruction(context: ParseContext): void {
-    // {label:} symbol => instruction statement
-    // Comma after symbol most probably means instruction name is missing
-    if (context.nextToken.type === TokenType.Comma) {
-      context.addError(
-        new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken)
-      );
-    } else {
-      this._type = StatementType.Instruction;
-      this._name = TokenNodeImpl.create(context, this); // directive name
-      this._name.token.subType = TokenSubType.Instruction;
-    }
-  }
+    case TokenType.Directive:
+      return createDirectiveStatement(context, label);
 
-  // name .equ value, aka #define in C
-  private isSymbolDefinition(context: ParseContext, t: Token): boolean {
-    if (t.type === TokenType.Directive) {
-      const tokenText = context.text.getText(t.start, t.length);
-      return Directive.isSymbolDefinition(tokenText);
-    }
-    return false;
-  }
-
-  // name: .word 0, aka int name = 0 in C
-  private isVariableDeclaration(context: ParseContext, t: Token): TokenNode | undefined {
-    if (t.type === TokenType.Directive) {
-      const tokenText = context.text.getText(t.start, t.length);
-      const isDataDirective = Directive.isVariableDeclaration(tokenText);
-      if (!isDataDirective) {
-        return;
-      }
-      // Now check if there is label on this or preceding statement.
-      // 'label: .word 0' and 'label:\n .word 0'.
-      if (this._label) {
-        return this._label;
-      }
-      // Check preceding statement
-      const st = context.root.statements;
-      const last = st.length > 0 ? st[st.length - 1] : undefined;
-      return last?.label;
-    }
-    return;
-  }
-
-  // General syntax check after parsing complete.
-  private syntaxCheck(context: ParseContext): void {
-    if (this._name && this._name.token.subType === TokenSubType.Instruction) {
-      this.instructionSyntaxCheck(context);
-    }
-  }
-
-  private instructionSyntaxCheck(context: ParseContext): void {
-    const nameText = context.getTokenText(this._name!.token);
-    const instruction = parseInstruction(nameText);
-    if (!instruction.isValid) {
-      context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
-    }
-  }
-
-  private directiveSyntaxCheck(): void {
-    // Instruction argument list is
+    default:
+      // {label:} ??? => Unknown statement
+      this._type = StatementType.Unknown;
+      context.addError(new UnexpectedItemError(ParseErrorType.InstructionOrDirectiveExpected, context.currentToken));
+      return;
   }
 }

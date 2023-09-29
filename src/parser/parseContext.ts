@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, AstRoot, ParseError } from '../AST/definitions';
+import { AstNode, AstRoot, ParseError, TokenNode } from '../AST/definitions';
 import { LanguageOptions } from '../core/languageOptions';
 import { TextRangeCollection } from '../text/definitions';
 import { TextProvider } from '../text/text';
@@ -18,6 +18,13 @@ export class ParseContext {
   public readonly root: AstRoot;
 
   private readonly _errors: ParseError[] = [];
+  // Tokens that define a symbol, i.e. .equ, .set and similar.
+  private readonly _defines: TokenNode[] = [];
+  // Tokens that declare variable (data) like 'name: .word 1'.
+  private readonly _declarations: TokenNode[] = [];
+  // Tokens that reference variable or symbol, i.e. something 
+  // that may appear in the instruction operands.
+  private readonly _references: TokenNode[] = [];
 
   constructor(root: AstRoot, text: TextProvider, options: LanguageOptions, tokens: readonly Token[], version: number) {
     this.root = root;
@@ -59,6 +66,19 @@ export class ParseContext {
     if (!found) {
       this._errors.push(error);
     }
+  }
+
+  // Variable and defines collection.
+  public addDefinition(tokenNode: TokenNode): void {
+    // Duplicates are OK and are detected later.
+    this._defines.push(tokenNode);
+  }
+  public addDeclaration(tokenNode: TokenNode): void {
+    // Duplicates are OK and are detected later.
+    this._declarations.push(tokenNode);
+  }
+  public addReference(tokenNode: TokenNode): void {
+    this._references.push(tokenNode);
   }
 }
 
