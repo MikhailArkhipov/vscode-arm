@@ -3,10 +3,10 @@
 
 import { TokenNode } from '../../AST/definitions';
 import { TokenType, TokenSubType } from '../../tokens/definitions';
-import { isTokenNode, makeLanguageOptions, parseText } from '../utility/parsing';
+import { createAstAsync, isTokenNode, makeLanguageOptions } from '../utility/parsing';
 
-test('Get node from position simple', () => {
-  const ast = parseText(' ADD r1, r2, #123', makeLanguageOptions(false, true));
+test('Get node from position simple', async () => {
+  const ast = await createAstAsync(' ADD r1, r2, #123', makeLanguageOptions(false));
 
   let node = ast.nodeFromPosition(0);
   expect(node).toBeUndefined();

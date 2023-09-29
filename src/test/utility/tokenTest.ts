@@ -20,7 +20,7 @@ export namespace TokenTest {
   }
 
   export function tokenizeToArray(text: string, options?: LanguageOptions): readonly Token[] {
-    options = options ?? makeLanguageOptions(true, true);
+    options = options ?? makeLanguageOptions(true);
     const t = new Tokenizer(options);
     return t.tokenize(new TextStream(text), 0, text.length);
   }

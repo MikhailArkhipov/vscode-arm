@@ -17,15 +17,16 @@ const tokenTypes = [
   'instruction',
   'register',
   'directive',
+  'declaration-directive',
+  'definition-directive',
   'label',
   'number',
   'string',
   'operator',
   'comment',
-  'variable'
+  'variable',
 ];
-const tokenModifiers = ['definition', 'declaration'];
-export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
+export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, []);
 
 export async function provideSemanticTokens(
   td: TextDocument,
@@ -44,7 +45,6 @@ export async function provideSemanticTokens(
 
   for (let i = 0; i < ed.tokens.count && !ct.isCancellationRequested; i++) {
     let itemType: string | undefined;
-    let modifiers: string[] = [];
 
     const t = ed.tokens.getItemAt(i);
     switch (t.type) {
@@ -53,13 +53,15 @@ export async function provideSemanticTokens(
         break;
 
       case TokenType.Directive:
-        itemType = 'directive';
         switch (t.subType) {
           case TokenSubType.Definition:
-            modifiers.push('definition');
+            itemType = options.variables ? 'definition-directive' : 'directive';
             break;
           case TokenSubType.Declaration:
-            modifiers.push('declaration');
+            itemType = options.variables ? 'declaration-directive' : 'directive';
+            break;
+          default:
+            itemType = 'directive';
             break;
         }
         break;
@@ -98,7 +100,7 @@ export async function provideSemanticTokens(
 
     if (itemType) {
       const range = new Range(td.positionAt(t.start), td.positionAt(t.end));
-      tokensBuilder.push(range, itemType, modifiers);
+      tokensBuilder.push(range, itemType, []);
     }
   }
   return tokensBuilder.build();

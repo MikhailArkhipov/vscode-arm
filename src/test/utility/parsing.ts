@@ -1,7 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-
+import * as path from 'path';
 import 'jest-expect-message';
+
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
@@ -13,6 +14,7 @@ import { TokenType, TokenSubType, Token } from '../../tokens/definitions';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { AstWriter } from './astWriter';
 import { compareLines } from './textCompare';
+import { loadInstructionSet } from '../../instructions/instructionSet';
 
 export function verifyOperator(op: TokenOperator, docText: TextProvider, expectedOpText: string): void {
   expect(op.children.count).toBe(3); // left operand, token, right operand
@@ -49,8 +51,9 @@ export function verifyToken(token: Token, docText: TextProvider, expectedType: T
   expect(docText.getText(token.start, token.length)).toBe(expectedText);
 }
 
-export function verifyParse(expectedTree: string, text: string): void {
-  const ast = parseText(text);
+export async function verifyAstAsync(expectedTree: string, text: string, isA64?: boolean): Promise<void> {
+  await initInstructionSet(isA64 ?? true);
+  const ast = await createAstAsync(text);
   const writer = new AstWriter();
   const actualTree = writer.writeTree(ast, text);
   compareTrees(expectedTree, actualTree);
@@ -79,15 +82,16 @@ export function parseExpression(text: string): { expression: Expression; context
   return { expression, context };
 }
 
-export function parseText(text: string, options?: LanguageOptions): AstRoot {
-  options = options ?? makeLanguageOptions(true, true);
+export async function createAstAsync(text: string, options?: LanguageOptions): Promise<AstRoot> {
+  options = options ?? makeLanguageOptions(true);
+  await initInstructionSet(options.isA64);
   const t = new Tokenizer(options);
   const tokens = t.tokenize(new TextStream(text), 0, text.length);
   return AstRootImpl.create(text, options, tokens, 0);
 }
 
-export function makeParseContext(text: string, options?: LanguageOptions): ParseContext {
-  options = options ?? makeLanguageOptions(true, true);
+function makeParseContext(text: string, options?: LanguageOptions): ParseContext {
+  options = options ?? makeLanguageOptions(true);
   const t = new Tokenizer(options);
   const ts = new TextStream(text);
   const tokens = t.tokenize(ts, 0, text.length);
@@ -96,7 +100,7 @@ export function makeParseContext(text: string, options?: LanguageOptions): Parse
 }
 export function writeTokens(filePath: string): void {}
 
-export function makeLanguageOptions(isA64: boolean, reservedRegisterNames: true): LanguageOptions {
+export function makeLanguageOptions(isA64: boolean): LanguageOptions {
   return {
     lineCommentChar: '@', // Line comments start with @
     cLineComments: true, // Allow C++ style line comments i.e. //
@@ -104,4 +108,9 @@ export function makeLanguageOptions(isA64: boolean, reservedRegisterNames: true)
     hashComments: true,
     isA64,
   };
+}
+
+async function initInstructionSet(isA64: boolean): Promise<void> {
+  const setFolder = path.join(__dirname, '..', '..', 'instruction_sets');
+  return loadInstructionSet(setFolder, isA64 ? 'A64' : 'A32');
 }

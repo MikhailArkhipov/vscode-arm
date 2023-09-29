@@ -62,14 +62,21 @@ export function findInstructionInfo(candidateName: string): InstructionJson | un
   return _currentInstructionSet?.findInstruction(candidateName);
 }
 
+export async function findInstructionInfoAsync(candidateName: string): Promise<InstructionJson | undefined> {
+  if(_runningLoader) {
+    await _runningLoader.promise;
+    return _currentInstructionSet?.findInstruction(candidateName);
+  }
+}
+
 // Load single instruction set.
-export function loadInstructionSet(setFolder: string, setName: string): void {
+export function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
   _runningLoader = createDeferred<void>();
 
   // Is the set already loaded?
   if (_currentInstructionSetName === setName) {
     _runningLoader.resolve();
-    return;
+    return _runningLoader.promise;
   }
 
   // Load instruction set data from JSON file.
@@ -91,4 +98,5 @@ export function loadInstructionSet(setFolder: string, setName: string): void {
     //outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
     _runningLoader.resolve();
   }
+  return _runningLoader.promise;
 }

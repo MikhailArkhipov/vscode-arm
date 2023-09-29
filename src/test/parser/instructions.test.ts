@@ -10,10 +10,10 @@ import {
   TokenNode,
 } from '../../AST/definitions';
 import { TokenSubType, TokenType } from '../../tokens/definitions';
-import { makeLanguageOptions, parseText, verifyParse, verifyTokenNode } from '../utility/parsing';
+import { createAstAsync, makeLanguageOptions, verifyAstAsync as verifyAstAsync, verifyTokenNode } from '../utility/parsing';
 
-test('Simple A32 instruction', () => {
-  const root = parseText('add r1, r2, #1', makeLanguageOptions(false, true));
+test('Simple A32 instruction', async () => {
+  const root = await createAstAsync('add r1, r2, #1', makeLanguageOptions(false));
   let child: AstNode;
 
   expect(root).toBeDefined();
@@ -43,8 +43,8 @@ test('Simple A32 instruction', () => {
   verifyTokenNode(tn, root.text, TokenType.Symbol, 'r1', TokenSubType.Register);
 });
 
-test('str fp, [sp, #-4]!', () => {
-  const expected = String.raw`Statement [0...17)
+test('str fp, [sp, #-4]!', async () => {
+  const expected = String.raw`InstructionStatement [0...17)
   Token str [0...3)
   CommaSeparatedList [4...17)
     CommaSeparatedItem [4...7)
@@ -64,11 +64,11 @@ test('str fp, [sp, #-4]!', () => {
               Token #-4 [13...16)
           Token ] [16...17)
 `;
-  verifyParse(expected, 'str fp, [sp, #-4]!');
+  await verifyAstAsync(expected, 'str fp, [sp, #-4]!');
 });
 
-test('ldm r4!, {r0, r1, r2, r3}', () => {
-  const expected = String.raw`Statement [0...25)
+test('ldm r4!, {r0, r1, r2, r3}', async () => {
+  const expected = String.raw`InstructionStatement [0...25)
   Token ldm [0...3)
   CommaSeparatedList [7...25)
     CommaSeparatedItem [7...8)
@@ -94,5 +94,5 @@ test('ldm r4!, {r0, r1, r2, r3}', () => {
               Token r3 [22...24)
           Token } [24...25)
 `;
-  verifyParse(expected, 'ldm r4!, {r0, r1, r2, r3}');
+  await verifyAstAsync(expected, 'ldm r4!, {r0, r1, r2, r3}');
 });

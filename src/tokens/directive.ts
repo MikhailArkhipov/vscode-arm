@@ -27,9 +27,9 @@ const symbolDefinitions = new Set<string>(['.equ', '.eqv', '.equiv', '.set']);
 
 export namespace Directive {
   export function isDeclaration(text: string): boolean {
-    return variableDeclarations.has(text);
+    return variableDeclarations.has(text.toLowerCase());
   }  
   export function isDefinition(text: string): boolean {
-    return symbolDefinitions.has(text);
+    return symbolDefinitions.has(text.toLowerCase());
   }
 }
