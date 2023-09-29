@@ -11,18 +11,29 @@ import {
 } from 'vscode';
 import { RDT } from './rdt';
 import { TokenSubType, TokenType } from '../tokens/tokens';
-import { Settings, getSetting } from '../core/settings';
+import { ColorOptions } from './options';
 
-const tokenTypes = ['instruction', 'directive', 'register', 'label', 'comment', 'number', 'string', 'operator'];
-const tokenModifiers = [];
+const tokenTypes = [
+  'instruction',
+  'register',
+  'directive',
+  // 'label',
+  // 'number',
+  // 'string',
+  // 'operator',
+  // 'comment',
+  // 'variable'
+];
+const tokenModifiers = ['definition', 'declaration'];
 export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 export async function provideSemanticTokens(
   td: TextDocument,
+  options: ColorOptions,
   ct: CancellationToken
 ): Promise<SemanticTokens | undefined> {
   const ed = RDT.getEditorDocument(td);
-  if (!ed || !getSetting<boolean>(Settings.showColors, true)) {
+  if (!ed || options.showColors) {
     return;
   }
 
@@ -33,6 +44,7 @@ export async function provideSemanticTokens(
 
   for (let i = 0; i < ed.tokens.count && !ct.isCancellationRequested; i++) {
     let itemType: string | undefined;
+    let modifiers: string[] = [];
 
     const t = ed.tokens.getItemAt(i);
     switch (t.type) {
@@ -42,6 +54,14 @@ export async function provideSemanticTokens(
 
       case TokenType.Directive:
         itemType = 'directive';
+        switch (t.subType) {
+          case TokenSubType.Definition:
+            modifiers.push('definition')
+            break;
+          case TokenSubType.Declaration:
+            modifiers.push('declaration');
+            break;
+        }
         break;
 
       case TokenType.Symbol:
@@ -52,9 +72,10 @@ export async function provideSemanticTokens(
           case TokenSubType.Register:
             itemType = 'register';
             break;
-          case TokenSubType.SymbolDeclaration:
-          case TokenSubType.SymbolReference:
-            itemType = 'variable';
+          default:
+            if (options.variables) {
+              itemType = 'variable';
+            }
             break;
         }
         break;
@@ -67,7 +88,6 @@ export async function provideSemanticTokens(
       case TokenType.String:
         itemType = 'string';
         break;
-
       case TokenType.Operator:
         itemType = 'operator';
         break;
@@ -78,7 +98,7 @@ export async function provideSemanticTokens(
 
     if (itemType) {
       const range = new Range(td.positionAt(t.start), td.positionAt(t.end));
-      tokensBuilder.push(range, itemType, tokenModifiers);
+      tokensBuilder.push(range, itemType, modifiers);
     }
   }
   return tokensBuilder.build();

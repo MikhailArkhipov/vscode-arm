@@ -11,13 +11,6 @@ export interface LanguageOptions {
   // Line comment character, '@' (GCC) or ';' (ARM). Runs to the end of the line
   // Arduino also supports ; (AVR Studio) with file extensions .asm
   readonly lineCommentChar: string; 
-  // GNU labels are 'label:' while ARM does not require colon and rather 
-  // require label to start at the beginning of the line.
-  readonly colonInLabels: boolean; 
   // Indicates A32 or A64 mode.
   readonly isA64: boolean;
-  // Treat R0-R15, W0-W31, etc as register names. This helps
-  // colorizer and parser and may flag other (confusing) uses of
-  // identifiers that look like registers elsewhere.
-  readonly reservedRegisterNames: boolean;  
 }

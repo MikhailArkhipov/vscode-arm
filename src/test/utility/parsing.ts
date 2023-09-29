@@ -100,8 +100,6 @@ export function makeLanguageOptions(isA64: boolean, reservedRegisterNames: true)
     cLineComments: true, // Allow C++ style line comments i.e. //
     cBlockComments: true, // Allow C block comments /* */
     hashComments: true,
-    colonInLabels: true,
-    reservedRegisterNames,
     isA64,
   };
 }

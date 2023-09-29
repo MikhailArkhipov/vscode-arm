@@ -1,7 +1,6 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { Directive } from '../instructions/directive';
 import { ParseContext } from '../parser/parseContext';
 import { MissingItemError, ParseErrorImpl } from '../parser/parseError';
 import { TokenType, TokenSubType } from '../tokens/tokens';
@@ -107,15 +106,16 @@ class DeclarationStatementImpl extends DirectiveStatementImpl {
 }
 
 export function createDirectiveStatement(context: ParseContext, label: TokenNode | undefined): Statement | undefined {
-  if (context.currentToken.type !== TokenType.Directive) {
+  const ct = context.currentToken;
+  if (ct.type !== TokenType.Directive) {
     throw new Error('Parser: must be at directive token.');
   }
-  const tokenText = context.getCurrentTokenText();
-  if (Directive.isDefinition(tokenText)) {
-    return new DefinitionStatementImpl(label);
+  switch (ct.subType) {
+    case TokenSubType.Definition:
+      return new DefinitionStatementImpl(label);
+    case TokenSubType.Declaration:
+      return new DeclarationStatementImpl(label);
+    default:
+      return new GeneralDirectiveStatementImpl(label);
   }
-  if (Directive.isDeclaration(tokenText)) {
-    return new DeclarationStatementImpl(label);
-  }
-  return new GeneralDirectiveStatementImpl(label);
 }

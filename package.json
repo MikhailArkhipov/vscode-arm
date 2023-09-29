@@ -78,30 +78,118 @@
     "configuration": [
       {
         "properties": {
+          "arm.general.instructionSet": {
+            "type": "string",
+            "default": "A64",
+            "enum": [
+              "A32",
+              "A64"
+            ],
+            "description": "ARM instruction sets to use."
+          },
+          "arm.general.documentationFolder": {
+            "type": "string",
+            "description": "Folder with ARM instruction documentation in HTML. Editor appends A32 or A64 to the folder name."
+          },
+          "arm.color.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides item coloring. Set to false if you prefer another extension to do the job."
+          },
+          "arm.color.registers": {
+            "type": "boolean",
+            "default": true,
+            "description": "Color register names in a distinct color."
+          },
+          "arm.color.variables": {
+            "type": "boolean",
+            "default": true,
+            "description": "Color variables in a distinct color."
+          },
+          "arm.completion.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides completion list during typing."
+          },
+          "arm.completion.advancedDirectives": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show advanced assembler directives in the completion list."
+          },
+          "arm.diagnostic.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor displays diagnostics for syntax errors, unknown directives and instructions, etc."
+          },
+          "arm.diagnostic.unknownInstructions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Flag unknown instructions. Instruction check does not take into account symbol possible redefition by .equ or .set."
+          },
+          "arm.diagnostic.unknownDirectives": {
+            "type": "boolean",
+            "default": true,
+            "description": "Flag unknown directives. Directive check does not take into account symbol possible redefition by .equ or .set."
+          },
+          "arm.diagnostic.unknownSymbols": {
+            "type": "boolean",
+            "default": true,
+            "description": "Flag unknown symbols. This does not take into account possible definitions outside of the file, such as in .include."
+          },
+          "arm.diagnostic.mixedCasing": {
+            "type": "boolean",
+            "default": true,
+            "description": "Flag inconsistent casing in instructions and operands."
+          },
           "arm.formatting.spaceAfterComma": {
             "type": "boolean",
             "default": true,
             "description": "Insert space after comma during formatting."
           },
-          "arm.formatting.upperCaseInstructions": {
+          "arm.formatting.spaceAroundOperators": {
             "type": "boolean",
             "default": false,
-            "description": "Emit instructions in uppercase during formatting and completion."
+            "description": "Place space around math operators (as in 1 + 2)."
           },
           "arm.formatting.upperCaseDirectives": {
             "type": "boolean",
             "default": false,
             "description": "Emit directives in uppercase during formatting and completion."
           },
+          "arm.formatting.upperCaseInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Emit instructions in uppercase during formatting and completion."
+          },
+          "arm.formatting.upperCaseLabels": {
+            "type": "boolean",
+            "default": false,
+            "description": "Emit labels in uppercase during formatting."
+          },
           "arm.formatting.upperCaseRegisters": {
             "type": "boolean",
             "default": false,
             "description": "Emit register names in uppercase during formatting."
           },
+          "arm.formatting.alignInstructions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Align instructions into a single column. Column position is determined by the longest label unless fixed position is specified."
+          },
+          "arm.formatting.alignInstructionsPosition": {
+            "type": "number",
+            "default": 0,
+            "description": "Align instructions at a fixed distance from the left, in tabs. Editor may separate long label from the instruction statement. 0 means calculate position based on longest label."
+          },
           "arm.formatting.alignOperands": {
             "type": "boolean",
             "default": true,
-            "description": "Align operands on a tab margin."
+            "description": "Align operands at a nearest tab position after longest instruction."
+          },
+          "arm.formatting.alignOperandsPosition": {
+            "type": "number",
+            "default": 0,
+            "description": "Align instruction operands at a fixed distance from the instruction, in tabs. 0 means align based on longest instruction."
           },
           "arm.formatting.alignDirectivesToInstructions": {
             "type": "boolean",
@@ -113,63 +201,10 @@
             "default": false,
             "description": "Align directives that start or end blocks of code (.macro, .if), to the same column as instructions."
           },
-          "arm.formatting.spaceAroundOperators": {
-            "type": "boolean",
-            "default": false,
-            "description": "Place space around operators (like in 1 + 2)."
-          },
-          "arm.completion.showAdvancedDirectives": {
-            "type": "boolean",
-            "default": false,
-            "description": "Show advanced assembler directives in the completion list."
-          },
-          "arm.diagnostics.show": {
-            "type": "boolean",
-            "default": true,
-            "description": "Show code diagnostics."
-          },
-          "arm.diagnostics.flagUnknownInstructions": {
-            "type": "boolean",
-            "default": true,
-            "description": "Flag unknown instructions."
-          },
-          "arm.editor.coloring": {
-            "type": "boolean",
-            "default": true,
-            "description": "Editor provides item coloring. Set to false if you prefer other coloring extension."
-          },
-          "arm.editor.completions": {
-            "type": "boolean",
-            "default": true,
-            "description": "Editor provides completion list during typing."
-          },
-          "arm.editor.hover": {
+          "arm.hover.show": {
             "type": "boolean",
             "default": true,
             "description": "Editor provides documentation when hovering over instruction and directives."
-          },
-          "arm.editor.validation": {
-            "type": "boolean",
-            "default": true,
-            "description": "Editor checks for syntax errors, invalid labels and directives, unknown instructions, etc."
-          },
-          "arm.instructionSet": {
-            "type": "string",
-            "default": "A64",
-            "enum": [
-              "A32",
-              "A64"
-            ],
-            "description": "ARM instruction sets to use."
-          },
-          "arm.reservedRegisterNames": {
-            "type": "boolean",
-            "default": true,
-            "description": "Treat symbol names like R0-R15 or W0-W31 (B/D/H/Q/V/X) as reserved identifiers (register names)."
-          },
-          "arm.documentationFolder": {
-            "type": "string",
-            "description": "Folder with ARM instruction documentation in HTML. Editor appends A32 or A64 to the folder name."
           }
         }
       }
@@ -187,9 +222,22 @@
       },
       {
         "id": "register",
-        "superType": "macro",
+        "superType": "parameter",
         "description": "Processor register."
       }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "definition",
+        "superType": "definition",
+        "description": "Symbol definition."
+      },
+      {
+        "id": "declaration",
+        "superType": "declaration",
+        "description": "Symbol declaration."
+      }
+
     ],
     "configurationDefaults": {
       "[arm]": {

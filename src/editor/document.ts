@@ -90,7 +90,7 @@ export class EditorDocument {
     return this._td.getText(range);
   }
 
-  public onIdle(ct: CancellationToken) {
+  public onIdle(ct: CancellationToken):void {
     this.updateDiagnostics(ct);
   }
 

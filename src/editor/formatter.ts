@@ -6,6 +6,7 @@ import { TextProvider, makeWhitespace } from '../text/text';
 import { TextStream } from '../text/textStream';
 import { TokenStream } from '../tokens/tokenStream';
 import { Token, TokenSubType, TokenType } from '../tokens/tokens';
+import { FormatOptions } from './options';
 
 // Common assumptions
 // - # comment starts at position 0
@@ -14,20 +15,6 @@ import { Token, TokenSubType, TokenType } from '../tokens/tokens';
 //   at the next TAB position.
 // - Detemine longest line at the end of instruction,
 //   then align line comments to the next TAB position.
-
-// NOT supporting tabs. Spaces only.
-export class FormatOptions {
-  public tabSize: number;
-  public spaceAfterComma: boolean;
-  public uppercaseLabels: boolean;
-  public uppercaseDirectives: boolean;
-  public uppercaseInstructions: boolean;
-  public uppercaseRegisters: boolean;
-  public alignOperands: boolean;
-  public ignoreComments: boolean;
-  public spaceAroundOperators: boolean;
-  public alignDirectivesToInstructions: boolean;
-}
 
 export class Formatter {
   private _tokens: TokenStream;

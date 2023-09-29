@@ -39,19 +39,22 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
     } else {
       this._name = TokenNodeImpl.create(context, this); // directive name
       this._name.token.subType = TokenSubType.Instruction;
-
-      const nameText = context.getTokenText(this._name!.token).toUpperCase();
-      const instruction = new InstructionImpl(nameText);
-      instruction.parse();
-      if (!instruction.isValid) {
-        context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
-      }
     }
 
+    this.checkInstructionName(context);
     this._operands = new CommaSeparatedListImpl();
     this._operands.parse(context, this);
 
     return super.parse(context, parent);
+  }
+
+  private checkInstructionName(context: ParseContext): void {
+    const nameText = context.getTokenText(this._name!.token).toUpperCase();
+    const instruction = new InstructionImpl(nameText);
+    instruction.parse();
+    if (!instruction.isValid) {
+      context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
+    }
   }
 }
 

@@ -4,6 +4,7 @@
 //  https://github.com/microsoft/pyright/blob/main/packages/pyright-internal/src/parser/tokenizer.ts
 //  https://github.com/MikhailArkhipov/vscode-r/tree/master/src/Languages/Core/Impl/Tokens
 
+import { text } from 'node:stream/consumers';
 import { LanguageOptions } from '../core/languageOptions';
 import { Char, Character } from '../text/charCodes';
 import { CharacterStream } from '../text/characterStream';
@@ -11,6 +12,7 @@ import { TextProvider } from '../text/text';
 import { NumberTokenizer } from './numberTokenizer';
 import { isRegisterName } from './registers';
 import { Token, TokenSubType, TokenType } from './tokens';
+import { Directive } from './directive';
 
 // NOTE: use of .valueof() with enums is b/c of https://github.com/microsoft/TypeScript/issues/9998.
 // I am not inclined to change currentToken property to a function to work around the TS issue.
@@ -302,7 +304,15 @@ export class Tokenizer {
 
     // We must be at whitespace or else this is not a directive.
     if (this._cs.isWhiteSpace() || this._cs.isEndOfStream()) {
-      this.addToken(TokenType.Directive, start, length);
+      const token = this.addToken(TokenType.Directive, start, length);
+
+      const text = this._cs.text.getText(start, length);
+      if (Directive.isDefinition(text)) {
+        token.subType = TokenSubType.Definition;
+      } else if (Directive.isDeclaration(text)) {
+        token.subType = TokenSubType.Declaration;
+      }
+
       return true;
     }
 
@@ -453,20 +463,21 @@ export class Tokenizer {
 
     // Perhaps an expression follows, like #(a+1)?
     // Rememeber, we are past # at this point, so don't advance.
-    if(this._cs.currentChar === Char.OpenBrace.valueOf()) {
+    if (this._cs.currentChar === Char.OpenBrace.valueOf()) {
       this.addToken(TokenType.Operator, start, 1, TokenSubType.Noop);
     } else {
       this.addToken(TokenType.Unknown, start, 1);
-    }   
+    }
     return true;
   }
 
-  private addToken(type: TokenType, start: number, length: number, tokenSubType?: TokenSubType): void {
+  private addToken(type: TokenType, start: number, length: number, tokenSubType?: TokenSubType): Token {
     const token = new Token(type, start, length);
     if (tokenSubType) {
       token.subType = tokenSubType;
     }
     this._tokens.push(token);
+    return token;
   }
 
   private addTokenAndMove(type: TokenType, start: number, tokenSubType?: TokenSubType): void {
