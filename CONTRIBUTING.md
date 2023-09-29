@@ -20,6 +20,11 @@ The extension is all TypeScript. It does not employ language server and language
 ### Coding guidelines
 Nothing special, standard TypeScript conventions. For formatting - tab size is 2, spaces only. Test runner is [Jest](https://jestjs.io/).
 
+### Circular dependencies
+After adding new files do run `madge --circular .` from the root to detect any circular dependencies and avoid headaches at runtime. Alternatively, install [dpdm](https://github.com/acrazing/dpdm).
+- `npm i -g dpdm`
+- `dpdm ./src/extension.ts`
+
 ### Code sources
 Tokenizer and parser are based on my Microsoft work on [R Tools](https://github.com/MikhailArkhipov/vscode-r), simplified, translated to TypeScript and adapted for the ARM assembly language syntax (GAS/GCC variety).
 
