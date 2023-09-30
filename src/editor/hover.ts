@@ -35,7 +35,7 @@ export async function provideHover(
 
     case TokenType.Symbol:
       if (token.subType === TokenSubType.Instruction) {
-        doc = await getInstructionDocumentation(tokenText, ct);
+        doc = await getInstructionDocumentation(tokenText, ed.instructionSet, ct);
       }
       break;
   }

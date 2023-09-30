@@ -12,5 +12,8 @@ export interface LanguageOptions {
   // Arduino also supports ; (AVR Studio) with file extensions .asm
   readonly lineCommentChar: string;
   // Indicates A32 or A64 mode.
-  readonly isA64: boolean;
+  readonly instructionSet: string;
 }
+
+export const A32Set = 'A32';
+export const A64Set = 'A64';

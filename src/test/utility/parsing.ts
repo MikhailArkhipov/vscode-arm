@@ -6,7 +6,7 @@ import 'jest-expect-message';
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
-import { LanguageOptions } from '../../core/languageOptions';
+import { A64Set, LanguageOptions } from '../../core/languageOptions';
 import { ParseContext } from '../../parser/parseContext';
 import { TextProvider } from '../../text/definitions';
 import { TextStream } from '../../text/textStream';
@@ -15,7 +15,6 @@ import { Tokenizer } from '../../tokens/tokenizer';
 import { AstWriter } from './astWriter';
 import { compareLines } from './textCompare';
 import { loadInstructionSets } from '../../instructions/instructionSet';
-import { Settings } from '../../core/settings';
 
 export function verifyOperator(op: TokenOperator, docText: TextProvider, expectedOpText: string): void {
   expect(op.children.count).toBe(3); // left operand, token, right operand
@@ -53,7 +52,7 @@ export function verifyToken(token: Token, docText: TextProvider, expectedType: T
 }
 
 export async function verifyAstAsync(expectedTree: string, text: string, isA64?: boolean): Promise<void> {
-  await initInstructionSet(isA64 ?? true);
+  await initInstructionSets();
   const ast = await createAstAsync(text);
   const writer = new AstWriter();
   const actualTree = writer.writeTree(ast, text);
@@ -84,15 +83,15 @@ export function parseExpression(text: string): { expression: Expression; context
 }
 
 export async function createAstAsync(text: string, options?: LanguageOptions): Promise<AstRoot> {
-  options = options ?? makeLanguageOptions(true);
-  await initInstructionSet(options.isA64);
+  options = options ?? makeLanguageOptions(A64Set);
+  await initInstructionSets();
   const t = new Tokenizer(options);
   const tokens = t.tokenize(new TextStream(text), 0, text.length);
   return AstRootImpl.create(text, options, tokens, 0);
 }
 
 function makeParseContext(text: string, options?: LanguageOptions): ParseContext {
-  options = options ?? makeLanguageOptions(true);
+  options = options ?? makeLanguageOptions(A64Set);
   const t = new Tokenizer(options);
   const ts = new TextStream(text);
   const tokens = t.tokenize(ts, 0, text.length);
@@ -101,17 +100,17 @@ function makeParseContext(text: string, options?: LanguageOptions): ParseContext
 }
 export function writeTokens(filePath: string): void {}
 
-export function makeLanguageOptions(isA64: boolean): LanguageOptions {
+export function makeLanguageOptions(instructionSet: string): LanguageOptions {
   return {
     lineCommentChar: '@', // Line comments start with @
     cLineComments: true, // Allow C++ style line comments i.e. //
     cBlockComments: true, // Allow C block comments /* */
     hashComments: true,
-    isA64,
+    instructionSet,
   };
 }
 
-async function initInstructionSet(isA64: boolean): Promise<void> {
+async function initInstructionSets(): Promise<void> {
   const setFolder = path.join(__dirname, '..', '..', 'instruction_sets');
   return loadInstructionSets(setFolder);
 }

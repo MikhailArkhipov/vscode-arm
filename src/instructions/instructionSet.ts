@@ -4,8 +4,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 //import { outputMessage } from '../core/utility';
-import { Deferred, createDeferred } from '../core/deferred';
-import { Settings } from '../core/settings';
+import { createDeferred } from '../core/deferred';
+import { A32Set, A64Set } from '../core/languageOptions';
 
 export interface InstructionSet {
   // Try to parse and locate instruction info based on
@@ -56,8 +56,8 @@ export function findInstructionInfo(candidateName: string, setName: string): Ins
 }
 
 export async function loadInstructionSets(setFolder: string): Promise<void> {
-  await loadInstructionSet(setFolder, Settings.A32Set);
-  await loadInstructionSet(setFolder, Settings.A64Set);
+  await loadInstructionSet(setFolder, A32Set);
+  await loadInstructionSet(setFolder, A64Set);
 }
 
 // Load single instruction set.

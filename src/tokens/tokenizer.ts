@@ -330,7 +330,7 @@ export class Tokenizer {
       this._tokens.push(token);
 
       const text = this._cs.text.getText(token.start, token.length);
-      if (isRegisterName(text, this._options.isA64)) {
+      if (isRegisterName(text, this._options.instructionSet)) {
         token.subType = TokenSubType.Register;
       }
       return;

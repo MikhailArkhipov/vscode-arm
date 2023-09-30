@@ -16,7 +16,7 @@ export class AstWriter {
     if(ast.errors.length > 0) {
       this._chunks.push('\n');
       ast.errors.forEach(e => {
-        this._chunks.push(`Error: ${getParseErrorMessage(e.errorType)}, range [${e.start}...${e.end})`);
+        this._chunks.push(`Error: ${getParseErrorMessage(e.errorType, ast.options.instructionSet)}, range [${e.start}...${e.end})`);
       });
     }
     return this._chunks.join('');

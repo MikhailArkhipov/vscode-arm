@@ -9,11 +9,12 @@ import {
   Statement,
   TokenNode,
 } from '../../AST/definitions';
+import { A64Set } from '../../core/languageOptions';
 import { TokenSubType, TokenType } from '../../tokens/definitions';
 import { createAstAsync, makeLanguageOptions, verifyAstAsync as verifyAstAsync, verifyTokenNode } from '../utility/parsing';
 
 test('Simple A32 instruction', async () => {
-  const root = await createAstAsync('add r1, r2, #1', makeLanguageOptions(false));
+  const root = await createAstAsync('add r1, r2, #1', makeLanguageOptions(A64Set));
   let child: AstNode;
 
   expect(root).toBeDefined();

@@ -100,7 +100,7 @@ async function handleInstructionsCompletion(
 ): Promise<CompletionItem[]> {
   const comps: CompletionItem[] = [];
 
-  const instructions = await getAvailableInstructions();
+  const instructions = await getAvailableInstructions(ed.instructionSet);
   if (ct.isCancellationRequested) {
     return [];
   }

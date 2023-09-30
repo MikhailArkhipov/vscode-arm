@@ -30,7 +30,7 @@ class InstructionImpl implements Instruction {
   // all start with V. Therefore if candidate name begins with V, we use
   // 3 letters since there are no FP instruction with just 2 letters.
 
-  public parse(): void {
+  public parse(instructionSet: string): void {
     // Get width specifier first (the part after period, like B.W
     // or, with FP, .I8 or .F32.F64)
     let text = this.fullName;
@@ -42,7 +42,7 @@ class InstructionImpl implements Instruction {
     text = text.substring(0, text.length - this.condition.length);
 
     this.name = text;
-    const info = findInstructionInfo(this.name);
+    const info = findInstructionInfo(this.name, instructionSet);
     if (info) {
       this.description = info.doc;
       this.isValid = true;
@@ -92,8 +92,8 @@ class InstructionImpl implements Instruction {
   }
 }
 
-export function parseInstructionName(nameText: string): Instruction {
+export function parseInstructionName(nameText: string, instructionSet: string): Instruction {
   const instruction = new InstructionImpl(nameText);
-  instruction.parse();
+  instruction.parse(instructionSet);
   return instruction;
 }

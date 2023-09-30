@@ -1,16 +1,17 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { A64Set } from '../core/languageOptions';
 import { Char } from '../text/charCodes';
 
 const _registers32: Set<string> = new Set();
 const _registers64: Set<string> = new Set();
 
-export function isRegisterName(text: string, isA64: boolean): boolean {
+export function isRegisterName(text: string, instructionSet: string): boolean {
   if (text.length < 2) {
     return false;
   }
-  return isA64 ? isRegister64Name(text) : isRegister32Name(text);
+  return instructionSet === A64Set ? isRegister64Name(text) : isRegister32Name(text);
 }
 
 function isRegister64Name(text: string): boolean {

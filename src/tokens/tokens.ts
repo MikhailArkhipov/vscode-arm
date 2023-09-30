@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { TextRangeImpl } from "../text/definitions";
-import { Token, TokenSubType, TokenType } from "./definitions";
+import { TextRangeImpl } from '../text/definitions';
+import { Token, TokenSubType, TokenType } from './definitions';
 
 /**
  * Describes a token. Parse token is a text range with a type that describes nature of the range.
@@ -19,4 +19,3 @@ export class TokenImpl extends TextRangeImpl implements Token {
     this.subType = TokenSubType.None;
   }
 }
-

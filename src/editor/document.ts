@@ -14,7 +14,7 @@ import {
 import { TextStream } from '../text/textStream';
 import { Tokenizer } from '../tokens/tokenizer';
 import { AstRoot } from '../AST/definitions';
-import { LanguageOptions } from '../core/languageOptions';
+import { A32Set, A64Set, LanguageOptions } from '../core/languageOptions';
 import { getParseErrorMessage } from './messages';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 import { TextRangeCollection } from '../text/definitions';
@@ -30,15 +30,15 @@ export class EditorDocument {
   private _tokens: TextRangeCollection<Token> = new TextRangeCollectionImpl();
   private _options: LanguageOptions;
   private _ast: AstRoot | undefined;
-  private _instructionSet = Settings.A64Set;
+
+  private _instructionSetInSettings: string;
+  private _instructionSet = A64Set;
 
   constructor(td: TextDocument) {
     this._td = td;
-
-    let iset = getSetting<string>(Settings.instructionSet, 'auto');
-    this._instructionSet = iset === 'auto' ? detectInstructionSet(td.getText()) : iset;
+    this.updateInstructionSet();
   }
-  
+
   public get textDocument(): TextDocument {
     return this._td;
   }
@@ -96,6 +96,10 @@ export class EditorDocument {
     this.updateDiagnostics(ct);
   }
 
+  public onSettingsChange(): void {
+    this.updateInstructionSet();
+  }
+
   private updateDiagnostics(ct: CancellationToken): void {
     this._diagnosticsCollection.clear();
     if (ct.isCancellationRequested) {
@@ -106,7 +110,11 @@ export class EditorDocument {
     if (this._ast) {
       this._ast.errors.forEach((e) => {
         const range = new Range(this._td.positionAt(e.start), this._td.positionAt(e.end));
-        const d = new Diagnostic(range, getParseErrorMessage(e.errorType), DiagnosticSeverity.Warning);
+        const d = new Diagnostic(
+          range,
+          getParseErrorMessage(e.errorType, this._instructionSet),
+          DiagnosticSeverity.Warning
+        );
         diagnostics.push(d);
       });
     }
@@ -126,8 +134,28 @@ export class EditorDocument {
       cBlockComments: true, // Allow C block comments /* */
       // GNU-specific.
       hashComments: true,
-      isA64: this._instructionSet === Settings.A64Set,
+      instructionSet: this._instructionSet,
     };
+  }
+
+  private updateInstructionSet(): void {
+    const currentSetInSettings = getSetting<string>(Settings.instructionSet, 'auto');
+    if (currentSetInSettings === this._instructionSetInSettings) {
+      return; // Nothing changed.
+    }
+
+    let newSet: string;
+    if (currentSetInSettings === 'auto') {
+      // Changed to 'auto'
+      newSet = detectInstructionSet(this._td.getText());
+    } else {
+      newSet = currentSetInSettings;
+    }
+
+    if (this._instructionSet !== newSet) {
+      this._instructionSet = newSet;
+      this._ast = undefined;
+    }
   }
 }
 
@@ -138,14 +166,14 @@ function detectInstructionSet(docText: string): string {
     cLineComments: true,
     hashComments: true,
     lineCommentChar: '@',
-    isA64: true,
+    instructionSet: A64Set,
   });
   const symbols = t
     .tokenize(new TextStream(docText), 0, docText.length)
     .filter((t) => t.type === TokenType.Symbol)
     .map((e) => docText.substring(e.start, e.end));
-  const score32 = symbols.filter((s) => isRegisterName(s, false)).length;
-  const score64 = symbols.filter((s) => isRegisterName(s, true)).length;
+  const score32 = symbols.filter((s) => isRegisterName(s, A32Set)).length;
+  const score64 = symbols.filter((s) => isRegisterName(s, A64Set)).length;
 
-  return score32 > score64 && score32 > 5 ? Settings.A32Set : Settings.A64Set;
+  return score32 > score64 && score32 > 5 ? A32Set : A64Set;
 }

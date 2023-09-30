@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { ParseErrorType } from '../AST/definitions';
-import { getCurrentInstructionSetName } from '../instructions/instructionSet';
 
-export function getParseErrorMessage(errorType: ParseErrorType): string {
+export function getParseErrorMessage(errorType: ParseErrorType, instructionSet: string): string {
   switch (errorType) {
     case ParseErrorType.UnknownInstruction:
-      return `Unknown instruction (${getCurrentInstructionSetName()} set).`;
+      return `Unknown instruction (${instructionSet} set).`;
     case ParseErrorType.InstructionOrDirectiveExpected:
       return 'Instruction or directive expected.';
     case ParseErrorType.UndefinedLabel:

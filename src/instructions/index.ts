@@ -33,7 +33,7 @@ import * as path from 'path';
 import { HTMLElement, parse } from 'node-html-parser';
 import { outputMessage } from '../core/utility';
 import { Character } from '../text/charCodes';
-import { Settings } from '../core/settings';
+import { A64Set } from '../core/languageOptions';
 
 // Add command to package.json to expose this. Uncomment command
 // registration in extension.ts.
@@ -52,7 +52,7 @@ import { Settings } from '../core/settings';
 // const armHtmlDocFolderName = '~\\ARM\\ISA_A64_xml_A_profile-2023-06\\xhtml';
 const armHtmlDocFolderName = '~\\ARM\\test';
 const indexFolderName = 'D:\\vscode-arm';
-const setFileName = `${Settings.A64Set}.json`;
+const setFileName = `${A64Set}.json`;
 
 interface InstructionData {
   name: string;

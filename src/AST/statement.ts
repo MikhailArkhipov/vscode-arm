@@ -116,7 +116,7 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
       return;
     }
     const nameText = context.getTokenText(this._name.token).toUpperCase();
-    const instruction = parseInstructionName(nameText);
+    const instruction = parseInstructionName(nameText, context.options.instructionSet);
     if (!instruction.isValid) {
       context.addError(new ParseErrorImpl(ParseErrorType.UnknownInstruction, ErrorLocation.Token, this._name!));
     } else {

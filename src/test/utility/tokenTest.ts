@@ -1,7 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { LanguageOptions } from '../../core/languageOptions';
+import { A64Set, LanguageOptions } from '../../core/languageOptions';
 import { CharacterStream } from '../../text/characterStream';
 import { TextStream } from '../../text/textStream';
 import { TokenType, Token, TokenSubType } from '../../tokens/definitions';
@@ -20,7 +20,7 @@ export namespace TokenTest {
   }
 
   export function tokenizeToArray(text: string, options?: LanguageOptions): readonly Token[] {
-    options = options ?? makeLanguageOptions(true);
+    options = options ?? makeLanguageOptions(A64Set);
     const t = new Tokenizer(options);
     return t.tokenize(new TextStream(text), 0, text.length);
   }
