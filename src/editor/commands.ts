@@ -34,8 +34,7 @@ export function openCurrentInstructionDocumenation(): void {
   // }
   try {
     const instructionName = ed.getTokenText(tokenIndex).toLowerCase();
-    const instructionSet = getSetting<string>(Settings.instructionSet, 'A64');
-    const instructionDocFolder = path.join(docFolder, instructionSet);
+    const instructionDocFolder = path.join(docFolder, ed.instructionSet);
 
     const fsEntries = fs.readdirSync(instructionDocFolder).map((e) => e.toLowerCase());
     // See if there is exact match

@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 //import { outputMessage } from '../core/utility';
 import { Deferred, createDeferred } from '../core/deferred';
+import { Settings } from '../core/settings';
 
 export interface InstructionSet {
   // Try to parse and locate instruction info based on
@@ -42,45 +43,31 @@ class InstructionSetImpl implements InstructionSet {
   }
 }
 
-let currentInstructionSetName = 'A64';
 const instructionSets: Map<string, InstructionSetImpl> = new Map();
-let runningLoader: Deferred<void>;
 
-export function getCurrentInstructionSetName(): string {
-  return currentInstructionSetName;
-}
-
-export async function getAvailableInstructions(): Promise<readonly InstructionJson[]> {
-  await runningLoader.promise;
-  const set = instructionSets.get(currentInstructionSetName);
+export function getAvailableInstructions(setName: string): readonly InstructionJson[] {
+  const set = instructionSets.get(setName);
   return set ? set.instructions : [];
 }
 
-export function findInstructionInfo(candidateName: string): InstructionJson | undefined {
-  const set = instructionSets.get(currentInstructionSetName);
+export function findInstructionInfo(candidateName: string, setName: string): InstructionJson | undefined {
+  const set = instructionSets.get(setName);
   return set?.findInstruction(candidateName);
 }
 
-export async function findInstructionInfoAsync(candidateName: string): Promise<InstructionJson | undefined> {
-  if(runningLoader) {
-    await runningLoader.promise;
-    return findInstructionInfo(candidateName);
-  }
-}
-
-export function waitForInstructionSetLoadingComplete(): Promise<void> {
-  return runningLoader.promise;
+export async function loadInstructionSets(setFolder: string): Promise<void> {
+  await loadInstructionSet(setFolder, Settings.A32Set);
+  await loadInstructionSet(setFolder, Settings.A64Set);
 }
 
 // Load single instruction set.
-export function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
-  runningLoader = createDeferred<void>();
+function loadInstructionSet(setFolder: string, setName: string): Promise<void> {
+  const loader = createDeferred<void>();
 
   // Is the set already loaded?
   if (instructionSets.has(setName)) {
-    currentInstructionSetName = setName;
-    runningLoader.resolve();
-    return runningLoader.promise;
+    loader.resolve();
+    return loader.promise;
   }
 
   // Load instruction set data from JSON file.
@@ -94,13 +81,12 @@ export function loadInstructionSet(setFolder: string, setName: string): Promise<
         // Transfer instructions to a map for faster lookup.
         const set = new InstructionSetImpl(iset);
         instructionSets.set(setName, set);
-        currentInstructionSetName = setName;
       }
-      runningLoader.resolve();
+      loader.resolve();
     });
   } catch (e) {
     //outputMessage(`Unable to load instruction set file ${setFilePath}. Error: ${e.message}`);
-    runningLoader.resolve();
+    loader.resolve();
   }
-  return runningLoader.promise;
+  return loader.promise;
 }

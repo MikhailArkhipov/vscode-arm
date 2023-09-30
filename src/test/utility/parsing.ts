@@ -14,7 +14,8 @@ import { TokenType, TokenSubType, Token } from '../../tokens/definitions';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { AstWriter } from './astWriter';
 import { compareLines } from './textCompare';
-import { loadInstructionSet } from '../../instructions/instructionSet';
+import { loadInstructionSets } from '../../instructions/instructionSet';
+import { Settings } from '../../core/settings';
 
 export function verifyOperator(op: TokenOperator, docText: TextProvider, expectedOpText: string): void {
   expect(op.children.count).toBe(3); // left operand, token, right operand
@@ -112,5 +113,5 @@ export function makeLanguageOptions(isA64: boolean): LanguageOptions {
 
 async function initInstructionSet(isA64: boolean): Promise<void> {
   const setFolder = path.join(__dirname, '..', '..', 'instruction_sets');
-  return loadInstructionSet(setFolder, isA64 ? 'A64' : 'A32');
+  return loadInstructionSets(setFolder);
 }

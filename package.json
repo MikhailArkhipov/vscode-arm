@@ -80,12 +80,13 @@
         "properties": {
           "arm.general.instructionSet": {
             "type": "string",
-            "default": "A64",
+            "default": "auto",
             "enum": [
+              "auto",
               "A32",
               "A64"
             ],
-            "description": "ARM instruction sets to use."
+            "description": "ARM instruction sets to use. Auto mode attempts to detect instruction set based on the file contents. If it is unable to do so, A64 is assumed."
           },
           "arm.general.documentationFolder": {
             "type": "string",

@@ -36,9 +36,14 @@ export namespace Settings {
   export const diagnosticUnknownDirectives = 'arm.diagnostic.unknownDirectives';
   export const diagnosticUnknownSymbols = 'arm.diagnostic.unknownSymbols';
   export const diagnosticMixedCasing = 'arm.diagnostic.mixedCasing';
+
+  export const A32Set = 'A32';
+  export const A64Set = 'A64';
 }
 
 export function getSetting<T>(name: string, defaultValue: T): T {
   const config = workspace.getConfiguration();
   return config.get(name, defaultValue) as T;
 }
+
+

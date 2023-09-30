@@ -22,8 +22,7 @@ import { getExtensionPath, setExtensionPath } from './core/utility';
 import { convertHtmlToIndex } from './instructions';
 import { IdleTime } from './core/idletime';
 import { provideCompletions, resolveCompletionItem } from './editor/completions';
-import { Settings, getSetting } from './core/settings';
-import { loadInstructionSet } from './instructions/instructionSet';
+import { loadInstructionSets } from './instructions/instructionSet';
 import { Formatter } from './editor/formatter';
 import { ColorOptions, getColorOptions, getFormatOptions } from './editor/options';
 
@@ -33,7 +32,7 @@ let colorOptions: ColorOptions;
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
   // don't wait here, let it run async
-  loadInstructionSetFromSettings();
+  await loadInstructionSets(path.join(getExtensionPath(), 'src', 'instruction_sets'));
   colorOptions = getColorOptions();
 
   // Register capabilities
@@ -114,13 +113,6 @@ function registerCommands(context: ExtensionContext): void {
 
 function onSettingsChange(): void {
   colorOptions = getColorOptions();
-  loadInstructionSetFromSettings();
-}
-
-function loadInstructionSetFromSettings(): void {
-  const setFolder = path.join(getExtensionPath(), 'src', 'instruction_sets');
-  const setName = getSetting<string>(Settings.instructionSet, 'A64');
-  loadInstructionSet(setFolder, setName);
 }
 
 function formatDocument(td: TextDocument): TextEdit[] {
