@@ -392,3 +392,8 @@ test('SVC 0x80', () => {
   const actual = TokenTest.tokenizeToArray('SVC 0x80');
   TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Number]);
 });
+
+test('mov	r2, R\\reg', () => {
+  const actual = TokenTest.tokenizeToArray('mov	r2, R\\reg');
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Symbol, TokenType.Comma, TokenType.Symbol, TokenType.Symbol]);
+});

@@ -98,6 +98,13 @@ test('ldm r4!, {r0, r1, r2, r3}', async () => {
   await verifyAstAsync(expected, 'ldm r4!, {r0, r1, r2, r3}', false);
 });
 
+test('mov R\\reg', async () => {
+  const expected =String.raw`InstructionStatement [0...3)
+  Token mov [0...3)
+`;
+  await verifyAstAsync(expected, 'mov R\\reg', true);
+});
+
 test('ADD	X0, X0, A', async () => {
   const expected ="ADD 3:1 [0...3) X0 3:2 [4...6) , 4:0 [6...7) X0 3:2 [8...10) , 4:0 [10...11) A 3:0 [12...13)";
   await verifyAstTokens(expected, 'ADD	X0, X0, A', true);

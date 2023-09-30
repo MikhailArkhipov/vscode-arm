@@ -498,7 +498,6 @@ function skipAddressOperator(context: ParseContext): void {
   }
 }
 
-//////// 
 // An item in a comma-separated sequence, such as {a, b, c}.
 // Normally an expression followed by an optional comma.
 export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparatedItem {
@@ -533,15 +532,20 @@ export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparate
         {
           const expression = new ExpressionImpl(this._nestedListAllowed);
           result = expression.parse(context, this);
-          this._item = expression;
+          // Don't add empty expressions
+          if(result) {
+            this._item = expression;
+          }
           if (context.currentToken.type === TokenType.Comma.valueOf()) {
             this._comma = TokenNodeImpl.create(context, this);
-            result = true; // We may be able to recover
+            result = true; // attempt to recover
           }
-        }
+    }
         break;
     }
-    super.parse(context, parent);
+    if(result) {
+      super.parse(context, parent);
+    }
     return result;
   }
 }
@@ -605,7 +609,9 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
         // Recoverable, don't stop expression parsing.
       }
     }
-    super.parse(context, parent);
+    if(itemParsed) {
+      super.parse(context, parent);
+    }
     return itemParsed;
   }
 }
