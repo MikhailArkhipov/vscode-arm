@@ -19,8 +19,9 @@ const tokenTypes = [
   'instruction',
   'register',
   'directive',
-  'declaration-directive',
-  'definition-directive',
+  'declaration',
+  'definition',
+  'include',
   'label',
   'number',
   'string',
@@ -57,13 +58,13 @@ export async function provideSemanticTokens(
       case TokenType.Directive:
         switch (t.subType) {
           case TokenSubType.Definition:
-            itemType = options.variables ? 'definition-directive' : 'directive';
+            itemType = options.variables ? 'definition' : 'directive';
             break;
           case TokenSubType.Declaration:
-            itemType = options.variables ? 'declaration-directive' : 'directive';
+            itemType = options.variables ? 'declaration' : 'directive';
             break;
           default:
-            itemType = 'directive';
+            itemType = ed.getTokenText(t) === '.include' ? 'include' : 'directive';
             break;
         }
         break;
@@ -77,9 +78,7 @@ export async function provideSemanticTokens(
             itemType = 'register';
             break;
           default:
-            if (options.variables) {
-              itemType = 'variable';
-            }
+            itemType = 'variable';
             break;
         }
         break;

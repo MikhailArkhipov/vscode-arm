@@ -78,40 +78,26 @@ export class Tokenizer {
     this.handleOtherChars();
   }
 
-  private isPossibleNumber(): boolean {
-    if (this._cs.currentChar === Char.Minus || this._cs.currentChar === Char.Plus) {
-      // Next character must be decimal or a dot otherwise
-      // it is not a number. No whitespace is allowed.
-      if (Character.isDecimal(this._cs.nextChar) || this._cs.nextChar === Char.Period) {
-        if (this._tokens.length > 0) {
-          // prevent recognition of 1+2 as 'number number'
-          const previousToken = this._tokens[this._tokens.length - 1];
-          if (
-            previousToken.type !== TokenType.OpenBrace &&
-            previousToken.type !== TokenType.OpenBracket &&
-            previousToken.type !== TokenType.Comma &&
-            previousToken.type !== TokenType.Operator
-          ) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
   private tryNumber(start: number): boolean {
-    if (this._tokens.length > 0) {
-      // prevent recognition of 1+2 as 'number number'
-      const previousToken = this._tokens[this._tokens.length - 1];
-      if (
-        previousToken.type !== TokenType.OpenBrace &&
-        previousToken.type !== TokenType.OpenBracket &&
-        previousToken.type !== TokenType.Comma &&
-        previousToken.type !== TokenType.Operator &&
-        previousToken.type !== TokenType.Directive
-      ) {
-        return false;
+    // We must prevent recognition of 1+2 as 'number number'.
+    // This only happens when number has a sign and does not have #.
+    if (this._cs.prevChar !== Char.Hash && this._cs.prevChar !== Char.$ && this._tokens.length > 0) {
+      if (this._cs.currentChar === Char.Plus || this._cs.currentChar === Char.Minus) {
+        const previousToken = this._tokens[this._tokens.length - 1];
+        // +/- are operators if previous token was ), symbol or number.
+        // This presents a problem if prev token was an instruction such as 'CMD -1'.
+        // This is an odd thing for ARM, but technically possible. We will ignore this
+        // case for now since the worst that would happen is that the number won't be
+        // colorized properly.
+        if (
+          previousToken.type === TokenType.Symbol ||
+          previousToken.type === TokenType.Number ||
+          previousToken.type === TokenType.CloseBrace
+        ) {
+          // )+, 1+2, x+1
+          this.addTokenAndMove(TokenType.Operator, start);
+          // Proceed to the number
+        }
       }
     }
 

@@ -11,7 +11,7 @@ import {
 } from '../../AST/definitions';
 import { A64Set } from '../../core/languageOptions';
 import { TokenSubType, TokenType } from '../../tokens/definitions';
-import { createAstAsync, makeLanguageOptions, verifyAstAsync as verifyAstAsync, verifyTokenNode } from '../utility/parsing';
+import { createAstAsync, makeLanguageOptions, verifyAstAsync as verifyAstAsync, verifyAstTokens, verifyTokenNode } from '../utility/parsing';
 
 test('Simple A32 instruction', async () => {
   const root = await createAstAsync('add r1, r2, #1', makeLanguageOptions(A64Set));
@@ -96,4 +96,9 @@ test('ldm r4!, {r0, r1, r2, r3}', async () => {
           Token } [24...25)
 `;
   await verifyAstAsync(expected, 'ldm r4!, {r0, r1, r2, r3}', false);
+});
+
+test('ADD	X0, X0, A', async () => {
+  const expected ="ADD 3:1 [0...3) X0 3:2 [4...6) , 4:0 [6...7) X0 3:2 [8...10) , 4:0 [10...11) A 3:0 [12...13)";
+  await verifyAstTokens(expected, 'ADD	X0, X0, A', true);
 });

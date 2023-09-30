@@ -213,8 +213,13 @@
     "semanticTokenTypes": [
       {
         "id": "instruction",
-        "superType": "function",
+        "superType": "enumMember",
         "description": "Assembly instruction."
+      },
+      {
+        "id": "register",
+        "superType": "enum",
+        "description": "Processor register."
       },
       {
         "id": "directive",
@@ -222,31 +227,19 @@
         "description": "Assembler directive."
       },
       {
-        "id": "definition-directive",
-        "superType": "macro",
+        "id": "definition",
+        "superType": "function",
         "description": "Assembler directive defining a symbol, such as .set or .equ."
       },
       {
-        "id": "declaration-directive",
+        "id": "declaration",
         "superType": "type",
         "description": "Assembler directive declaring data, such as .word."
       },
       {
-        "id": "register",
-        "superType": "parameter",
-        "description": "Processor register."
-      }
-    ],
-    "semanticTokenModifiers": [
-      {
-        "id": "definition",
-        "superType": "definition",
-        "description": "Symbol definition."
-      },
-      {
-        "id": "declaration",
-        "superType": "declaration",
-        "description": "Symbol declaration."
+        "id": "include",
+        "superType": "macro",
+        "description": "Assembler directive declaring data, such as .word."
       }
     ],
     "configurationDefaults": {

@@ -92,8 +92,7 @@ export class EditorDocument {
     return this._tokens.getItemContaining(offset);
   }
 
-  public getTokenText(tokenIndex: number): string {
-    const t = this._tokens.getItemAt(tokenIndex);
+  public getTokenText(t: Token): string {
     const range = new Range(this._td.positionAt(t.start), this._td.positionAt(t.end));
     return this._td.getText(range);
   }

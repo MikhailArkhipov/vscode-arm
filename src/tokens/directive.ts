@@ -3,7 +3,7 @@
 
 const variableDeclarations = new Set<string>([
   '.ascii',
-  '.asciiz',
+  '.asciz',
   '.byte',
   '.double',
   '.fill',

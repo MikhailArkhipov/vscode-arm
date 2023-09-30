@@ -1,9 +1,18 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import { AstNode, AstRoot } from '../../AST/definitions';
+import { AstNode, AstRoot, TokenNode } from '../../AST/definitions';
 import { getParseErrorMessage } from '../../editor/messages';
 import { makeWhitespace } from '../../text/utility';
+
+  export function writeAstTokens(ast: AstRoot, text: string): string {
+    const chunks: string[] = [];
+    ast.tokens.asArray().forEach(t => {
+      chunks.push(`${text.substring(t.start, t.end)} ${t.type}:${t.subType} [${t.start}...${t.end})`)
+    })
+    return chunks.join(' ');
+  }
+
 
 export class AstWriter {
   private _chunks: string[] = [];

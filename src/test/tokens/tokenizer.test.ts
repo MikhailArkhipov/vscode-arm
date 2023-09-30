@@ -387,3 +387,8 @@ test('[D1]!', () => {
     TokenSubType.Noop,
   ]);
 });
+
+test('SVC 0x80', () => {
+  const actual = TokenTest.tokenizeToArray('SVC 0x80');
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Number]);
+});

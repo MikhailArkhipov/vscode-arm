@@ -12,7 +12,7 @@ import { TextProvider } from '../../text/definitions';
 import { TextStream } from '../../text/textStream';
 import { TokenType, TokenSubType, Token } from '../../tokens/definitions';
 import { Tokenizer } from '../../tokens/tokenizer';
-import { AstWriter } from './astWriter';
+import { AstWriter, writeAstTokens } from './astWriter';
 import { compareLines } from './textCompare';
 import { loadInstructionSets } from '../../instructions/instructionSet';
 
@@ -58,6 +58,14 @@ export async function verifyAstAsync(expectedTree: string, text: string, isA64?:
   const actualTree = writer.writeTree(ast, text);
   compareTrees(expectedTree, actualTree);
 }
+
+export async function verifyAstTokens(expectedTokens: string, text: string, isA64?: boolean): Promise<void> {
+  await initInstructionSets();
+  const ast = await createAstAsync(text);
+  const actual = writeAstTokens(ast, text);
+  expect(actual).toBe(expectedTokens);
+}
+
 
 export function verifyParseExpression(expectedTree: string, text: string): void {
   const expression = parseExpression(text).expression;

@@ -4,7 +4,6 @@
 import { LanguageOptions } from '../core/languageOptions';
 import { TextProvider, TextRange, TextRangeCollection } from '../text/definitions';
 import { Token } from '../tokens/definitions';
-import { TokenStream } from '../tokens/tokenStream';
 
 export interface NodeCollection extends TextRangeCollection<AstNode> {}
 

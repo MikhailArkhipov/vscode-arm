@@ -33,7 +33,8 @@ export function openCurrentInstructionDocumenation(): void {
   //   return;
   // }
   try {
-    const instructionName = ed.getTokenText(tokenIndex).toLowerCase();
+    const t = this._tokens.getItemAt(tokenIndex);
+    const instructionName = ed.getTokenText(t).toLowerCase();
     const instructionDocFolder = path.join(docFolder, ed.instructionSet);
 
     const fsEntries = fs.readdirSync(instructionDocFolder).map((e) => e.toLowerCase());
