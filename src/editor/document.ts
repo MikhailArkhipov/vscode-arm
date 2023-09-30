@@ -30,13 +30,10 @@ export class EditorDocument {
   private _tokens: TextRangeCollection<Token> = new TextRangeCollectionImpl();
   private _options: LanguageOptions;
   private _ast: AstRoot | undefined;
-
-  private _instructionSetInSettings: string;
   private _instructionSet = A64Set;
 
   constructor(td: TextDocument) {
     this._td = td;
-    this.updateInstructionSet();
   }
 
   public get textDocument(): TextDocument {
@@ -51,10 +48,19 @@ export class EditorDocument {
 
   public getAst(): AstRoot | undefined {
     if (!this._ast || this._ast.version < this._td.version) {
-      this._options = this.getLanguageOptions();
-      const t = new Tokenizer(this._options);
-      const text = this._td.getText();
-      const tokens = t.tokenize(new TextStream(text), 0, text.length);
+      let tokens = this.tokenize();
+     
+      let instructionSet = getSetting<string>(Settings.instructionSet, 'auto');
+      if(instructionSet === 'auto') {
+        const documentText = this._td.getText();
+        instructionSet = detectInstructionSet(documentText, tokens)
+      }
+      
+      if(this._instructionSet !== instructionSet) {
+        this._instructionSet = instructionSet;
+        tokens = this.tokenize();
+      }
+      
       this._ast = AstRootImpl.create(this._td.getText(), this._options, tokens, this._td.version);
     }
     return this._ast;
@@ -96,10 +102,6 @@ export class EditorDocument {
     this.updateDiagnostics(ct);
   }
 
-  public onSettingsChange(): void {
-    this.updateInstructionSet();
-  }
-
   private updateDiagnostics(ct: CancellationToken): void {
     this._diagnosticsCollection.clear();
     if (ct.isCancellationRequested) {
@@ -138,40 +140,19 @@ export class EditorDocument {
     };
   }
 
-  private updateInstructionSet(): void {
-    const currentSetInSettings = getSetting<string>(Settings.instructionSet, 'auto');
-    if (currentSetInSettings === this._instructionSetInSettings) {
-      return; // Nothing changed.
-    }
-
-    let newSet: string;
-    if (currentSetInSettings === 'auto') {
-      // Changed to 'auto'
-      newSet = detectInstructionSet(this._td.getText());
-    } else {
-      newSet = currentSetInSettings;
-    }
-
-    if (this._instructionSet !== newSet) {
-      this._instructionSet = newSet;
-      this._ast = undefined;
-    }
+  private tokenize(): readonly Token[] {
+    this._options = this.getLanguageOptions();     
+    const t = new Tokenizer(this._options);
+    const documentText = this._td.getText();
+    return t.tokenize(new TextStream(documentText), 0, documentText.length);
   }
 }
 
-function detectInstructionSet(docText: string): string {
+function detectInstructionSet(documentText: string, tokens: readonly Token[]): string {
   // Tokenize content and see what kind of registers are in use.
-  const t = new Tokenizer({
-    cBlockComments: true,
-    cLineComments: true,
-    hashComments: true,
-    lineCommentChar: '@',
-    instructionSet: A64Set,
-  });
-  const symbols = t
-    .tokenize(new TextStream(docText), 0, docText.length)
+  const symbols = tokens
     .filter((t) => t.type === TokenType.Symbol)
-    .map((e) => docText.substring(e.start, e.end));
+    .map((e) => documentText.substring(e.start, e.end));
   const score32 = symbols.filter((s) => isRegisterName(s, A32Set)).length;
   const score64 = symbols.filter((s) => isRegisterName(s, A64Set)).length;
 
