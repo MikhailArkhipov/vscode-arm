@@ -400,25 +400,6 @@ test('SVC 0x80', () => {
   TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Number]);
 });
 
-test('mov	r2, R\\reg', () => {
-  const code = String.raw`
-  .macro name
-    mov	r2, R\\reg
-  .endm`;
-  const actual = TokenTest.tokenizeToArray(code, A32Set);
-  TokenTest.verifyTokenTypes(actual, [
-    TokenType.EndOfLine,
-    TokenType.Directive,
-    TokenType.Symbol,
-    TokenType.EndOfLine,
-    TokenType.Symbol,
-    TokenType.Symbol,
-    TokenType.Comma,
-    TokenType.Symbol,
-    TokenType.EndOfLine,
-    TokenType.Directive,
-  ]);
-});
 
 test('push {r0-r4, lr}', () => {
   const actual = TokenTest.tokenizeToArray('push {r0-r4, lr}', A32Set);

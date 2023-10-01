@@ -95,7 +95,15 @@ export class Tokenizer {
     if (this.tryBasicChars2()) {
       return;
     }
-    // A symbol?
+    // Macro label reference?
+    if(this.tryMacroLabelReference()) {
+      this._state = TokenizerState.PastDirective;
+      return;
+    }
+    if(this.tryMacroSymbol()) {
+      this._state = TokenizerState.PastDirective;
+      return;
+    }
     if (this.handleSymbol()) {
       this._state = TokenizerState.PastDirective;
       return;
@@ -341,6 +349,49 @@ export class Tokenizer {
     return false;
   }
 
+  private tryMacroLabelReference(): boolean {
+    //A decimal number followed by f or b.
+    if(!this._macroMode) {
+      return false;     
+    }
+    if(!Character.isDecimal(this._cs.currentChar)) {
+      return false;
+    }
+    const start = this._cs.position;
+    this._cs.skipNonWsSequence(ch => Character.isDecimal(ch));
+    if(this._cs.currentChar === Char.f || this._cs.currentChar === Char.b) {
+      this._cs.moveToNextChar();
+    }
+    if(isHardStopCharacter(this._cs.currentChar) || this._cs.isAtNewLine()) {
+      this.addToken(TokenType.Symbol, start, this._cs.position - start, TokenSubType.MacroLabelReference);
+      return true;
+    }
+    this._cs.position = start;
+    return false;
+  }
+
+  private tryMacroSymbol(): boolean {
+    if(!this._macroMode) {
+      return false;     
+    }
+    if(this._cs.currentChar !== Char.Backslash) {
+      return false;
+    }
+    const start = this._cs.position;
+    this._cs.moveToNextChar();
+    this.skipSymbol();
+
+    if(this._cs.currentChar === Char.Backslash && this._cs.nextChar === Char.OpenBrace && this._cs.lookAhead(2) === Char.CloseBrace) {
+      // The string ‘\()’ can be used to separate the end of a macro argument from the following text
+      // \base\().length
+      this._cs.advance(3);
+      this.addToken(TokenType.Symbol, start, this._cs.position - start, TokenSubType.MacroParameter);
+      return true;
+    }
+    this._cs.position = start;
+    return false;
+  }
+
   private handleSymbol(): boolean {
     //https://sourceware.org/binutils/docs-2.26/as/Symbol-Intro.html#Symbol-Intro
     const start = this._cs.position;
@@ -351,21 +402,31 @@ export class Tokenizer {
     }
 
     const text = this._cs.text.getText(start, this._cs.position - start);
-    if (this._macroMode && text.indexOf('\\') >= 0) {
-      // \foo is a reference to the macro parameters. In macro mode we merge macro
-      // parameter reference into adjoining symbol, if any. This is to simplify parsing
-      // For example, R\x is, effectively, part of the symbol. If we don't merge,
-      // expression parser will have hard time groking 1+2\x since 'operand + operand operand'
-      // is not a legal expression and the parser will yield 'operator expected' error.
-      // Colorizer may choose to look into \ in the item and split colorable range
-      // into two distinct items, but that is just visual effect.
-      const pt = this._tokens.length > 0 ? this._tokens[this._tokens.length - 1] : undefined;
-      if (pt && pt.end === start) {
-        this._tokens.pop();
-        const t = this.addToken(TokenType.Symbol, pt.start, this._cs.position - pt.start);
-        t.subType = TokenSubType.MacroParameter;
+    if (this._macroMode) {
+      if (text.indexOf('\\') >= 0) {
+        // \foo is a reference to the macro parameters. In macro mode we merge macro
+        // parameter reference into adjoining symbol, if any. This is to simplify parsing
+        // For example, R\x is, effectively, part of the symbol. If we don't merge,
+        // expression parser will have hard time groking 1+2\x since 'operand + operand operand'
+        // is not a legal expression and the parser will yield 'operator expected' error.
+        // Colorizer may choose to look into \ in the item and split colorable range
+        // into two distinct items, but that is just visual effect.
+        const pt = this._tokens.length > 0 ? this._tokens[this._tokens.length - 1] : undefined;
+        if (pt && pt.end === start && pt.type !== TokenType.Unknown && pt.type !== TokenType.EndOfLine) {
+          this._tokens.pop();
+          const t = this.addToken(TokenType.Symbol, pt.start, this._cs.position - pt.start);
+          t.subType = TokenSubType.MacroParameter;
+        } else {
+          const t = this.addToken(TokenType.Symbol, start, this._cs.position - start);
+          t.subType = TokenSubType.MacroParameter;
+        }
+        return true;
       }
-      return true;
+
+      if(text.endsWith('f') || text.endsWith('b')) {
+        // Possibly label reference
+
+      }
     }
 
     const token = new TokenImpl(TokenType.Symbol, start, this._cs.position - start);
@@ -544,11 +605,6 @@ export class Tokenizer {
     // will let validator deal with it.
 
     const start = this._cs.position;
-    if (this._macroMode) {
-      if (this._cs.currentChar === Char.Backslash) {
-        this._cs.moveToNextChar();
-      }
-    }
     if (!this.isLeadingSymbolCharacter(this._cs.currentChar)) {
       this._cs.position = start;
       return false;
@@ -579,7 +635,7 @@ export class Tokenizer {
 
   private isLeadingSymbolCharacter(ch: number): boolean {
     return Character.isAnsiLetter(ch) || ch === Char.Underscore || (this._macroMode && ch === Char.Backslash);
-  } 
+  }
 }
 
 function isSymbolCharacter(ch: number): boolean {
@@ -615,6 +671,7 @@ function isHardStopCharacter(ch: number): boolean {
     case Char.Comma:
     case Char.SingleQuote:
     case Char.DoubleQuote:
+    case Char.Backslash:
       return true;
   }
   return false;

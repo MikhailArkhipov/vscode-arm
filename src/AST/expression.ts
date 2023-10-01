@@ -533,17 +533,17 @@ export class CommaSeparatedItemImpl extends AstNodeImpl implements CommaSeparate
           const expression = new ExpressionImpl(this._nestedListAllowed);
           result = expression.parse(context, this);
           // Don't add empty expressions
-          if(result) {
+          if (result) {
             this._item = expression;
           }
           if (context.currentToken.type === TokenType.Comma.valueOf()) {
             this._comma = TokenNodeImpl.create(context, this);
             result = true; // attempt to recover
           }
-    }
+        }
         break;
     }
-    if(result) {
+    if (result) {
       super.parse(context, parent);
     }
     return result;
@@ -604,12 +604,21 @@ export class CommaSeparatedListImpl extends AstNodeImpl implements CommaSeparate
       }
       if (this._closeBrace && this._items.length === 0) {
         context.addError(
-          new ParseErrorImpl(ParseErrorType.EmptyExpression, ErrorLocation.Token, context.tokens.previousToken)
+          new ParseErrorImpl(ParseErrorType.EmptyExpression, ErrorLocation.Token, context.previousToken)
         );
         // Recoverable, don't stop expression parsing.
       }
     }
-    if(itemParsed) {
+
+    if (this._items.length > 0) {
+      // Check for dangling comma
+      const lastItem = this._items[this._items.length - 1];
+      if (lastItem.comma) {
+        context.addError(new ParseErrorImpl(ParseErrorType.ExpressionExpected, ErrorLocation.Token, lastItem.comma));
+      }
+    }
+
+    if (itemParsed) {
       super.parse(context, parent);
     }
     return itemParsed;

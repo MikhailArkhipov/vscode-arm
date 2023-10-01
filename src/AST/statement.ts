@@ -20,6 +20,7 @@ import { AstNodeImpl } from './astNode';
 import { TokenSubType, TokenType } from '../tokens/definitions';
 import { parseInstructionName } from './instruction';
 import { CommaSeparatedListImpl } from './expression';
+import { TextRange } from '../text/definitions';
 
 // GCC: https://sourceware.org/binutils/docs-2.26/as/Statements.html#Statements
 // A statement begins with zero or more labels, optionally followed by a key symbol
@@ -56,7 +57,16 @@ export abstract class StatementImpl extends AstNodeImpl implements Statement {
   // {label:}{instruction}{operands}
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     // Skip anytning unrecognized
+    const eosPosition = context.tokens.position;
+    const nt = context.tokens.nextToken;
     context.tokens.moveToEol();
+    if (context.tokens.position - eosPosition > 0) {
+      const lastToken = context.tokens.getTokenAt(context.tokens.position - 1);
+      // There is something between fully parsed statement and EOL.
+      context.addError(
+        new UnexpectedItemError(ParseErrorType.UnexpectedToken, TextRange.fromBounds(nt.start, lastToken.end))
+      );
+    }
     return super.parse(context, parent);
   }
 }
@@ -108,7 +118,7 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
 
     const operands = new CommaSeparatedListImpl();
     const result = operands.parse(context, this);
-    if(result) {
+    if (result) {
       this._operands = operands;
     }
     return super.parse(context, parent);

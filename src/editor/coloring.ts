@@ -101,6 +101,8 @@ export async function provideSemanticTokens(
           case TokenSubType.MacroParameter:
             itemType = 'macro-parameter';
             break;
+          case TokenSubType.MacroLabelReference:
+            itemType = 'label';
           default:
             itemType = 'variable';
             break;

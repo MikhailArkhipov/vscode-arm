@@ -52,7 +52,8 @@ export enum TokenSubType {
   EndCondition = 10, // .endif
   Include = 11, // .include
   MacroName = 12,
-  MacroParameter = 13 // parameter to a macro
+  MacroParameter = 13, // parameter to a macro
+  MacroLabelReference = 14 // label reference in a macro
 }
 
 /**
