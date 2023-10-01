@@ -74,9 +74,12 @@ export class Tokenizer {
     }
 
     // Handle possible comments
-    this.handleCBlockComment();
+    if(this.handleCBlockComment()) {
+      return;
+    }    
     if (this.isAtLineComment()) {
       this.handleLineComment();
+      return;
     }
 
     // Try immediate with # right away so we don't have to
@@ -96,11 +99,11 @@ export class Tokenizer {
       return;
     }
     // Macro label reference?
-    if(this.tryMacroLabelReference()) {
+    if (this.tryMacroLabelReference()) {
       this._state = TokenizerState.PastDirective;
       return;
     }
-    if(this.tryMacroSymbol()) {
+    if (this.tryMacroSymbol()) {
       this._state = TokenizerState.PastDirective;
       return;
     }
@@ -126,11 +129,13 @@ export class Tokenizer {
         if (
           previousToken.type === TokenType.Symbol ||
           previousToken.type === TokenType.Number ||
-          previousToken.type === TokenType.CloseBrace
+          previousToken.type === TokenType.CloseBrace ||
+          previousToken.type === TokenType.CloseCurly          
         ) {
           // )+, 1+2, x+1
           this.addTokenAndMove(TokenType.Operator, start);
-          // Proceed to the number
+          // Let next pass handle the rest
+          return true;
         }
       }
     }
@@ -150,6 +155,7 @@ export class Tokenizer {
         if (this._cs.nextChar === Char.Less) {
           this.addToken(TokenType.Operator, this._cs.position, 2);
           this._cs.advance(2);
+          return true;
         }
         break;
 
@@ -157,13 +163,13 @@ export class Tokenizer {
         if (this._cs.nextChar === Char.Greater) {
           this.addToken(TokenType.Operator, this._cs.position, 2);
           this._cs.advance(2);
+          return true;
         }
         break;
 
       case Char.Slash:
       case Char.Asterisk:
       case Char.Percent:
-
       case Char.Ampersand:
       case Char.Bar:
         this.addTokenAndMove(TokenType.Operator, this._cs.position);
@@ -351,18 +357,18 @@ export class Tokenizer {
 
   private tryMacroLabelReference(): boolean {
     //A decimal number followed by f or b.
-    if(!this._macroMode) {
-      return false;     
+    if (!this._macroMode) {
+      return false;
     }
-    if(!Character.isDecimal(this._cs.currentChar)) {
+    if (!Character.isDecimal(this._cs.currentChar)) {
       return false;
     }
     const start = this._cs.position;
-    this._cs.skipNonWsSequence(ch => Character.isDecimal(ch));
-    if(this._cs.currentChar === Char.f || this._cs.currentChar === Char.b) {
+    this._cs.skipNonWsSequence((ch) => Character.isDecimal(ch));
+    if (this._cs.currentChar === Char.f || this._cs.currentChar === Char.b) {
       this._cs.moveToNextChar();
     }
-    if(isHardStopCharacter(this._cs.currentChar) || this._cs.isAtNewLine()) {
+    if (isHardStopCharacter(this._cs.currentChar) || this._cs.isWhiteSpace()) {
       this.addToken(TokenType.Symbol, start, this._cs.position - start, TokenSubType.MacroLabelReference);
       return true;
     }
@@ -371,17 +377,21 @@ export class Tokenizer {
   }
 
   private tryMacroSymbol(): boolean {
-    if(!this._macroMode) {
-      return false;     
+    if (!this._macroMode) {
+      return false;
     }
-    if(this._cs.currentChar !== Char.Backslash) {
+    if (this._cs.currentChar !== Char.Backslash) {
       return false;
     }
     const start = this._cs.position;
     this._cs.moveToNextChar();
     this.skipSymbol();
 
-    if(this._cs.currentChar === Char.Backslash && this._cs.nextChar === Char.OpenBrace && this._cs.lookAhead(2) === Char.CloseBrace) {
+    if (
+      this._cs.currentChar === Char.Backslash &&
+      this._cs.nextChar === Char.OpenBrace &&
+      this._cs.lookAhead(2) === Char.CloseBrace
+    ) {
       // The string ‘\()’ can be used to separate the end of a macro argument from the following text
       // \base\().length
       this._cs.advance(3);
@@ -423,9 +433,8 @@ export class Tokenizer {
         return true;
       }
 
-      if(text.endsWith('f') || text.endsWith('b')) {
+      if (text.endsWith('f') || text.endsWith('b')) {
         // Possibly label reference
-
       }
     }
 
@@ -440,13 +449,27 @@ export class Tokenizer {
   private handleUnknown(): void {
     // Unclear what it is. Skip unknown stuff, but do stop at important
     // characters, like potential comments, comma, operators.
+    this.skipWhitespace();
     const start = this._cs.position;
     this._cs.skipNonWsSequence((ch: number): boolean => {
       return !isHardStopCharacter(ch);
     });
-    if (this._cs.position > start) {
+    
+    if(this._cs.position > start) {
       this.addToken(TokenType.Unknown, start, this._cs.position - start);
+      return;
     }
+    // We were unable to move forward
+    if(this._cs.isAtNewLine() || this._cs.isEndOfStream()) {
+      return;
+    }
+    // Not EOL or EOF but we could not move. However, we must recover
+    // or tokenizer will be in an infinite loop.
+    if(this._cs.position === start) {
+      // Must move forward
+      this._cs.moveToNextChar();
+    }
+    this.addToken(TokenType.Unknown, start, this._cs.position - start);
   }
 
   // Handle generic comment that spans to the end of the line.
@@ -482,9 +505,9 @@ export class Tokenizer {
     }
   }
 
-  private handleCBlockComment(): void {
+  private handleCBlockComment(): boolean {
     if (!this.isAtBlockComment()) {
-      return;
+      return false;
     }
 
     const start = this._cs.position;
@@ -497,6 +520,7 @@ export class Tokenizer {
       this._cs.moveToNextChar();
     }
     this.addToken(TokenType.BlockComment, start, this._cs.position - start);
+    return true;
   }
 
   private handleLineBreak(): void {
@@ -583,9 +607,10 @@ export class Tokenizer {
     return token;
   }
 
-  private addTokenAndMove(type: TokenType, start: number, tokenSubType?: TokenSubType): void {
-    this.addToken(type, start, 1, tokenSubType);
+  private addTokenAndMove(type: TokenType, start: number, tokenSubType?: TokenSubType): Token {
+    const t = this.addToken(type, start, 1, tokenSubType);
     this._cs.moveToNextChar();
+    return t;
   }
 
   // Skip over whitespace characters within a line.
@@ -652,6 +677,7 @@ function isSymbolCharacter(ch: number): boolean {
 // operators, comments, braces, so tokenizer can recover.
 function isHardStopCharacter(ch: number): boolean {
   switch (ch) {
+    case Char.At:
     case Char.Less: // <<
     case Char.Greater: // >>
     case Char.Equal:
@@ -672,6 +698,7 @@ function isHardStopCharacter(ch: number): boolean {
     case Char.SingleQuote:
     case Char.DoubleQuote:
     case Char.Backslash:
+    case Char.Colon:
       return true;
   }
   return false;

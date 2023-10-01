@@ -125,6 +125,11 @@ export class DeclarationStatementImpl extends DirectiveStatementImpl {
     if (symbolName) {
       symbolName.token.subType = TokenSubType.Declaration;
     }
+    const operands = new CommaSeparatedListImpl();
+    const result = operands.parse(context, this);
+    if(result) {
+      this._operands = operands;
+    }
     return super.parse(context, parent);
   }
 

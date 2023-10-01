@@ -6,7 +6,7 @@ import 'jest-expect-message';
 import { AstRootImpl } from '../../AST/astRoot';
 import { AstNode, TokenNode, Expression, TokenOperator, AstRoot } from '../../AST/definitions';
 import { ExpressionImpl } from '../../AST/expression';
-import { A64Set, LanguageOptions } from '../../core/languageOptions';
+import { A32Set, A64Set, LanguageOptions } from '../../core/languageOptions';
 import { ParseContext } from '../../parser/parseContext';
 import { TextProvider } from '../../text/definitions';
 import { TextStream } from '../../text/textStream';
@@ -53,7 +53,9 @@ export function verifyToken(token: Token, docText: TextProvider, expectedType: T
 
 export async function verifyAstAsync(expectedTree: string, text: string, isA64?: boolean): Promise<void> {
   await initInstructionSets();
-  const ast = await createAstAsync(text);
+  const options = makeLanguageOptions(isA64 ? A64Set : A32Set)
+  const ast = await createAstAsync(text, options);
+  expect(ast.errors.length).toBe(0);
   const writer = new AstWriter();
   const actualTree = writer.writeTree(ast, text);
   compareTrees(expectedTree, actualTree);

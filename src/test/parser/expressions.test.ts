@@ -6,6 +6,7 @@ import { TokenType } from '../../tokens/definitions';
 import {
   isTokenNode,
   parseExpression,
+  verifyAstAsync,
   verifyNodeText,
   verifyOperator,
   verifyParseExpression,
@@ -225,4 +226,41 @@ test('{pc}caret', () => {
   Token } [3...4)
 `;
   verifyParseExpression(expected, '{pc}^');
+})
+
+test('ldr r0, =1f', async () => {
+  const code = String.raw`
+  .macro x
+    ldr r0, =1f
+  `;
+  const expected = String.raw
+`EmptyStatement [0...0)
+MacroDirectiveStatement [3...11)
+  Token .macro [3...9)
+  Token x [10...11)
+InstructionStatement [16...27)
+  Token ldr [16...19)
+  CommaSeparatedList [20...27)
+    CommaSeparatedItem [20...23)
+      Expression [20...22)
+        Token r0 [20...22)
+      Token , [22...23)
+    CommaSeparatedItem [25...27)
+      Expression [25...27)
+        Token 1f [25...27)
+`;
+  await verifyAstAsync(expected, code, false);
+})
+
+test('a: .asciz	"a"', async () => {
+  const code = String.raw`a: .asciz	"a"`;
+  const expected = String.raw
+`DeclarationStatement [3...13)
+  Token .asciz [3...9)
+  CommaSeparatedList [10...13)
+    CommaSeparatedItem [10...13)
+      Expression [10...13)
+        Token "a" [10...13)
+`;
+  await verifyAstAsync(expected, code, false);
 })

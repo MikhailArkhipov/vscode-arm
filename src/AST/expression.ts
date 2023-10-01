@@ -166,7 +166,7 @@ export class ExpressionImpl extends AstNodeImpl implements Expression {
     }
 
     super.parse(context, parent);
-    return this._errorType === ParseErrorType.None;
+    return this.children.count > 0;
   }
 
   private isConsistentOperationSequence(context: ParseContext): boolean {
@@ -474,10 +474,7 @@ function isWriteBackOrCaretOperator(context: ParseContext): boolean {
   const pt = context.previousToken;
   switch (text) {
     case '!':
-      if (
-        pt.type === TokenType.CloseBracket ||
-        (pt.type === TokenType.Symbol && pt.subType === TokenSubType.Register)
-      ) {
+      if (pt.type === TokenType.CloseBracket || pt.type === TokenType.Symbol) {
         return true;
       }
       break;
