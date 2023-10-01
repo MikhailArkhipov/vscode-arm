@@ -28,6 +28,7 @@ import { ColorOptions, getColorOptions, getFormatOptions } from './editor/option
 
 const languageName = 'arm';
 let colorOptions: ColorOptions;
+let _deactivated = false;
 
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
@@ -41,7 +42,9 @@ export async function activate(context: ExtensionContext): Promise<void> {
   registerCommands(context);
 }
 
-export async function deactivate(): Promise<void> {}
+export async function deactivate(): Promise<void> {
+  _deactivated = true;
+}
 
 function registerCapabilities(context: ExtensionContext): void {
   context.subscriptions.push(
@@ -112,7 +115,9 @@ function registerCommands(context: ExtensionContext): void {
 }
 
 function onSettingsChange(): void {
-  colorOptions = getColorOptions();
+  if(!_deactivated) {
+    colorOptions = getColorOptions();
+  }
 }
 
 function formatDocument(td: TextDocument): TextEdit[] {

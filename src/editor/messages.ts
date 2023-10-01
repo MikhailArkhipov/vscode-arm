@@ -5,28 +5,32 @@ import { ParseErrorType } from '../AST/definitions';
 
 export function getParseErrorMessage(errorType: ParseErrorType, instructionSet: string): string {
   switch (errorType) {
-    case ParseErrorType.UnknownInstruction:
-      return `Unknown instruction (${instructionSet} set).`;
     case ParseErrorType.InstructionOrDirectiveExpected:
       return 'Instruction or directive expected.';
-    case ParseErrorType.UndefinedLabel:
-      return 'Undefined label.';
+    case ParseErrorType.UnknownInstruction:
+      return `Unknown instruction (${instructionSet} set).`;
     case ParseErrorType.UnknownDirective:
       return 'Unknown directive.';
-    case ParseErrorType.StringExpected:
-      return 'String expected.';
+    case ParseErrorType.UndefinedLabel:
+      return 'Undefined label.';
     case ParseErrorType.RegisterExpected:
       return 'Register expected.';
+    case ParseErrorType.SymbolExpected:
+      return 'Symbol expected.';
     case ParseErrorType.LeftOperandExpected:
       return 'Left operand expected.';
     case ParseErrorType.RightOperandExpected:
       return 'Right operand expected.';
+    case ParseErrorType.StringExpected:
+      return 'String expected.';
+    case ParseErrorType.OperatorExpected:
+      return 'Operator expected.';
     case ParseErrorType.ExpressionExpected:
       return 'Expression expected.';
-    case ParseErrorType.SymbolExpected:
-      return 'Symbol expected.';
     case ParseErrorType.CloseBraceExpected:
       return 'Closing brace expected.';
+    case ParseErrorType.EmptyExpression:
+      return 'Empty expression.';
     case ParseErrorType.UnexpectedOperand:
       return 'Unexpected operand.';
     case ParseErrorType.UnexpectedEndOfLine:

@@ -11,7 +11,12 @@ import { Token, TokenSubType, TokenType } from '../tokens/definitions';
 import { EmptyStatementImpl, InstructionStatementImpl, StatementImpl, UnknownStatementImpl } from './statement';
 import { TokenNodeImpl } from './tokenNode';
 import { UnexpectedItemError } from '../parser/parseError';
-import { DeclarationStatementImpl, DefinitionStatementImpl, GeneralDirectiveStatementImpl } from './directive';
+import {
+  DeclarationStatementImpl,
+  DefinitionStatementImpl,
+  GeneralDirectiveStatementImpl,
+  MacroDirectiveStatementImpl,
+} from './directive';
 import { TextRangeCollectionImpl } from '../text/textRangeCollection';
 
 export class AstRootImpl extends AstNodeImpl implements AstRoot {
@@ -131,6 +136,10 @@ function createDirectiveStatement(context: ParseContext, label: TokenNode | unde
       return new DefinitionStatementImpl(label);
     case TokenSubType.Declaration:
       return new DeclarationStatementImpl(label);
+    case TokenSubType.BeginMacro:
+      // TODO: create actual macro block? Would help to detect missing .endm
+      // and perhaps apply different syntax check on parameters and labels?
+      return new MacroDirectiveStatementImpl(label);
     default:
       return new GeneralDirectiveStatementImpl(label);
   }

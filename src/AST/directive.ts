@@ -12,6 +12,7 @@ import {
   TokenNode,
   ErrorLocation,
   Statement,
+  BeginMacroDirective,
 } from './definitions';
 import { CommaSeparatedListImpl } from './expression';
 import { StatementImpl } from './statement';
@@ -31,8 +32,41 @@ abstract class DirectiveStatementImpl extends StatementImpl {
 export class GeneralDirectiveStatementImpl extends DirectiveStatementImpl {
   public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
     this._name = TokenNodeImpl.create(context, this);
-    this._operands = new CommaSeparatedListImpl();
-    this._operands.parse(context, this);
+    const operands = new CommaSeparatedListImpl();
+    const result = operands.parse(context, this);
+    if(result) {
+      this._operands = operands;
+    }
+    return super.parse(context, parent);
+  }
+}
+
+// Macro
+export class MacroDirectiveStatementImpl extends DirectiveStatementImpl implements BeginMacroDirective {
+  private _macroName: TokenNode;
+  
+  public get subType(): StatementSubType {
+    return StatementSubType.BeginMacro;
+  }
+  public get macroName(): TokenNode {
+    return this._macroName;
+  }
+  
+  public parse(context: ParseContext, parent?: AstNode | undefined): boolean {
+    // Not making actual block item just yet
+    this._name = TokenNodeImpl.create(context, this);
+    if(context.currentToken.type === TokenType.Symbol) {
+      this._macroName = TokenNodeImpl.create(context, this);
+      this._macroName.token.subType = TokenSubType.MacroName;
+    } else {
+      context.addError(new MissingItemError(ParseErrorType.MacroNameExpected, context.previousToken))
+    }
+    const operands = new CommaSeparatedListImpl();
+    const result = operands.parse(context, this);
+    if(result) {
+      this._operands = operands;
+      // Check operands, should be just symbols
+    }
     return super.parse(context, parent);
   }
 }
@@ -49,10 +83,13 @@ export class DefinitionStatementImpl extends DirectiveStatementImpl {
       context.addError(new MissingItemError(ParseErrorType.SymbolExpected, context.tokens.previousToken));
     }
 
-    this._operands = new CommaSeparatedListImpl();
-    this._operands.parse(context, this);
+    const operands = new CommaSeparatedListImpl();
+    const result = operands.parse(context, this);
+    if(result) {
+      this._operands = operands;
+    }
 
-    if (this._operands.items.count > 0) {
+    if (this._operands && this._operands.items.count > 0) {
       const firstOperandExp = this._operands.items.getItemAt(0).expression?.content;
       if (firstOperandExp && firstOperandExp.children.count === 1) {
         const symbolName = firstOperandExp as TokenNode;

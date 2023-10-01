@@ -22,12 +22,16 @@ const tokenTypes = [
   'declaration',
   'definition',
   'include',
+  'macro',
+  'condition',
   'label',
   'number',
   'string',
   'operator',
   'comment',
   'variable',
+  'macro-name',
+  'macro-parameter',
 ];
 export const semanticTokensLegend = new SemanticTokensLegend(tokenTypes, []);
 
@@ -63,8 +67,22 @@ export async function provideSemanticTokens(
           case TokenSubType.Declaration:
             itemType = options.variables ? 'declaration' : 'directive';
             break;
+          case TokenSubType.BeginMacro:
+          case TokenSubType.EndMacro:
+            itemType = 'macro';
+            break;
+          case TokenSubType.BeginCondition:
+          case TokenSubType.EndCondition:
+            itemType = 'condition';
+            break;
+          case TokenSubType.Include:
+            itemType = 'include';
+            break;
+          case TokenSubType.Declaration:
+            itemType = options.variables ? 'declaration' : 'directive';
+            break;
           default:
-            itemType = ed.getTokenText(t) === '.include' ? 'include' : 'directive';
+            itemType = 'directive';
             break;
         }
         break;
@@ -76,6 +94,12 @@ export async function provideSemanticTokens(
             break;
           case TokenSubType.Register:
             itemType = 'register';
+            break;
+          case TokenSubType.MacroName:
+            itemType = 'macro-name';
+            break;
+          case TokenSubType.MacroParameter:
+            itemType = 'macro-parameter';
             break;
           default:
             itemType = 'variable';

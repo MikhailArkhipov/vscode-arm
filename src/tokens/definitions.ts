@@ -46,6 +46,13 @@ export enum TokenSubType {
   Declaration = 4, // label: {\n}.data_directive (.byte, .word, .asciiz, ...)
   Reference = 5, // Reference to a symbol or variable
   Noop = 6, // ! in '[...]!' or 'R4!', = in '=[...]' or ^ in '{...}^'.
+  BeginMacro = 7, // .macro
+  EndMacro = 8, // .endm
+  BeginCondition = 9, // .if*
+  EndCondition = 10, // .endif
+  Include = 11, // .include
+  MacroName = 12,
+  MacroParameter = 13 // parameter to a macro
 }
 
 /**

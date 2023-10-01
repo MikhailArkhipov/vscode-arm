@@ -17,12 +17,19 @@ import { TokenImpl } from './tokens';
 // NOTE: use of .valueof() with enums is b/c of https://github.com/microsoft/TypeScript/issues/9998.
 // I am not inclined to change currentToken property to a function to work around the TS issue.
 
+enum TokenizerState {
+  Normal = 0,
+  PastLabel = 1,
+  PastDirective = 2, // Also instruction
+}
+
 export class Tokenizer {
   private readonly _options: LanguageOptions;
   private _numberTokenizer: NumberTokenizer;
   private _cs: CharacterStream;
   private _tokens: Token[] = [];
-  private _pastLabel = false;
+  private _state = TokenizerState.Normal;
+  private _macroMode = false;
 
   constructor(options: LanguageOptions) {
     this._options = options;
@@ -33,7 +40,7 @@ export class Tokenizer {
     this._cs.position = start;
 
     this._tokens = [];
-    this._pastLabel = false;
+    this._state = TokenizerState.Normal;
     this._numberTokenizer = new NumberTokenizer(this._cs);
 
     const end = Math.min(textProvider.length, start + length);
@@ -53,6 +60,19 @@ export class Tokenizer {
   private addNextToken(): void {
     this.skipWhitespace();
 
+    // Labels only appear first in line.
+    // TODO: At the moment we don't care about cases like
+    // /* */ /* */ ... label: instruction.
+    if (this._state === TokenizerState.Normal && this.tryLabel()) {
+      this._state = TokenizerState.PastLabel;
+      return;
+    }
+
+    if (this._state < TokenizerState.PastDirective && this.tryDirective()) {
+      this._state = TokenizerState.PastDirective;
+      return;
+    }
+
     // Handle possible comments
     this.handleCBlockComment();
     if (this.isAtLineComment()) {
@@ -71,11 +91,17 @@ export class Tokenizer {
     if (this.tryNumber(this._cs.position)) {
       return;
     }
-    // Remanining simple cases that do conflict with numbers.
+    // Remanining simple cases.
     if (this.tryBasicChars2()) {
       return;
     }
-    this.handleOtherChars();
+    // A symbol?
+    if (this.handleSymbol()) {
+      this._state = TokenizerState.PastDirective;
+      return;
+    }
+
+    this.handleUnknown();
   }
 
   private tryNumber(start: number): boolean {
@@ -172,7 +198,7 @@ export class Tokenizer {
       case Char.LineFeed:
       case Char.CarriageReturn:
         this.handleLineBreak();
-        this._pastLabel = false;
+        this._state = TokenizerState.Normal;
         return true;
 
       case Char.SingleQuote:
@@ -193,22 +219,6 @@ export class Tokenizer {
     return false;
   }
 
-  // Handle more complicated cases.
-  private handleOtherChars(): void {
-    // Labels only appear first in line.
-    // TODO: At the moment we don't care about cases like
-    // /* */ /* */ ... label: instruction.
-    if (!this._pastLabel && this.tryLabel()) {
-      this._pastLabel = true;
-      return;
-    }
-    if (this.tryDirective()) {
-      return;
-    }
-    // A symbol?
-    this.handleSymbolOrUnknown();
-  }
-
   // Attempt to determine if sequence is a label.
   private tryLabel(): boolean {
     if (!this.isPositionFirstInLine()) {
@@ -219,36 +229,42 @@ export class Tokenizer {
     // Exception is local labels which are numbers possible ending with dollar signs and optionally, 'b' or 'f'.
     // TODO: Currently we consider labels ending in colon. ARM labels without colons are not yet supported.
     const start = this._cs.position;
-    const ch = this._cs.currentChar;
 
-    if (isLeadingSymbolCharacter(ch)) {
+    if (this._macroMode) {
+      // In macros labels are pretty much anything.
+      // 1:, \lbl:, ... all legal. Also, .altmacro allows &, like l&:
+      this._cs.skipNonWsSequence((ch: number): boolean => {
+        return ch !== Char.Colon;
+      });
+      if (this._cs.currentChar === Char.Colon) {
+        this._cs.moveToNextChar();
+        this.addToken(TokenType.Label, start, this._cs.position - start);
+        return true;
+      }
+      this._cs.position = start;
+      return false;
+    }
+
+    const ch = this._cs.currentChar;
+    if (this.isLeadingSymbolCharacter(ch)) {
       // Regular label. Skip first char, then letters, underscores, digits,
       // dollar signs until colon, whitespace, odd characters or EOL/EOF.
       this.skipSymbol();
-    } else if (Character.isDecimal(ch)) {
-      // Local label. 22:, 33$: or .L77$:
-      this._cs.skipNonWsSequence((ch: number): boolean => {
-        return Character.isDecimal(ch);
-      });
-      if (this._cs.currentChar === Char.$) {
-        this._cs.skipNonWsSequence((ch: number): boolean => {
-          return ch === Char.$;
-        });
-      }
-    } else if (ch === Char.Period && this._cs.nextChar === Char.L) {
-      // Local label .L77$: this is rare since it mostly appears in generated code
-      // after as or ld transform local label names into .L?? form. Also allow dash here.
-      this._cs.advance(2);
-      this._cs.skipNonWsSequence((ch: number): boolean => {
-        return (
-          Character.isAnsiLetter(ch) ||
-          Character.isDecimal(ch) ||
-          ch === Char.Underscore ||
-          ch === Char.$ ||
-          ch === Char.Minus
-        );
-      });
     }
+    //  else if (ch === Char.Period && this._cs.nextChar === Char.L) {
+    //   // Local label .L77$: this is rare since it mostly appears in generated code
+    //   // after as or ld transform local label names into .L?? form. Also allow dash here.
+    //   this._cs.advance(2);
+    //   this._cs.skipNonWsSequence((ch: number): boolean => {
+    //     return (
+    //       Character.isAnsiLetter(ch) ||
+    //       Character.isDecimal(ch) ||
+    //       ch === Char.Underscore ||
+    //       ch === Char.$ ||
+    //       ch === Char.Minus
+    //     );
+    //   });
+    // }
 
     // We must be at : now or else it is not label.
     if (this._cs.currentChar === Char.Colon) {
@@ -297,8 +313,27 @@ export class Tokenizer {
         token.subType = TokenSubType.Definition;
       } else if (Directive.isDeclaration(text)) {
         token.subType = TokenSubType.Declaration;
+      } else {
+        switch (text) {
+          case '.macro':
+            token.subType = TokenSubType.BeginMacro;
+            this._macroMode = true;
+            break;
+          case '.endm':
+            token.subType = TokenSubType.EndMacro;
+            this._macroMode = false;
+            break;
+          case '.endif':
+            token.subType = TokenSubType.EndCondition;
+            break;
+          case '.include':
+            token.subType = TokenSubType.Include;
+            break;
+          default:
+            token.subType = text.startsWith('.if') ? TokenSubType.BeginCondition : TokenSubType.None;
+            break;
+        }
       }
-
       return true;
     }
 
@@ -306,24 +341,45 @@ export class Tokenizer {
     return false;
   }
 
-  private handleSymbolOrUnknown(): void {
+  private handleSymbol(): boolean {
     //https://sourceware.org/binutils/docs-2.26/as/Symbol-Intro.html#Symbol-Intro
     const start = this._cs.position;
     this.skipSymbol();
 
-    if (this._cs.position > start) {
-      const token = new TokenImpl(TokenType.Symbol, start, this._cs.position - start);
-      this._tokens.push(token);
-
-      const text = this._cs.text.getText(token.start, token.length);
-      if (isRegisterName(text, this._options.instructionSet)) {
-        token.subType = TokenSubType.Register;
-      }
-      return;
+    if (this._cs.position === start) {
+      return false; // Not a symbol
     }
 
+    const text = this._cs.text.getText(start, this._cs.position - start);
+    if (this._macroMode && text.indexOf('\\') >= 0) {
+      // \foo is a reference to the macro parameters. In macro mode we merge macro
+      // parameter reference into adjoining symbol, if any. This is to simplify parsing
+      // For example, R\x is, effectively, part of the symbol. If we don't merge,
+      // expression parser will have hard time groking 1+2\x since 'operand + operand operand'
+      // is not a legal expression and the parser will yield 'operator expected' error.
+      // Colorizer may choose to look into \ in the item and split colorable range
+      // into two distinct items, but that is just visual effect.
+      const pt = this._tokens.length > 0 ? this._tokens[this._tokens.length - 1] : undefined;
+      if (pt && pt.end === start) {
+        this._tokens.pop();
+        const t = this.addToken(TokenType.Symbol, pt.start, this._cs.position - pt.start);
+        t.subType = TokenSubType.MacroParameter;
+      }
+      return true;
+    }
+
+    const token = new TokenImpl(TokenType.Symbol, start, this._cs.position - start);
+    if (this._state === TokenizerState.PastDirective && isRegisterName(text, this._options.instructionSet)) {
+      token.subType = TokenSubType.Register;
+    }
+    this._tokens.push(token);
+    return true;
+  }
+
+  private handleUnknown(): void {
     // Unclear what it is. Skip unknown stuff, but do stop at important
     // characters, like potential comments, comma, operators.
+    const start = this._cs.position;
     this._cs.skipNonWsSequence((ch: number): boolean => {
       return !isHardStopCharacter(ch);
     });
@@ -487,17 +543,16 @@ export class Tokenizer {
     // We may end up recognizing '.a.b.c' as directives, but we
     // will let validator deal with it.
 
-    // \foo is a reference to the macro parameters
     const start = this._cs.position;
-    if (this._cs.currentChar === Char.Backslash) {
-      this._cs.moveToNextChar();
+    if (this._macroMode) {
+      if (this._cs.currentChar === Char.Backslash) {
+        this._cs.moveToNextChar();
+      }
     }
-
-    if (!isLeadingSymbolCharacter(this._cs.currentChar)) {
+    if (!this.isLeadingSymbolCharacter(this._cs.currentChar)) {
       this._cs.position = start;
       return false;
     }
-
     this._cs.moveToNextChar();
     this._cs.skipNonWsSequence((ch: number): boolean => {
       return isSymbolCharacter(ch);
@@ -521,10 +576,10 @@ export class Tokenizer {
     }
     return true;
   }
-}
 
-function isLeadingSymbolCharacter(ch: number): boolean {
-  return Character.isAnsiLetter(ch) || ch === Char.Underscore;
+  private isLeadingSymbolCharacter(ch: number): boolean {
+    return Character.isAnsiLetter(ch) || ch === Char.Underscore || (this._macroMode && ch === Char.Backslash);
+  } 
 }
 
 function isSymbolCharacter(ch: number): boolean {

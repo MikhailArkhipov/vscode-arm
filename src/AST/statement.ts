@@ -105,9 +105,12 @@ export class InstructionStatementImpl extends StatementImpl implements Instructi
     }
 
     this.checkInstructionName(context);
-    this._operands = new CommaSeparatedListImpl();
-    this._operands.parse(context, this);
 
+    const operands = new CommaSeparatedListImpl();
+    const result = operands.parse(context, this);
+    if(result) {
+      this._operands = operands;
+    }
     return super.parse(context, parent);
   }
 

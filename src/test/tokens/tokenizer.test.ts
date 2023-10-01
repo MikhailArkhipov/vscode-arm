@@ -1,6 +1,7 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import { A32Set } from '../../core/languageOptions';
 import { TokenSubType, TokenType } from '../../tokens/definitions';
 import { TokenTest } from '../utility/tokenTest';
 
@@ -225,8 +226,8 @@ test('Not a comment', () => {
 });
 
 test('EQU directive', () => {
-  const actual = TokenTest.tokenizeToArray('name .equ 1');
-  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Directive, TokenType.Number]);
+  const actual = TokenTest.tokenizeToArray('.equ name, 1');
+  TokenTest.verifyTokenTypes(actual, [TokenType.Directive, TokenType.Symbol, TokenType.Comma, TokenType.Number]);
 });
 
 test('ASCII directive', () => {
@@ -314,11 +315,6 @@ test('#foo', () => {
   TokenTest.verifyTokenTypes(actual, [TokenType.Symbol]);
 });
 
-test('#\\foo', () => {
-  const actual = TokenTest.tokenizeToArray(' #\\foo');
-  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol]);
-});
-
 test('#(a+1)', () => {
   const actual = TokenTest.tokenizeToArray(' #(a+1)');
   TokenTest.verifyTokenTypes(actual, [
@@ -340,20 +336,22 @@ test('#(a+1)', () => {
 });
 
 test('=X4', () => {
-  const actual = TokenTest.tokenizeToArray('=X4');
-  TokenTest.verifyTokenTypes(actual, [TokenType.Operator, TokenType.Symbol]);
-  TokenTest.verifyTokenSubTypes(actual, [TokenSubType.Noop, TokenSubType.Register]);
+  const actual = TokenTest.tokenizeToArray('mov =X4');
+  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Operator, TokenType.Symbol]);
+  TokenTest.verifyTokenSubTypes(actual, [TokenSubType.None, TokenSubType.Noop, TokenSubType.Register]);
 });
 
 test('=[Q4]', () => {
-  const actual = TokenTest.tokenizeToArray('=[Q4]');
+  const actual = TokenTest.tokenizeToArray('mov =[Q4]');
   TokenTest.verifyTokenTypes(actual, [
+    TokenType.Symbol,
     TokenType.Operator,
     TokenType.OpenBracket,
     TokenType.Symbol,
     TokenType.CloseBracket,
   ]);
   TokenTest.verifyTokenSubTypes(actual, [
+    TokenSubType.None,
     TokenSubType.Noop,
     TokenSubType.None,
     TokenSubType.Register,
@@ -362,9 +360,16 @@ test('=[Q4]', () => {
 });
 
 test('{X2}caret', () => {
-  const actual = TokenTest.tokenizeToArray('{X2}^');
-  TokenTest.verifyTokenTypes(actual, [TokenType.OpenCurly, TokenType.Symbol, TokenType.CloseCurly, TokenType.Operator]);
+  const actual = TokenTest.tokenizeToArray('mov {X2}^');
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.Symbol,
+    TokenType.OpenCurly,
+    TokenType.Symbol,
+    TokenType.CloseCurly,
+    TokenType.Operator,
+  ]);
   TokenTest.verifyTokenSubTypes(actual, [
+    TokenSubType.None,
     TokenSubType.None,
     TokenSubType.Register,
     TokenSubType.None,
@@ -373,14 +378,16 @@ test('{X2}caret', () => {
 });
 
 test('[D1]!', () => {
-  const actual = TokenTest.tokenizeToArray('[D1]!');
+  const actual = TokenTest.tokenizeToArray('mov [D1]!');
   TokenTest.verifyTokenTypes(actual, [
+    TokenType.Symbol,
     TokenType.OpenBracket,
     TokenType.Symbol,
     TokenType.CloseBracket,
     TokenType.Operator,
   ]);
   TokenTest.verifyTokenSubTypes(actual, [
+    TokenSubType.None,
     TokenSubType.None,
     TokenSubType.Register,
     TokenSubType.None,
@@ -394,6 +401,45 @@ test('SVC 0x80', () => {
 });
 
 test('mov	r2, R\\reg', () => {
-  const actual = TokenTest.tokenizeToArray('mov	r2, R\\reg');
-  TokenTest.verifyTokenTypes(actual, [TokenType.Symbol, TokenType.Symbol, TokenType.Comma, TokenType.Symbol, TokenType.Symbol]);
+  const code = String.raw`
+  .macro name
+    mov	r2, R\\reg
+  .endm`;
+  const actual = TokenTest.tokenizeToArray(code, A32Set);
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.EndOfLine,
+    TokenType.Directive,
+    TokenType.Symbol,
+    TokenType.EndOfLine,
+    TokenType.Symbol,
+    TokenType.Symbol,
+    TokenType.Comma,
+    TokenType.Symbol,
+    TokenType.EndOfLine,
+    TokenType.Directive,
+  ]);
+});
+
+test('push {r0-r4, lr}', () => {
+  const actual = TokenTest.tokenizeToArray('push {r0-r4, lr}', A32Set);
+  TokenTest.verifyTokenTypes(actual, [
+    TokenType.Symbol,
+    TokenType.OpenCurly,
+    TokenType.Symbol,
+    TokenType.Operator,
+    TokenType.Symbol,
+    TokenType.Comma,
+    TokenType.Symbol,
+    TokenType.CloseCurly,
+  ]);
+  TokenTest.verifyTokenSubTypes(actual, [
+    TokenSubType.None,
+    TokenSubType.None,
+    TokenSubType.Register,
+    TokenSubType.None,
+    TokenSubType.Register,
+    TokenSubType.None,
+    TokenSubType.Register,
+    TokenSubType.None,
+  ]);
 });

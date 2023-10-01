@@ -132,6 +132,10 @@ export enum StatementSubType {
   None = 0,
   Definition = 1, // name .equ expression
   Declaration = 2, // name: .word 0
+  BeginMacro = 3, // .macro
+  EndMacro = 4, // .endm
+  BeginCondition = 5, // .if*
+  EndCondition = 6, // .endif
 }
 
 export interface Statement extends AstNode {
@@ -144,6 +148,10 @@ export interface Statement extends AstNode {
 
 export interface InstructionStatement extends Statement {
   get instruction(): Instruction | undefined;
+}
+
+export interface BeginMacroDirective extends Statement {
+  get macroName(): TokenNode | undefined;
 }
 
 export interface AstRoot extends AstNode {
@@ -186,12 +194,13 @@ export enum ParseErrorType {
   CloseBraceExpected = 13,
   // Expected non-empty expression inside {} or [].
   EmptyExpression = 14,
+  // Expected macro name after .macro
+  MacroNameExpected = 15,
   //DataExpected,
   //NumberExpected,
-  //ExpressionExpected,
-  UnexpectedOperand = 15,
-  UnexpectedEndOfLine = 16,
-  UnexpectedEndOfFile = 17,
+  UnexpectedOperand = 16,
+  UnexpectedEndOfLine = 50,
+  UnexpectedEndOfFile = 100,
 }
 
 export enum ErrorLocation {

@@ -238,8 +238,23 @@
       },
       {
         "id": "include",
-        "superType": "macro",
-        "description": "Assembler directive declaring data, such as .word."
+        "superType": "regexp",
+        "description": "Assembler include directive."
+      },
+      {
+        "id": "condifion",
+        "superType": "decorator",
+        "description": "Assembler conditional directive."
+      },
+      {
+        "id": "macro-name",
+        "superType": "function",
+        "description": "Macro name."
+      },
+      {
+        "id": "macro-parameter",
+        "superType": "parameter",
+        "description": "Parameter to a macro."
       }
     ],
     "configurationDefaults": {

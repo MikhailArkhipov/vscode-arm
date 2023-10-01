@@ -19,8 +19,8 @@ export namespace TokenTest {
     return `${name} : ${t.start} - ${t.end} (${t.length})`;
   }
 
-  export function tokenizeToArray(text: string, options?: LanguageOptions): readonly Token[] {
-    options = options ?? makeLanguageOptions(A64Set);
+  export function tokenizeToArray(text: string, instructionSet?: string): readonly Token[] {
+    const options = makeLanguageOptions(instructionSet ?? A64Set);
     const t = new Tokenizer(options);
     return t.tokenize(new TextStream(text), 0, text.length);
   }
