@@ -7,3 +7,10 @@ src/jest*.*
 **/tsconfig.json
 images/Screen*.*
 *.vsix
+.vscode/*
+**.exe
+node_modules/vscode-languageserver-protocol/**/*
+node_modules/vscode-languageserver-types/**/*
+node_modules/vscode-jsonrpc/**/*
+node_modules/esbuild/**/*
+node_modules/@esbuild/**/*
