@@ -50,7 +50,7 @@
           "dark": "images/ArmIcon.png"
         }
       }
-          ],
+    ],
     "menus": {
       "editor/context": [
         {
@@ -176,15 +176,20 @@
             ],
             "description": "Register name casing during formatting and completion."
           },
+          "arm.formatting.alignOperands": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "on",
+              "off"
+            ],
+            "description": "Align operands at a nearest tab position after longest instruction."
+          },
           "arm.formatting.labelsOnSeparateLines": {
             "type": "boolean",
             "default": true,
             "description": "Place labels on their own lines. This does not apply to labels on data directives."
-          },
-          "arm.formatting.alignOperands": {
-            "type": "boolean",
-            "default": true,
-            "description": "Align operands at a nearest tab position after longest instruction."
           },
           "arm.formatting.alignEndOfLineComments": {
             "type": "boolean",
@@ -315,7 +320,7 @@
     "vscode:prepublish": "npm run esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch"  
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

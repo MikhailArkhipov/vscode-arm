@@ -221,6 +221,34 @@ export function detectIndentation(text: string, tokens: readonly Token[], option
   };
 }
 
+export function detectOperandAlignment(tokens: readonly Token[]): boolean {
+  // If there is only a space between instruction
+  // and its operands, the operands are not aligned.
+  const ts = new TokenStream(tokens);
+  let multiple = 0;
+  let single = 0;
+  while (!ts.isEndOfStream()) {
+    const ct = ts.currentToken;
+    const pt = ts.previousToken;
+    const nt = ts.nextToken;
+    if (
+      ct.type === TokenType.Symbol &&
+      (pt.type === TokenType.Label || pt.type === TokenType.EndOfLine) &&
+      ts.nextToken.type !== TokenType.EndOfLine
+    ) {
+      if (ts.nextToken.start - ct.end > 1) {
+        multiple++;
+      } else {
+        single++;
+      }
+      ts.moveToEol();
+    } else {
+      ts.moveToNextToken();
+    }
+  }
+  return single < multiple;
+}
+
 export class CommentGroup {
   readonly standalone: boolean;
 
@@ -262,7 +290,7 @@ export class CommentGroup {
     const map = new Map<number, number>();
     let max = 0;
     let maxIdent = 0;
-    
+
     this.indents.forEach((e) => {
       let count = map.get(e);
       if (count) {

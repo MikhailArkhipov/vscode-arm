@@ -20,7 +20,7 @@ import { TextRangeCollection } from '../text/definitions';
 import { A64Set, Token } from '../tokens/definitions';
 import { AstRootImpl } from '../AST/astRoot';
 import { FormatOptions, getDiagnosticOptions } from './options';
-import { CasingType, detectCasingStyle, detectInstructionSet } from './detectors';
+import { CasingType, detectCasingStyle, detectInstructionSet, detectOperandAlignment } from './detectors';
 import { getSetting, Settings } from '../core/settings';
 
 export class EditorDocument {
@@ -151,8 +151,10 @@ export function getFormatOptions(documentText: string, tokens: readonly Token[])
   const directivesCaseSetting = getSetting<string>(Settings.formattingDirectivesCase, 'auto');
   const instructionsCaseSetting = getSetting<string>(Settings.formattingInstructionsCase, 'auto');
   const registersCaseSetting = getSetting<string>(Settings.formattingRegistersCase, 'auto');
+  const alignOperandsSetting = getSetting<string>(Settings.formattingAlignOperands, 'auto');
 
   let detectedStyle = detectCasingStyle(documentText, tokens);
+  let alignOperands = true;
 
   let uppercaseLabels = false;
   let uppercaseDirectives = false;
@@ -184,6 +186,12 @@ export function getFormatOptions(documentText: string, tokens: readonly Token[])
     uppercaseRegisters = detectedStyle.registers === CasingType.Upper;
   }
 
+  if (alignOperandsSetting === 'auto') {
+    alignOperands = detectOperandAlignment(tokens);
+  } else {
+    alignOperands = alignOperandsSetting === 'on';
+  }
+
   return {
     tabSize: getSetting<number>('editor.tabSize', 4),
     spaceAfterComma: getSetting<boolean>(Settings.formattingSpaceAfterComma, true),
@@ -193,7 +201,7 @@ export function getFormatOptions(documentText: string, tokens: readonly Token[])
     uppercaseInstructions,
     uppercaseRegisters,
     labelsOnSeparateLines: getSetting<boolean>(Settings.labelsOnSeparateLines, true),
-    alignOperands: getSetting<boolean>(Settings.formattingAlignOperands, true),
+    alignOperands,
     alignEolComments: getSetting<boolean>(Settings.formattingAlignEolComments, true),
   };
 }
