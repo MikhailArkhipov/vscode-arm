@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head><title>AArch32</title><link rel="stylesheet" type="text/css" href="insn.css"/></head>
+  <body><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="a32_encindex.html">A32 Instructions by Encoding</a></div></td><td><div class="topbar"><a href="t32_encindex.html">T32 Instructions by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><hr/><h1 class="alphindextitle">AArch32 -- Base Instructions (alphabetic order)</h1>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adc_i.html">ADC, ADCS (immediate)</a>:
+        Add with Carry (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adc_r.html">ADC, ADCS (register)</a>:
+        Add with Carry (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adc_rr.html">ADC, ADCS (register-shifted register)</a>:
+        Add with Carry (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_adr.html">ADD (immediate, to PC)</a>:
+        Add to PC: an alias of ADR.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_i.html">ADD, ADDS (immediate)</a>:
+        Add (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_r.html">ADD, ADDS (register)</a>:
+        Add (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_rr.html">ADD, ADDS (register-shifted register)</a>:
+        Add (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_sp_i.html">ADD, ADDS (SP plus immediate)</a>:
+        Add to SP (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="add_sp_r.html">ADD, ADDS (SP plus register)</a>:
+        Add to SP (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="adr.html">ADR</a>:
+        Form PC-relative address.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_i.html">AND, ANDS (immediate)</a>:
+        Bitwise AND (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_r.html">AND, ANDS (register)</a>:
+        Bitwise AND (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="and_rr.html">AND, ANDS (register-shifted register)</a>:
+        Bitwise AND (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asr_mov_r.html">ASR (immediate)</a>:
+        Arithmetic Shift Right (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asr_mov_rr.html">ASR (register)</a>:
+        Arithmetic Shift Right (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asrs_mov_r.html">ASRS (immediate)</a>:
+        Arithmetic Shift Right, setting flags (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="asrs_mov_rr.html">ASRS (register)</a>:
+        Arithmetic Shift Right, setting flags (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="b.html">B</a>:
+        Branch.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfc.html">BFC</a>:
+        Bit Field Clear.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bfi.html">BFI</a>:
+        Bit Field Insert.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_i.html">BIC, BICS (immediate)</a>:
+        Bitwise Bit Clear (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_r.html">BIC, BICS (register)</a>:
+        Bitwise Bit Clear (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bic_rr.html">BIC, BICS (register-shifted register)</a>:
+        Bitwise Bit Clear (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bkpt.html">BKPT</a>:
+        Breakpoint.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bl_i.html">BL, BLX (immediate)</a>:
+        Branch with Link and optional Exchange (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="blx_r.html">BLX (register)</a>:
+        Branch with Link and Exchange (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bx.html">BX</a>:
+        Branch and Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="bxj.html">BXJ</a>:
+        Branch and Exchange, previously Branch and Exchange Jazelle.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cbnz.html">CBNZ, CBZ</a>:
+        Compare and Branch on Nonzero or Zero.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clrbhb.html">CLRBHB</a>:
+        Clear Branch History.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clrex.html">CLREX</a>:
+        Clear-Exclusive.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="clz.html">CLZ</a>:
+        Count Leading Zeros.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_i.html">CMN (immediate)</a>:
+        Compare Negative (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_r.html">CMN (register)</a>:
+        Compare Negative (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmn_rr.html">CMN (register-shifted register)</a>:
+        Compare Negative (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_i.html">CMP (immediate)</a>:
+        Compare (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_r.html">CMP (register)</a>:
+        Compare (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cmp_rr.html">CMP (register-shifted register)</a>:
+        Compare (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="cps.html">CPS, CPSID, CPSIE</a>:
+        Change PE State.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="crc32.html">CRC32</a>:
+        CRC32.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="crc32c.html">CRC32C</a>:
+        CRC32C.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="csdb.html">CSDB</a>:
+        Consumption of Speculative Data Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dbg.html">DBG</a>:
+        Debug hint.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps1.html">DCPS1</a>:
+        Debug Change PE State to EL1.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps2.html">DCPS2</a>:
+        Debug Change PE State to EL2.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dcps3.html">DCPS3</a>:
+        Debug Change PE State to EL3.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dmb.html">DMB</a>:
+        Data Memory Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="dsb.html">DSB</a>:
+        Data Synchronization Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_i.html">EOR, EORS (immediate)</a>:
+        Bitwise Exclusive-OR (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_r.html">EOR, EORS (register)</a>:
+        Bitwise Exclusive-OR (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eor_rr.html">EOR, EORS (register-shifted register)</a>:
+        Bitwise Exclusive-OR (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="eret.html">ERET</a>:
+        Exception Return.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="esb.html">ESB</a>:
+        Error Synchronization Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="hlt.html">HLT</a>:
+        Halting Breakpoint.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="hvc.html">HVC</a>:
+        Hypervisor Call.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="isb.html">ISB</a>:
+        Instruction Synchronization Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="it.html">IT</a>:
+        If-Then.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lda.html">LDA</a>:
+        Load-Acquire Word.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldab.html">LDAB</a>:
+        Load-Acquire Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaex.html">LDAEX</a>:
+        Load-Acquire Exclusive Word.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaexb.html">LDAEXB</a>:
+        Load-Acquire Exclusive Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaexd.html">LDAEXD</a>:
+        Load-Acquire Exclusive Doubleword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldaexh.html">LDAEXH</a>:
+        Load-Acquire Exclusive Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldah.html">LDAH</a>:
+        Load-Acquire Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldc_i.html">LDC (immediate)</a>:
+        Load data to System register (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldc_l.html">LDC (literal)</a>:
+        Load data to System register (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldm_e.html">LDM (exception return)</a>:
+        Load Multiple (exception return).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldm_u.html">LDM (User registers)</a>:
+        Load Multiple (User registers).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldm.html">LDM, LDMIA, LDMFD</a>:
+        Load Multiple (Increment After, Full Descending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldmda.html">LDMDA, LDMFA</a>:
+        Load Multiple Decrement After (Full Ascending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldmdb.html">LDMDB, LDMEA</a>:
+        Load Multiple Decrement Before (Empty Ascending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldmib.html">LDMIB, LDMED</a>:
+        Load Multiple Increment Before (Empty Descending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_i.html">LDR (immediate)</a>:
+        Load Register (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_l.html">LDR (literal)</a>:
+        Load Register (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldr_r.html">LDR (register)</a>:
+        Load Register (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrb_i.html">LDRB (immediate)</a>:
+        Load Register Byte (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrb_l.html">LDRB (literal)</a>:
+        Load Register Byte (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrb_r.html">LDRB (register)</a>:
+        Load Register Byte (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrbt.html">LDRBT</a>:
+        Load Register Byte Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrd_i.html">LDRD (immediate)</a>:
+        Load Register Dual (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrd_l.html">LDRD (literal)</a>:
+        Load Register Dual (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrd_r.html">LDRD (register)</a>:
+        Load Register Dual (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrex.html">LDREX</a>:
+        Load Register Exclusive.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrexb.html">LDREXB</a>:
+        Load Register Exclusive Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrexd.html">LDREXD</a>:
+        Load Register Exclusive Doubleword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrexh.html">LDREXH</a>:
+        Load Register Exclusive Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrh_i.html">LDRH (immediate)</a>:
+        Load Register Halfword (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrh_l.html">LDRH (literal)</a>:
+        Load Register Halfword (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrh_r.html">LDRH (register)</a>:
+        Load Register Halfword (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrht.html">LDRHT</a>:
+        Load Register Halfword Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsb_i.html">LDRSB (immediate)</a>:
+        Load Register Signed Byte (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsb_l.html">LDRSB (literal)</a>:
+        Load Register Signed Byte (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsb_r.html">LDRSB (register)</a>:
+        Load Register Signed Byte (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsbt.html">LDRSBT</a>:
+        Load Register Signed Byte Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsh_i.html">LDRSH (immediate)</a>:
+        Load Register Signed Halfword (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsh_l.html">LDRSH (literal)</a>:
+        Load Register Signed Halfword (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsh_r.html">LDRSH (register)</a>:
+        Load Register Signed Halfword (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrsht.html">LDRSHT</a>:
+        Load Register Signed Halfword Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ldrt.html">LDRT</a>:
+        Load Register Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsl_mov_r.html">LSL (immediate)</a>:
+        Logical Shift Left (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsl_mov_rr.html">LSL (register)</a>:
+        Logical Shift Left (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsls_mov_r.html">LSLS (immediate)</a>:
+        Logical Shift Left, setting flags (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsls_mov_rr.html">LSLS (register)</a>:
+        Logical Shift Left, setting flags (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsr_mov_r.html">LSR (immediate)</a>:
+        Logical Shift Right (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsr_mov_rr.html">LSR (register)</a>:
+        Logical Shift Right (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsrs_mov_r.html">LSRS (immediate)</a>:
+        Logical Shift Right, setting flags (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="lsrs_mov_rr.html">LSRS (register)</a>:
+        Logical Shift Right, setting flags (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mcr.html">MCR</a>:
+        Move to System register from general-purpose register or execute a System instruction.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mcrr.html">MCRR</a>:
+        Move to System register from two general-purpose registers.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mla.html">MLA, MLAS</a>:
+        Multiply Accumulate.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mls.html">MLS</a>:
+        Multiply and Subtract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_i.html">MOV, MOVS (immediate)</a>:
+        Move (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_r.html">MOV, MOVS (register)</a>:
+        Move (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mov_rr.html">MOV, MOVS (register-shifted register)</a>:
+        Move (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="movt.html">MOVT</a>:
+        Move Top.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrc.html">MRC</a>:
+        Move to general-purpose register from System register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrrc.html">MRRC</a>:
+        Move to two general-purpose registers from System register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrs.html">MRS</a>:
+        Move Special register to general-purpose register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mrs_br.html">MRS (Banked register)</a>:
+        Move Banked or Special register to general-purpose register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msr_br.html">MSR (Banked register)</a>:
+        Move general-purpose register to Banked or Special register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msr_i.html">MSR (immediate)</a>:
+        Move immediate value to Special register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="msr_r.html">MSR (register)</a>:
+        Move general-purpose register to Special register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mul.html">MUL, MULS</a>:
+        Multiply.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvn_i.html">MVN, MVNS (immediate)</a>:
+        Bitwise NOT (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvn_r.html">MVN, MVNS (register)</a>:
+        Bitwise NOT (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="mvn_rr.html">MVN, MVNS (register-shifted register)</a>:
+        Bitwise NOT (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="nop.html">NOP</a>:
+        No Operation.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orn_i.html">ORN, ORNS (immediate)</a>:
+        Bitwise OR NOT (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orn_r.html">ORN, ORNS (register)</a>:
+        Bitwise OR NOT (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_i.html">ORR, ORRS (immediate)</a>:
+        Bitwise OR (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_r.html">ORR, ORRS (register)</a>:
+        Bitwise OR (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="orr_rr.html">ORR, ORRS (register-shifted register)</a>:
+        Bitwise OR (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pkh.html">PKHBT, PKHTB</a>:
+        Pack Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pld_l.html">PLD (literal)</a>:
+        Preload Data (literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pld_i.html">PLD, PLDW (immediate)</a>:
+        Preload Data (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pld_r.html">PLD, PLDW (register)</a>:
+        Preload Data (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pli_i.html">PLI (immediate, literal)</a>:
+        Preload Instruction (immediate, literal).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pli_r.html">PLI (register)</a>:
+        Preload Instruction (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pop.html">POP</a>:
+        Pop Multiple Registers from Stack.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pop_ldm.html">POP (multiple registers)</a>:
+        Pop Multiple Registers from Stack: an alias of LDM, LDMIA, LDMFD.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pop_ldr_i.html">POP (single register)</a>:
+        Pop Single Register from Stack: an alias of LDR (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="pssbb.html">PSSBB</a>:
+        Physical Speculative Store Bypass Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="push.html">PUSH</a>:
+        Push Multiple Registers to Stack.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="push_stmdb.html">PUSH (multiple registers)</a>:
+        Push multiple registers to Stack: an alias of STMDB, STMFD.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="push_str_i.html">PUSH (single register)</a>:
+        Push Single Register to Stack: an alias of STR (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qadd.html">QADD</a>:
+        Saturating Add.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qadd16.html">QADD16</a>:
+        Saturating Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qadd8.html">QADD8</a>:
+        Saturating Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qasx.html">QASX</a>:
+        Saturating Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qdadd.html">QDADD</a>:
+        Saturating Double and Add.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qdsub.html">QDSUB</a>:
+        Saturating Double and Subtract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qsax.html">QSAX</a>:
+        Saturating Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qsub.html">QSUB</a>:
+        Saturating Subtract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qsub16.html">QSUB16</a>:
+        Saturating Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="qsub8.html">QSUB8</a>:
+        Saturating Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rbit.html">RBIT</a>:
+        Reverse Bits.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev.html">REV</a>:
+        Byte-Reverse Word.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rev16.html">REV16</a>:
+        Byte-Reverse Packed Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="revsh.html">REVSH</a>:
+        Byte-Reverse Signed Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rfe.html">RFE, RFEDA, RFEDB, RFEIA, RFEIB</a>:
+        Return From Exception.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ror_mov_r.html">ROR (immediate)</a>:
+        Rotate Right (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ror_mov_rr.html">ROR (register)</a>:
+        Rotate Right (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rors_mov_r.html">RORS (immediate)</a>:
+        Rotate Right, setting flags (immediate): an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rors_mov_rr.html">RORS (register)</a>:
+        Rotate Right, setting flags (register): an alias of MOV, MOVS (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rrx_mov_r.html">RRX</a>:
+        Rotate Right with Extend: an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rrxs_mov_r.html">RRXS</a>:
+        Rotate Right with Extend, setting flags: an alias of MOV, MOVS (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsb_i.html">RSB, RSBS (immediate)</a>:
+        Reverse Subtract (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsb_r.html">RSB, RSBS (register)</a>:
+        Reverse Subtract (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsb_rr.html">RSB, RSBS (register-shifted register)</a>:
+        Reverse Subtract (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsc_i.html">RSC, RSCS (immediate)</a>:
+        Reverse Subtract with Carry (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsc_r.html">RSC, RSCS (register)</a>:
+        Reverse Subtract with Carry (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="rsc_rr.html">RSC, RSCS (register-shifted register)</a>:
+        Reverse Subtract (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sadd16.html">SADD16</a>:
+        Signed Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sadd8.html">SADD8</a>:
+        Signed Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sasx.html">SASX</a>:
+        Signed Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sb.html">SB</a>:
+        Speculation Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbc_i.html">SBC, SBCS (immediate)</a>:
+        Subtract with Carry (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbc_r.html">SBC, SBCS (register)</a>:
+        Subtract with Carry (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbc_rr.html">SBC, SBCS (register-shifted register)</a>:
+        Subtract with Carry (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sbfx.html">SBFX</a>:
+        Signed Bit Field Extract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sdiv.html">SDIV</a>:
+        Signed Divide.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sel.html">SEL</a>:
+        Select Bytes.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setend.html">SETEND</a>:
+        Set Endianness.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="setpan.html">SETPAN</a>:
+        Set Privileged Access Never.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sev.html">SEV</a>:
+        Send Event.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sevl.html">SEVL</a>:
+        Send Event Local.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shadd16.html">SHADD16</a>:
+        Signed Halving Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shadd8.html">SHADD8</a>:
+        Signed Halving Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shasx.html">SHASX</a>:
+        Signed Halving Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shsax.html">SHSAX</a>:
+        Signed Halving Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shsub16.html">SHSUB16</a>:
+        Signed Halving Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="shsub8.html">SHSUB8</a>:
+        Signed Halving Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smc.html">SMC</a>:
+        Secure Monitor Call.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlabb.html">SMLABB, SMLABT, SMLATB, SMLATT</a>:
+        Signed Multiply Accumulate (halfwords).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlad.html">SMLAD, SMLADX</a>:
+        Signed Multiply Accumulate Dual.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlal.html">SMLAL, SMLALS</a>:
+        Signed Multiply Accumulate Long.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlalbb.html">SMLALBB, SMLALBT, SMLALTB, SMLALTT</a>:
+        Signed Multiply Accumulate Long (halfwords).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlald.html">SMLALD, SMLALDX</a>:
+        Signed Multiply Accumulate Long Dual.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlawb.html">SMLAWB, SMLAWT</a>:
+        Signed Multiply Accumulate (word by halfword).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlsd.html">SMLSD, SMLSDX</a>:
+        Signed Multiply Subtract Dual.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smlsld.html">SMLSLD, SMLSLDX</a>:
+        Signed Multiply Subtract Long Dual.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smmla.html">SMMLA, SMMLAR</a>:
+        Signed Most Significant Word Multiply Accumulate.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smmls.html">SMMLS, SMMLSR</a>:
+        Signed Most Significant Word Multiply Subtract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smmul.html">SMMUL, SMMULR</a>:
+        Signed Most Significant Word Multiply.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smuad.html">SMUAD, SMUADX</a>:
+        Signed Dual Multiply Add.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smulbb.html">SMULBB, SMULBT, SMULTB, SMULTT</a>:
+        Signed Multiply (halfwords).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smull.html">SMULL, SMULLS</a>:
+        Signed Multiply Long.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smulwb.html">SMULWB, SMULWT</a>:
+        Signed Multiply (word by halfword).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="smusd.html">SMUSD, SMUSDX</a>:
+        Signed Multiply Subtract Dual.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="srs.html">SRS, SRSDA, SRSDB, SRSIA, SRSIB</a>:
+        Store Return State.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssat.html">SSAT</a>:
+        Signed Saturate.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssat16.html">SSAT16</a>:
+        Signed Saturate 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssax.html">SSAX</a>:
+        Signed Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssbb.html">SSBB</a>:
+        Speculative Store Bypass Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssub16.html">SSUB16</a>:
+        Signed Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ssub8.html">SSUB8</a>:
+        Signed Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stc.html">STC</a>:
+        Store data to System register.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stl.html">STL</a>:
+        Store-Release Word.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlb.html">STLB</a>:
+        Store-Release Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlex.html">STLEX</a>:
+        Store-Release Exclusive Word.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlexb.html">STLEXB</a>:
+        Store-Release Exclusive Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlexd.html">STLEXD</a>:
+        Store-Release Exclusive Doubleword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlexh.html">STLEXH</a>:
+        Store-Release Exclusive Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stlh.html">STLH</a>:
+        Store-Release Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stm_u.html">STM (User registers)</a>:
+        Store Multiple (User registers).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stm.html">STM, STMIA, STMEA</a>:
+        Store Multiple (Increment After, Empty Ascending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stmda.html">STMDA, STMED</a>:
+        Store Multiple Decrement After (Empty Descending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stmdb.html">STMDB, STMFD</a>:
+        Store Multiple Decrement Before (Full Descending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="stmib.html">STMIB, STMFA</a>:
+        Store Multiple Increment Before (Full Ascending).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_i.html">STR (immediate)</a>:
+        Store Register (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="str_r.html">STR (register)</a>:
+        Store Register (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strb_i.html">STRB (immediate)</a>:
+        Store Register Byte (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strb_r.html">STRB (register)</a>:
+        Store Register Byte (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strbt.html">STRBT</a>:
+        Store Register Byte Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strd_i.html">STRD (immediate)</a>:
+        Store Register Dual (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strd_r.html">STRD (register)</a>:
+        Store Register Dual (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strex.html">STREX</a>:
+        Store Register Exclusive.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strexb.html">STREXB</a>:
+        Store Register Exclusive Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strexd.html">STREXD</a>:
+        Store Register Exclusive Doubleword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strexh.html">STREXH</a>:
+        Store Register Exclusive Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strh_i.html">STRH (immediate)</a>:
+        Store Register Halfword (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strh_r.html">STRH (register)</a>:
+        Store Register Halfword (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strht.html">STRHT</a>:
+        Store Register Halfword Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="strt.html">STRT</a>:
+        Store Register Unprivileged.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_adr.html">SUB (immediate, from PC)</a>:
+        Subtract from PC: an alias of ADR.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_i.html">SUB, SUBS (immediate)</a>:
+        Subtract (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_r.html">SUB, SUBS (register)</a>:
+        Subtract (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_rr.html">SUB, SUBS (register-shifted register)</a>:
+        Subtract (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_sp_i.html">SUB, SUBS (SP minus immediate)</a>:
+        Subtract from SP (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sub_sp_r.html">SUB, SUBS (SP minus register)</a>:
+        Subtract from SP (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="svc.html">SVC</a>:
+        Supervisor Call.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtab.html">SXTAB</a>:
+        Signed Extend and Add Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtab16.html">SXTAB16</a>:
+        Signed Extend and Add Byte 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtah.html">SXTAH</a>:
+        Signed Extend and Add Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtb.html">SXTB</a>:
+        Signed Extend Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxtb16.html">SXTB16</a>:
+        Signed Extend Byte 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="sxth.html">SXTH</a>:
+        Signed Extend Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tbb.html">TBB, TBH</a>:
+        Table Branch Byte or Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="teq_i.html">TEQ (immediate)</a>:
+        Test Equivalence (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="teq_r.html">TEQ (register)</a>:
+        Test Equivalence (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="teq_rr.html">TEQ (register-shifted register)</a>:
+        Test Equivalence (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tsb.html">TSB CSYNC</a>:
+        Trace Synchronization Barrier.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tst_i.html">TST (immediate)</a>:
+        Test (immediate).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tst_r.html">TST (register)</a>:
+        Test (register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="tst_rr.html">TST (register-shifted register)</a>:
+        Test (register-shifted register).</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uadd16.html">UADD16</a>:
+        Unsigned Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uadd8.html">UADD8</a>:
+        Unsigned Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uasx.html">UASX</a>:
+        Unsigned Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="ubfx.html">UBFX</a>:
+        Unsigned Bit Field Extract.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udf.html">UDF</a>:
+        Permanently Undefined.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="udiv.html">UDIV</a>:
+        Unsigned Divide.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhadd16.html">UHADD16</a>:
+        Unsigned Halving Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhadd8.html">UHADD8</a>:
+        Unsigned Halving Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhasx.html">UHASX</a>:
+        Unsigned Halving Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhsax.html">UHSAX</a>:
+        Unsigned Halving Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhsub16.html">UHSUB16</a>:
+        Unsigned Halving Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uhsub8.html">UHSUB8</a>:
+        Unsigned Halving Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umaal.html">UMAAL</a>:
+        Unsigned Multiply Accumulate Accumulate Long.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umlal.html">UMLAL, UMLALS</a>:
+        Unsigned Multiply Accumulate Long.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="umull.html">UMULL, UMULLS</a>:
+        Unsigned Multiply Long.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqadd16.html">UQADD16</a>:
+        Unsigned Saturating Add 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqadd8.html">UQADD8</a>:
+        Unsigned Saturating Add 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqasx.html">UQASX</a>:
+        Unsigned Saturating Add and Subtract with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqsax.html">UQSAX</a>:
+        Unsigned Saturating Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqsub16.html">UQSUB16</a>:
+        Unsigned Saturating Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uqsub8.html">UQSUB8</a>:
+        Unsigned Saturating Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usad8.html">USAD8</a>:
+        Unsigned Sum of Absolute Differences.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usada8.html">USADA8</a>:
+        Unsigned Sum of Absolute Differences and Accumulate.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usat.html">USAT</a>:
+        Unsigned Saturate.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usat16.html">USAT16</a>:
+        Unsigned Saturate 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usax.html">USAX</a>:
+        Unsigned Subtract and Add with Exchange.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usub16.html">USUB16</a>:
+        Unsigned Subtract 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="usub8.html">USUB8</a>:
+        Unsigned Subtract 8.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtab.html">UXTAB</a>:
+        Unsigned Extend and Add Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtab16.html">UXTAB16</a>:
+        Unsigned Extend and Add Byte 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtah.html">UXTAH</a>:
+        Unsigned Extend and Add Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtb.html">UXTB</a>:
+        Unsigned Extend Byte.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxtb16.html">UXTB16</a>:
+        Unsigned Extend Byte 16.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="uxth.html">UXTH</a>:
+        Unsigned Extend Halfword.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfe.html">WFE</a>:
+        Wait For Event.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="wfi.html">WFI</a>:
+        Wait For Interrupt.</span></p></div>
+    <div class="iformindex"><p class="iformindex"><span class="insnheading"><a href="yield.html">YIELD</a>:
+        Yield hint.</span></p></div>
+  <hr/><table style="margin: 0 auto;"><tr><td><div class="topbar"><a href="index.html">Base Instructions</a></div></td><td><div class="topbar"><a href="fpsimdindex.html">SIMD&amp;FP Instructions</a></div></td><td><div class="topbar"><a href="a32_encindex.html">A32 Instructions by Encoding</a></div></td><td><div class="topbar"><a href="t32_encindex.html">T32 Instructions by Encoding</a></div></td><td><div class="topbar"><a href="shared_pseudocode.html">Shared Pseudocode</a></div></td><td><div class="topbar"><a href="notice.html">Proprietary Notice</a></div></td></tr></table><p class="versions">
+        Internal version only: isa v01_31, pseudocode v2023-06_rel, sve v2023-06_rel      
+        ; Build timestamp: 2023-07-04T18:06
+    </p><p class="copyconf">
+      Copyright © 2010-2023 Arm Limited or its affiliates. All rights reserved.
+      This document is Non-Confidential.
+    </p></body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "enabledLanguageIds": [
+    "typescript"
+  ],
+  "ignorePaths": [
+    "node_modules"
+  ],
+  "ignoreWords": [".asciz", ".endm"],
+  "ignoreRegExpList": ["/([A-Z]{2,})+/g"]
+}

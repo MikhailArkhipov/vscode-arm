@@ -1,0 +1,342 @@
+{
+  "name": "arm",
+  "displayName": "ARM Assembly",
+  "description": "ARM Assembly Language Editor (IntelliSense, documentation tooltips, formatting, diagnostics and more)",
+  "version": "0.0.1",
+  "author": "Mikhail Arkhipov",
+  "icon": "images/ArmIcon.png",
+  "publisher": "Mikhail-Arkhipov",
+  "license": "MIT",
+  "preview": true,
+  "homepage": "https://github.com/MikhailArkhipov/vscode-arm",
+  "bugs": {
+    "url": "https://github.com/MikhailArkhipov/vscode-arm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikhailArkhipov/vscode-arm"
+  },
+  "keywords": [
+    "ARM",
+    "Assembly"
+  ],
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Linters",
+    "Snippets"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "arm.openCurrentItemDocumentation",
+        "title": "Open instruction Web page",
+        "category": "ARM",
+        "icon": {
+          "light": "images/ArmIcon.png",
+          "dark": "images/ArmIcon.png"
+        }
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "arm.openCurrentItemDocumentation",
+          "group": "ARM",
+          "when": "editorTextFocus && editorLangId == arm"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "arm.openInstructionDocumentation",
+        "key": "ctrl+o ctrl+d",
+        "when": "editorTextFocus"
+      }
+    ],
+    "languages": [
+      {
+        "id": "arm",
+        "aliases": [
+          "ARM",
+          "Arm",
+          "ARM Assembly Language"
+        ],
+        "extensions": [
+          ".s",
+          ".S",
+          ".sx"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": [
+      {
+        "properties": {
+          "arm.general.instructionSet": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "A32",
+              "A64"
+            ],
+            "description": "ARM instruction sets to use. Auto mode attempts to detect instruction set based on the file contents. If it is unable to do so, A64 is assumed."
+          },
+          "arm.color.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides item coloring. Set to false if you prefer another extension to do the job."
+          },
+          "arm.completion.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides completion list during typing."
+          },
+          "arm.completion.advancedDirectives": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show advanced assembler directives in the completion list."
+          },
+          "arm.diagnostic.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor displays diagnostics for syntax errors, unknown directives and instructions, etc."
+          },
+          "arm.diagnostic.unknownInstructions": {
+            "type": "boolean",
+            "default": false,
+            "description": "Flag unknown instructions. Instruction check does not take into account symbol possible redefinition by .equ or .set."
+          },
+          "arm.diagnostic.unknownDirectives": {
+            "type": "boolean",
+            "default": false,
+            "description": "Flag unknown directives. Directive check does not take into account symbol possible redefinition by .equ or .set."
+          },
+          "arm.formatting.spaceAfterComma": {
+            "type": "boolean",
+            "default": true,
+            "description": "Insert space after comma during formatting."
+          },
+          "arm.formatting.spaceAroundOperators": {
+            "type": "boolean",
+            "default": false,
+            "description": "Place space around math operators (as in 1 + 2)."
+          },
+          "arm.formatting.labelsCase": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "upper",
+              "lower"
+            ],
+            "description": "Labels casing during formatting."
+          },
+          "arm.formatting.directivesCase": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "upper",
+              "lower"
+            ],
+            "description": "Directives casing during formatting and completion."
+          },
+          "arm.formatting.instructionsCase": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "upper",
+              "lower"
+            ],
+            "description": "Instructions casing during formatting and completion."
+          },
+          "arm.formatting.registersCase": {
+            "type": "string",
+            "default": "auto",
+            "enum": [
+              "auto",
+              "upper",
+              "lower"
+            ],
+            "description": "Register name casing during formatting and completion."
+          },
+          "arm.formatting.labelsOnSeparateLines": {
+            "type": "boolean",
+            "default": true,
+            "description": "Place labels on their own lines. This does not apply to labels on data directives."
+          },
+          "arm.formatting.alignOperands": {
+            "type": "boolean",
+            "default": true,
+            "description": "Align operands at a nearest tab position after longest instruction."
+          },
+          "arm.formatting.alignEndOfLineComments": {
+            "type": "boolean",
+            "default": true,
+            "description": "Preserve vertical alignment of end of line comments."
+          },
+          "arm.hover.show": {
+            "type": "boolean",
+            "default": true,
+            "description": "Editor provides documentation when hovering over instruction and directives."
+          }
+        }
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "arm",
+        "scopes": {
+          "templateType": [
+            "entity.name.type.instruction"
+          ]
+        }
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "instruction",
+        "superType": "enumMember",
+        "description": "Assembly instruction."
+      },
+      {
+        "id": "directive",
+        "superType": "keyword",
+        "description": "Assembler directive."
+      },
+      {
+        "id": "register",
+        "superType": "enum",
+        "description": "Processor register."
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "definition",
+        "superType": "function",
+        "description": "Assembler directive defining a symbol, such as .set or .equ."
+      },
+      {
+        "id": "declaration",
+        "superType": "type",
+        "description": "Assembler directive declaring data, such as .word."
+      },
+      {
+        "id": "include",
+        "superType": "regexp",
+        "description": "Assembler include directive."
+      },
+      {
+        "id": "condition",
+        "superType": "decorator",
+        "description": "Assembler conditional directive."
+      },
+      {
+        "id": "macro",
+        "superType": "decorator",
+        "description": "Assembler macro directive."
+      },
+      {
+        "id": "macroName",
+        "superType": "decorator",
+        "description": "Assembler macro name."
+      },
+      {
+        "id": "macroParameter",
+        "superType": "decorator",
+        "description": "Assembler macro parameter reference."
+      },
+      {
+        "id": "unrecognized",
+        "description": "Unrecognized instruction or directive."
+      }
+    ],
+    "configurationDefaults": {
+      "editor.semanticHighlighting.enabled": true,
+      "editor.semanticTokenColorCustomizations": {
+        "enabled": true,
+        "[Default Dark Modern]": {
+          "rules": {
+            "directive": "#7ad1c5",
+            "directive.macro": "#c45e66",
+            "directive.definition": "#1ba3f5",
+            "directive.declaration": "#DCDCAA",
+            "directive.condition": "#e06c75",
+            "directive.include": "#a883b2",
+            "instruction": "#62aeec",
+            "instruction.unrecognized": "#6677d1",
+            "register": "#4EC9B0",
+            "variable": "#9CDCFE",
+            "variable.macroName": "#569CD6",
+            "variable.macroParameter": "#56b6c2"
+          }
+        },
+        "[Default Light Modern]": {
+          "rules": {
+            "directive": "#7ad1c5",
+            "directive.macro": "#c45e66",
+            "directive.definition": "#1ba3f5",
+            "directive.declaration": "#DCDCAA",
+            "directive.condition": "#e06c75",
+            "directive.include": "#a883b2",
+            "instruction": "#62aeec",
+            "instruction.unrecognized": "#6677d1",
+            "register": "#4EC9B0",
+            "variable": "#9CDCFE",
+            "variable.macroName": "#569CD6",
+            "variable.macroParameter": "#28484c"
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "build": "tsc -p ./",
+    "test": "jest",
+    "lint": "eslint **/*.ts",
+    "prettier": "prettier -c ."
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.5",
+    "@types/jest-expect-message": "npm:jest-expect-message@*",
+    "@types/node": "^20.6.2",
+    "@types/vscode": "^1.82.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "@vscode/vsce": "^2.21.0",
+    "chai": "^4.3.8",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.0.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "jest": "^29.7.0",
+    "jest-expect-message": "^1.1.3",
+    "madge": "^6.1.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "node-html-parser": "^6.1.10",
+    "turndown": "^7.1.2",
+    "typed-rest-client": "^1.8.11",
+    "vscode-languageclient": "^8.1.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  }
+}

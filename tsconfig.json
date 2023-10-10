@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "strictNullChecks": true,
+        "module": "commonjs",
+        "target": "es6",
+        "outDir": "out",
+        "lib": [
+            "es6"
+        ],
+        "sourceMap": true,
+        "rootDir": ".",
+        "resolveJsonModule": true
+    },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        ".vscode-test"
+    ],
+    "files": ["node_modules/jest-expect-message/types/index.d.ts"],
+}
