@@ -94,8 +94,9 @@ export interface TokenOperator extends Operator {
 // that came from the instruction set JSON file.
 export interface InstructionInfo {
   readonly fullName: string; // LDMIANE.W
-  readonly name: string; // 'LDM' - core name
+  readonly name: string; // 'LDM' - core name.
   readonly description: string | undefined;
+  readonly file: string // ARM documentation source file.
   readonly isValid: boolean;
 }
 

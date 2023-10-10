@@ -48,13 +48,14 @@ import { A32Set, A64Set } from '../tokens/definitions';
 //   }
 // }
 
-const armHtmlDocFolderName = 'D:\\vscode-arm\\ARM-doc\\A64';
+const armHtmlDocFolderName = 'D:\\ARM-doc\\A32';
 const indexFolderName = 'D:\\vscode-arm';
-const setFileName = `${A64Set}.json`;
+const setFileName = `${A32Set}.json`;
 
 interface InstructionData {
-  name: string;
-  doc: string;
+  name: string; // Instruction name
+  doc: string; // Documentation to show in hover
+  file: string; // File name the doc was extracted from
 }
 
 export function convertHtmlToIndex(): void {
@@ -125,10 +126,11 @@ function getInstructionDataFromHtml(fileName: string, contents: string): Instruc
   const result: InstructionData[] = [];
   const doc = getDoc(instSection);
   if (doc) {
-    instrNames.forEach((e) => {
+    instrNames.forEach((name) => {
       result.push({
-        name: e,
+        name,
         doc,
+        file: path.basename(fileName)
       });
     });
   } else {

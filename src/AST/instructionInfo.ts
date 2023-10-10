@@ -12,6 +12,7 @@ class InstructionInfoImpl implements InstructionInfo {
   public condition: string = ''; // NE/Z/...
   public specifier: string = ''; // Width, like .W or .N r a datatype, such as NEON .I16, etc.
   public description: string;
+  public file: string // ARM documentation source file.
   public isValid = true;
 
   constructor(fullName: string) {
@@ -45,6 +46,7 @@ class InstructionInfoImpl implements InstructionInfo {
     const info = findInstructionInfo(this.name, instructionSet);
     if (info) {
       this.description = info.doc;
+      this.file = info.file;
       this.isValid = true;
     } else {
       this.isValid = false;

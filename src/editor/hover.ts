@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { TextDocument, Position, Hover, MarkdownString, CancellationToken } from 'vscode';
-import { getDirectiveDocumentation } from './documentation';
+import { getDirectiveDocumentation, getInstructionDocumentationUrl } from './documentation';
 import { RDT } from './rdt';
 import { Settings, getSetting } from '../core/settings';
 import { Token, TokenSubType, TokenType } from '../tokens/definitions';
@@ -45,6 +45,11 @@ export async function provideHover(
 function getInstructionDocumentation(instructionName: string, instructionSet: string): MarkdownString | undefined {
   const pi = getInstructionInfo(instructionName.toUpperCase(), instructionSet);
   if (pi.name && pi.name.length > 0 && pi.description && pi.description.length > 0) {
-    return new MarkdownString(`#### ${pi.name}\n\n${pi.description}`);
+    return new MarkdownString(
+      `#### ${pi.name}\n\n${pi.description}\n\n[Open documentation](${getInstructionDocumentationUrl(
+        instructionName,
+        instructionSet
+      )})`
+    );
   }
 }

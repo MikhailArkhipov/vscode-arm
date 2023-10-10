@@ -18,6 +18,7 @@ export interface InstructionSet {
 interface InstructionJson {
   readonly name: string;
   readonly doc: string;
+  readonly file: string;
 }
 
 // Runtime instruction set built from the JSON data.

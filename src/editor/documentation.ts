@@ -1,9 +1,6 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as fs from 'fs';
-import * as path from 'path';
-
 import { HttpClient } from 'typed-rest-client/HttpClient';
 import { CancellationToken, MarkdownString } from 'vscode';
 import { getInstructionInfo } from '../AST/instructionInfo';
@@ -41,32 +38,8 @@ export async function getDirectiveDocumentation(
 }
 
 export function getInstructionDocumentationUrl(instructionName: string, instructionSet: string): string | undefined {
-  try {
-    const instruction = getInstructionInfo(instructionName, instructionSet);
-    if (!instruction.isValid) {
-      return;
-    }
-
-    const instructionDocFolder = path.join(__dirname, '..', '..', '..', 'ARM-doc', instructionSet);
-    const fsEntries = fs.readdirSync(instructionDocFolder).map((e) => e.toLowerCase());
-    // See if there is exact match
-    let docFile: string | undefined = `${instruction.name}.html`;
-    const index = fsEntries.indexOf(docFile);
-    if (index < 0) {
-      const prefix = `${instruction.name}_`;
-      docFile = fsEntries.find((e) => {
-        return e.startsWith(prefix) && e.endsWith('.html');
-      });
-      if (!docFile) {
-        docFile = fsEntries.find((e) => {
-          return e.startsWith(instruction.name) && e.endsWith('.html');
-        });
-      }
-    }
-
-    if (docFile) {
-      return `file:///${instructionDocFolder.replace('\\', '/')}/${docFile}`;
-    }
-  } catch (e) {}
-  return '';
+  const instruction = getInstructionInfo(instructionName, instructionSet);
+  return instruction.isValid
+    ? `https://mikhailarkhipov.github.io/ARM-doc/${instructionSet}/${instruction.file}`
+    : undefined;
 }
