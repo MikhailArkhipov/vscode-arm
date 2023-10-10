@@ -10,7 +10,6 @@ import { TokenType, TokenSubType, Token, A64Set } from '../../tokens/definitions
 import { Tokenizer } from '../../tokens/tokenizer';
 import { AstWriter, writeAstTokens } from './astWriter';
 import { compareLines } from './textCompare';
-import { initInstructionSets } from './instructions';
 
 export function verifyOperator(op: TokenOperator, docText: TextProvider, expectedOpText: string): void {
   expect(op.children.count).toBe(3); // left operand, token, right operand
@@ -47,18 +46,16 @@ export function verifyToken(token: Token, docText: TextProvider, expectedType: T
   expect(docText.getText(token.start, token.length)).toBe(expectedText);
 }
 
-export async function verifyAstAsync(expectedTree: string, text: string, instructionSet = A64Set): Promise<void> {
-  await initInstructionSets();
-  const ast = await createAstAsync(text, instructionSet);
+export function verifyAst(expectedTree: string, text: string, instructionSet = A64Set): void {
+  const ast = createAst(text, instructionSet);
   expect(ast.errors.length, 'Unexpected parsing errors.').toBe(0);
   const writer = new AstWriter();
   const actualTree = writer.writeTree(ast);
   compareTrees(expectedTree, actualTree);
 }
 
-export async function verifyAstTokens(expectedTokens: string, text: string, instructionSet = A64Set): Promise<void> {
-  await initInstructionSets();
-  const ast = await createAstAsync(text, instructionSet);
+export function verifyAstTokens(expectedTokens: string, text: string, instructionSet = A64Set): void {
+  const ast = createAst(text, instructionSet);
   const actual = writeAstTokens(ast, text);
   expect(actual).toBe(expectedTokens);
 }
@@ -72,8 +69,7 @@ function compareTrees(expectedTree: string, actualTree: string): void {
   expect(result.lineNumber, message).toBe(-1);
 }
 
-export async function createAstAsync(text: string, instructionSet = A64Set): Promise<AstRoot> {
-  await initInstructionSets();
+export function createAst(text: string, instructionSet = A64Set): AstRoot {
   const t = new Tokenizer(instructionSet);
   const tokens = t.tokenize(new TextStream(text));
   return AstRootImpl.create(text, instructionSet, tokens, 0);

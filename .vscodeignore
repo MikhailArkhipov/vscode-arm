@@ -1,5 +1,6 @@
 out/src/test/**/*
 **/*.ts
 **/*.s
+**/*.map
 **/tsconfig.json
 *.vsix

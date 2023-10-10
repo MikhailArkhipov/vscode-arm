@@ -93,7 +93,7 @@ function handleDirectivesCompletion(
 }
 
 function handleInstructionsCompletion(ed: EditorDocument, ct: CancellationToken): CompletionItem[] {
- const instructions = getAvailableInstructions(ed.instructionSet);
+  const instructions = getAvailableInstructions(ed.instructionSet);
   if (ct.isCancellationRequested) {
     return [];
   }

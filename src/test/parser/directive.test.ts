@@ -3,9 +3,9 @@
 
 /* spell-checker: disable */
 import { A32Set } from '../../tokens/definitions';
-import { verifyAstAsync } from '../utility/parsing';
+import { verifyAst } from '../utility/parsing';
 
-test('ldr r0, =1f', async () => {
+test('ldr r0, =1f', () => {
   const code = String.raw`
   .macro x
     ldr r0, =1f
@@ -22,20 +22,20 @@ test('ldr r0, =1f', async () => {
     Token:13:0 = [24...25)
     Token:3:13 1f [25...27)
 `;
-  await verifyAstAsync(expected, code, A32Set);
+  verifyAst(expected, code, A32Set);
 });
 
-test('Declare symbol via .asciz', async () => {
+test('Declare symbol via .asciz', () => {
   const code = 'a: .asciz	"a"';
   const expected = String.raw`
   Declaration:(a:) .asciz [0...13)
     Token:1:4 a: [0...2)
     Token:2:4 .asciz [3...9)
     Token:5:0 "a" [10...13)`;
-  await verifyAstAsync(expected, code, A32Set);
+  verifyAst(expected, code, A32Set);
 });
 
-test('a = b', async () => {
+test('a = b', () => {
   const code = 'a = b';
   const expected = String.raw`
 Equals:(a) = b [0...5)
@@ -43,10 +43,10 @@ Equals:(a) = b [0...5)
   Token:13:0 = b [2...3)
   Token:3:0 b [4...5)
 `;
-  await verifyAstAsync(expected, code, A32Set);
+  verifyAst(expected, code, A32Set);
 });
 
-test('w: . = . + 256', async () => {
+test('w: . = . + 256', () => {
   const code = 'w: . = . + 256';
   const expected = String.raw`
   Equals:(.) = [0...14)
@@ -56,10 +56,10 @@ test('w: . = . + 256', async () => {
     Token:3:0 . [7...8)
     Token:13:0 + [9...10)
     Token:6:0 256 [11...14)`;
-  await verifyAstAsync(expected, code);
+  verifyAst(expected, code);
 });
 
-test('.equ N, 3', async () => {
+test('.equ N, 3', () => {
   const code = '.equ N, 3';
   const expected = String.raw`
 Definition:(N) .equ [0...9)
@@ -67,5 +67,5 @@ Definition:(N) .equ [0...9)
   Token:3:3 N [5...6)
   Token:4:0 , [6...7)
   Token:6:0 3 [8...9)`;
-  await verifyAstAsync(expected, code, A32Set);
+  verifyAst(expected, code, A32Set);
 });

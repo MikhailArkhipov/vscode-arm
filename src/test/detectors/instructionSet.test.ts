@@ -7,19 +7,17 @@ import * as path from 'path';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { detectInstructionSet } from '../../editor/detectors';
 import { TextStream } from '../../text/textStream';
-import { initInstructionSets } from '../utility/instructions';
 import { A32Set, A64Set } from '../../tokens/definitions';
 
 test('Detect t1.s', async () => {
-  const set = await detectSetAsync('t1');
+  const set = detectSet('t1');
   expect(set).toBe(A32Set);
 });
 
-async function detectSetAsync(fileName: string): Promise<string> {
+function detectSet(fileName: string): string {
   const filePath = path.join(__dirname, 'files', fileName + '.s');
   const documentText = fs.readFileSync(filePath, 'utf-8');
-  await initInstructionSets();
-  
+
   const t = new Tokenizer(A64Set);
   let tokens = t.tokenize(new TextStream(documentText));
   return detectInstructionSet(documentText, tokens);

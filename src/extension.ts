@@ -1,6 +1,5 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-import * as path from 'path';
 import {
   ExtensionContext,
   languages,
@@ -18,11 +17,9 @@ import { provideHover } from './editor/hover';
 import { RDT } from './editor/rdt';
 import { openCurrentItemDocumentation } from './editor/commands';
 import { provideSemanticTokens, semanticTokensLegend } from './editor/coloring';
-import { getExtensionPath, setExtensionPath } from './core/utility';
-import { convertHtmlToIndex } from './instructions';
+import { setExtensionPath } from './core/utility';
 import { IdleTime } from './core/idletime';
 import { provideCompletions, resolveCompletionItem } from './editor/completions';
-import { loadInstructionSets } from './instructions/instructionSet';
 import { Formatter } from './editor/formatter';
 import { ColorOptions, getColorOptions } from './editor/options';
 import { getFormatOptions } from './editor/document';
@@ -33,8 +30,6 @@ let _deactivated = false;
 
 export async function activate(context: ExtensionContext): Promise<void> {
   setExtensionPath(context.extensionPath);
-  // don't wait here, let it run async
-  await loadInstructionSets(path.join(getExtensionPath(), 'src', 'instruction_sets'));
   colorOptions = getColorOptions();
 
   // Register capabilities
@@ -110,13 +105,13 @@ function registerEditorEvents(context: ExtensionContext) {
 
 function registerCommands(context: ExtensionContext): void {
   context.subscriptions.push(
-    commands.registerCommand('arm.openCurrentItemDocumentation', openCurrentItemDocumentation),
+    commands.registerCommand('arm.openCurrentItemDocumentation', openCurrentItemDocumentation)
     // commands.registerCommand('arm.convertHtmlToIndex', convertHtmlToIndex)
   );
 }
 
 function onSettingsChange(): void {
-  if(!_deactivated) {
+  if (!_deactivated) {
     colorOptions = getColorOptions();
   }
 }
@@ -132,11 +127,11 @@ function formatDocument(td: TextDocument, vsCodeFormattingOptions: FormattingOpt
   const documentText = td.getText();
   const tokens = ed.tokens.asArray();
 
-  const fo = getFormatOptions(documentText, tokens);  
+  const fo = getFormatOptions(documentText, tokens);
   fo.tabSize = vsCodeFormattingOptions.tabSize;
-  
+
   const formattedText = formatter.formatDocument(documentText, fo);
   const range = new Range(td.positionAt(0), td.positionAt(documentText.length));
-  
+
   return [new TextEdit(range, formattedText)];
 }

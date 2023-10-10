@@ -6,34 +6,32 @@ import * as path from 'path';
 
 import { Formatter } from '../../editor/formatter';
 import { FormatOptions } from '../../editor/options';
-import { createAstAsync } from '../utility/parsing';
+import { createAst } from '../utility/parsing';
 import { CasingType, detectCasingStyle, detectInstructionSet } from '../../editor/detectors';
 import { compareFiles } from '../utility/fileCompare';
 import { Tokenizer } from '../../tokens/tokenizer';
 import { TextStream } from '../../text/textStream';
-import { initInstructionSets } from '../utility/instructions';
 import { A32Set, A64Set } from '../../tokens/definitions';
-import { loadInstructionSets } from '../../instructions/instructionSet';
 
 test('Empty string', async () => {
-  const result = await formatAsync('');
+  const result = await format('');
   expect(result.length).toBe(0);
 });
 
 test('Empty statement + line comment', async () => {
-  const result = await formatAsync(' foo: // comment');
+  const result = await format(' foo: // comment');
   expect(result).toBe('foo: // comment\n');
 });
 
 test('Вasic statement + line comment', async () => {
-  const result = await formatAsync(' foo:add    r1,  r2,#1// comment');
+  const result = await format(' foo:add    r1,  r2,#1// comment');
   expect(result).toBe(String.raw`foo:
     add r1, r2, #1 // comment
 `);
 });
 
 test('Align statement + line comment to the left', async () => {
-  const result = await formatAsync('\n // comment\n foo:add    r1,  r2,#1');
+  const result = await format('\n // comment\n foo:add    r1,  r2,#1');
   expect(result).toBe(String.raw`
 // comment
 foo:
@@ -42,7 +40,7 @@ foo:
 });
 
 test('Align statement + // line comment to instruction', async () => {
-  const result = await formatAsync('\n      // comment\n foo:add    r1,  r2,#1');
+  const result = await format('\n      // comment\n foo:add    r1,  r2,#1');
   expect(result).toBe(String.raw`
     // comment
 foo:
@@ -51,27 +49,27 @@ foo:
 });
 
 test('No extra lines after label break', async () => {
-  const result = await formatAsync('label:\n // comment');
+  const result = await format('label:\n // comment');
   expect(result).toBe('label:\n// comment\n');
 });
 
 test('No extra lines at the end', async () => {
-  const result = await formatAsync('label:\n // comment\n\n\n\n');
+  const result = await format('label:\n // comment\n\n\n\n');
   expect(result).toBe('label:\n// comment\n');
 });
 
 test('No extra lines between instructions', async () => {
-  const result = await formatAsync('mov r1, r2, r3\n\n\nmov r1, r2, r3');
+  const result = await format('mov r1, r2, r3\n\n\nmov r1, r2, r3');
   expect(result).toBe('    mov r1, r2, r3\n\n    mov r1, r2, r3\n');
 });
 
 test('Whitespace 1', async () => {
-  const result = await formatAsync('        str     fp, [sp, #-4]!');
+  const result = await format('        str     fp, [sp, #-4]!');
   expect(result).toBe('    str fp, [sp, #-4]!\n');
 });
 
 test('Conditional preprocessor', async () => {
-  const result = await formatAsync(String.raw`.ifdef SYM
+  const result = await format(String.raw`.ifdef SYM
 .err
 .endif
   `);
@@ -82,7 +80,7 @@ test('Conditional preprocessor', async () => {
 });
 
 test('Directive + label', async () => {
-  const result = await formatAsync('input: .byte 212, 228, 188');
+  const result = await format('input: .byte 212, 228, 188');
   expect(result).toBe('input:  .byte   212, 228, 188\n');
 });
 
@@ -90,7 +88,7 @@ test('U instructions, L registers', async () => {
   const fo = new FormatOptionsImpl();
   fo.uppercaseInstructions = true;
   fo.uppercaseRegisters = false;
-  const result = await formatAsync("cmp   X1, #'a'-1", fo);
+  const result = await format("cmp   X1, #'a'-1", fo);
   expect(result).toBe("    CMP x1, #'a'-1\n");
 });
 
@@ -98,7 +96,7 @@ test('L instructions U registers', async () => {
   const fo = new FormatOptionsImpl();
   fo.uppercaseInstructions = false;
   fo.uppercaseRegisters = true;
-  const result = await formatAsync("CMP   r1, #'a'-1", fo, A32Set);
+  const result = await format("CMP   r1, #'a'-1", fo, A32Set);
   expect(result).toBe("    cmp R1, #'a'-1\n");
 });
 
@@ -106,31 +104,31 @@ test('Space around operators off', async () => {
   const options = new FormatOptionsImpl();
   options.tabSize = 2;
   options.spaceAroundOperators = false;
-  const result = await formatAsync('    subs w7 ,  [q0-12+148]', options);
+  const result = await format('    subs w7 ,  [q0-12+148]', options);
   expect(result).toBe('  subs  w7, [q0-12+148]\n');
 });
 
 test('Space around operators on', async () => {
   const options = new FormatOptionsImpl();
   options.spaceAroundOperators = true;
-  const result = await formatAsync('  subs R7 ,  [r0-12+148]', options, A32Set);
+  const result = await format('  subs R7 ,  [r0-12+148]', options, A32Set);
   expect(result).toBe('    subs    r7, [r0 - 12 + 148]\n');
 });
 
 test('Equals operator no space', async () => {
   const options = new FormatOptionsImpl();
   options.spaceAroundOperators = true;
-  const result = await formatAsync('ldr r1, =r2\nldr r1, =[r2]', options);
+  const result = await format('ldr r1, =r2\nldr r1, =[r2]', options);
   expect(result).toBe('    ldr r1, =r2\n    ldr r1, =[r2]\n');
 });
 
 test('C preprocessor', async () => {
-  const result = await formatAsync('#define A  1');
+  const result = await format('#define A  1');
   expect(result).toBe('#define A  1\n');
 });
 
 test('Block comment to instruction', async () => {
-  const result = await formatAsync(String.raw`
+  const result = await format(String.raw`
   /********************
    * Exit syscall
    *********************/
@@ -147,7 +145,7 @@ test('Block comment to instruction', async () => {
 });
 
 test('Multiline block comment', async () => {
-  const result = await formatAsync(
+  const result = await format(
     String.raw`
      /*write syscall*/
     mov   x0, #1 
@@ -160,7 +158,7 @@ test('Multiline block comment', async () => {
 });
 
 test('EOL comment group', async () => {
-  const result = await formatAsync(
+  const result = await format(
     String.raw`
     mov r0,  #7   @i = 7
    mov r1, #0     @c = 0
@@ -177,7 +175,7 @@ test('EOL comment group', async () => {
 test('EOL comment group with tabs', async () => {
   const options = new FormatOptionsImpl();
   options.tabSize = 4;
-  const result = await formatAsync("\n\
+  const result = await format("\n\
 \tadd r1, r1, r2\t\t@c = c + a;\n\
 \tadd r2, #1\t\t@a++\n\
 \tadd r0, #1\t\t@i++\n\
@@ -199,7 +197,7 @@ test('EOL comment group with tabs', async () => {
 test('.EQU N, 100', async () => {
   const fo = new FormatOptionsImpl();
   fo.uppercaseDirectives = true;
-  const result = await formatAsync(
+  const result = await format(
     String.raw`
      .equ	N,  100
    mov x0, #1
@@ -213,31 +211,30 @@ test('.EQU N, 100', async () => {
 });
 
 test('Format file t1.s', async () => {
-  await formatFileAsync('t1');
+  await formatFile('t1');
 });
 
 test('Format file t2.s', async () => {
-  await formatFileAsync('t2');
+  await formatFile('t2');
 });
 
 test('Format file t3.s', async () => {
-  await formatFileAsync('t3');
+  await formatFile('t3');
 });
 
 test('Format file t4.s', async () => {
-  await formatFileAsync('t4');
+  await formatFile('t4');
 });
 
 test('Format file t5.s', async () => {
-  await formatFileAsync('t5');
+  await formatFile('t5');
 });
 
 test('Format file t6.s', async () => {
-  await formatFileAsync('t6');
+  await formatFile('t6');
 });
 
-async function formatAsync(original: string, formatOptions?: FormatOptions, instructionSet = A64Set): Promise<string> {
-  await initInstructionSets();
+function format(original: string, formatOptions?: FormatOptions, instructionSet = A64Set): string {
   formatOptions = formatOptions ?? new FormatOptionsImpl();
   const f = new Formatter();
   return f.formatDocument(original, formatOptions, instructionSet);
@@ -256,17 +253,16 @@ class FormatOptionsImpl implements FormatOptions {
   alignEolComments = true;
 }
 
-async function formatFileAsync(fileName: string): Promise<void> {
+function formatFile(fileName: string): void {
   const filePath = path.join(__dirname, 'files', fileName + '.s');
   const documentText = fs.readFileSync(filePath, 'utf-8');
-  await initInstructionSets();
 
   const t = new Tokenizer(A64Set);
   let tokens = t.tokenize(new TextStream(documentText));
   const instructionSet = detectInstructionSet(documentText, tokens);
 
   const formatter = new Formatter();
-  const ast = await createAstAsync(documentText, instructionSet);
+  const ast = createAst(documentText, instructionSet);
   const detectedStyle = detectCasingStyle(documentText, ast.tokens.asArray());
 
   const fo = makeDefaultFormatOptions();
