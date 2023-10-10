@@ -1,6 +1,9 @@
 out/src/test/**/*
+src/instruction_sets/**/*
+src/jest*.*
 **/*.ts
 **/*.s
 **/*.map
 **/tsconfig.json
+images/Screen*.*
 *.vsix
