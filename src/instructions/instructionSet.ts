@@ -1,8 +1,8 @@
 // Copyright (c) Mikhail Arkhipov. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as a32set from '../instruction_sets/A32.json';
-import * as a64set from '../instruction_sets/A64.json';
+import * as a32set from '../instruction_sets/a32.json';
+import * as a64set from '../instruction_sets/a64.json';
 
 import { A32Set } from '../tokens/definitions';
 
