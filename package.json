@@ -1,6 +1,6 @@
 {
-  "name": "arm",
-  "displayName": "ARM Assembly",
+  "name": "armassemblyeditor",
+  "displayName": "ARM Assembly Editor",
   "description": "ARM Assembly Language Editor (IntelliSense, documentation tooltips, formatting, diagnostics and more)",
   "version": "0.0.1",
   "author": "Mikhail Arkhipov",
