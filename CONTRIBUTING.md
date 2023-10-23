@@ -28,7 +28,9 @@ After adding new files do run `madge --circular .` from the root to detect any c
 Tokenizer and parser are based on my earlier work at Microsoft on [R Tools](https://github.com/MikhailArkhipov/vscode-r). The code was simplified, translated to TypeScript and adapted for the ARM assembly language syntax (GAS/GCC variety).
 
 ### Instruction documentation
-[Instruction documentation](https://github.com/MikhailArkhipov/vscode-arm/tree/main/src/instruction_sets) for A32 and A64 was generated from free ARM sources, downloads are [here](https://developer.arm.com/downloads/-/exploration-tools). Generator code is in sources, `arm.convertHtmlToIndex` command can be activated in the [extension](https://github.com/MikhailArkhipov/vscode-arm/blob/main/src/extension.ts). [Generator source code](https://github.com/MikhailArkhipov/vscode-arm/blob/main/src/instructions/index.ts). The extension includes HTML files from ARM documentation archives. 
+[Instruction documentation](https://github.com/MikhailArkhipov/vscode-arm/tree/main/src/instruction_sets) for A32 and A64 was generated from ARM sources, downloads are [here](https://developer.arm.com/downloads/-/exploration-tools). This documentation is short version that is used in hover and completions. Generator code is in a [separate repo](https://github.com/MikhailArkhipov/arm-doc-converter). 
+
+The extension can open full instruction documentation in browser contained in HTML files from [ARM documentation archives](https://developer.arm.com/downloads/-/exploration-tools) unpacked into another [separate repo](https://github.com/MikhailArkhipov/ARM-doc).
 
 ### Directives documentation
 Fetched directly from GAS/GCC Web site. No local caching is implemented at the moment. See [documentation.ts](https://github.com/MikhailArkhipov/vscode-arm/blob/main/src/documentation/documentation.ts)

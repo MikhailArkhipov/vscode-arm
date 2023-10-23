@@ -7,8 +7,8 @@ import { AstNode, NodeCollection } from './definitions';
 import { NodeCollectionImpl } from './nodeCollection';
 
 export class AstNodeImpl implements AstNode {
-  // REMOVE IN PRODUCTION
-  __text__: string; // DEBUG ONLY HELPER
+  // REMOVE IN PRODUCTION, DEBUG ONLY HELPER
+  // __text__: string;
 
   protected _parent: AstNode | undefined;
   private readonly _children = new NodeCollectionImpl();
@@ -69,8 +69,8 @@ export class AstNodeImpl implements AstNode {
   public parse(context: ParseContext, parent?: AstNode): boolean {
     // Use property so item gets added to the parent collection.
     this.parent = parent;
-    // REMOVE IN PRODUCTION
-    this.__text__ = `${context.text.getText(this.start, this.length)} [${this.start}...${this.end})`;
+    // REMOVE IN PRODUCTION, DEBUG ONLY HELPER
+    // this.__text__ = `${context.text.getText(this.start, this.length)} [${this.start}...${this.end})`;
     return true;
   }
 
