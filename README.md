@@ -1,5 +1,5 @@
 # ARM Assembly Language support for Visual Studio Code
-A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/VSCode) provides support for the [ARM Assembly language](https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference) when using GAS (GCC Assembler). 
+A [Visual Studio Code](https://code.visualstudio.com/) [extension](https://marketplace.visualstudio.com/items?itemName=Mikhail-Arkhipov.armassemblyeditor) provides support for the [ARM Assembly language](https://developer.arm.com/documentation/dui0068/b/ARM-Instruction-Reference) when using GAS (GCC Assembler). 
 
 ![ARM Assembly editor](https://github.com/MikhailArkhipov/vscode-arm/blob/main/images/Screen1.png?raw=true)
 
